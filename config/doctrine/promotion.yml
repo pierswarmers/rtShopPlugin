@@ -1,0 +1,43 @@
+rtShopPromotion:
+  actAs:
+    Timestampable:
+  columns:
+    stackable:         { type: boolean, default: 0 }
+    date_from:         { type: timestamp }
+    date_to:           { type: timestamp }
+    reduction_type:    { type: enum, values: [percentageOff, dollarOff] }
+    reduction_value:   { type: float }
+    title:             { type: string(255) }
+    comment:           { type: string }
+
+rtShopVoucher:
+  columns:
+    code:              string(255)
+    batch_reference:   string(255)
+    count:             { type: integer, default: 1 }
+    mode:              { type: enum, values: [Group, Single] }
+  inheritance:
+    extends: rtShopPromotion
+    type: column_aggregation
+    keyField: type
+    keyValue: rtShopVoucher
+
+rtShopPromotionProduct:
+  columns:
+    quantity_from:     { type: integer }
+    quantity_to:       { type: integer }
+  inheritance:
+    extends: rtShopPromotion
+    type: column_aggregation
+    keyField: type
+    keyValue: rtShopPromotionProduct
+
+rtShopPromotionCart:
+  columns:
+    total_from:        { type: float }
+    total_to:          { type: float }
+  inheritance:
+    extends: rtShopPromotion
+    type: column_aggregation
+    keyField: type
+    keyValue: rtShopPromotionCart
