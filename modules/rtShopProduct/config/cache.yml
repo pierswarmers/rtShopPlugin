@@ -1,0 +1,11 @@
+<?php if(sfConfig::get('app_rt_shop_is_private', false)): ?>
+
+_shop_product:
+  enabled:     true
+
+<?php else: ?>
+
+show:
+  enabled:     true
+
+<?php endif; ?>

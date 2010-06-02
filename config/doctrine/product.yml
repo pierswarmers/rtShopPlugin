@@ -1,0 +1,167 @@
+rtShopProduct:
+  actAs:
+    rtSearchTemplate:
+      fields:      [title, content, description]
+  columns:
+    sku:                      { type: string(255) }
+    is_featured:              { type: boolean, default: 0 }
+    backorder_allowed:        { type: boolean, default: 0 }
+    is_taxable:               { type: boolean, default: 1 }
+  inheritance:
+    type:              concrete
+    extends:           rtPage
+  relations:
+    rtShopCategories:
+      class: rtShopCategory
+      local: product_id
+      foreign:  category_id
+      refClass: rtShopProductToCategory
+    rtShopStocks:
+      local: id
+      foreign: product_id
+    rtShopAttributes:
+      class: rtShopAttribute
+      local: product_id
+      foreign:  attribute_id
+      refClass: rtShopProductToAttribute
+
+
+
+rtShopStock:
+  columns:
+    product_id:               { type: integer }
+    promotion_id:             { type: integer }
+    quantity:                 { type: integer, default: 0 }
+    sku:                      { type: string(255) }
+    price_retail:             { type: float, default: 0.00 }
+    price_promotion:          { type: float, default: 0.00 }
+    price_wholesale:          { type: float, default: 0.00 }
+    length:                   { type: float, default: 0.00 }
+    width:                    { type: float, default: 0.00 }
+    height:                   { type: float, default: 0.00 }
+    weight:                   { type: float, default: 0.00 }
+  relations:
+    rtShopProduct:
+      local: product_id
+      foreign: id
+      foreignAlias: rtShopStocks
+      onDelete: CASCADE
+    rtShopPromotionProduct:
+      local: promotion_id
+      foreign: id
+      foreignAlias: rtShopStocks
+    rtShopVariations:
+      class: rtShopVariation
+      local: stock_id
+      foreign: variation_id
+      foreignAlias: rtShopStocks
+      refClass: rtShopStockToVariation
+#    rtShopOrders:
+#      class: rtShopOrder
+#      local: stock_id
+#      foreign:  order_id
+#      refClass: rtShopOrderToStock
+
+
+
+rtShopStockToVariation:
+  columns:
+    stock_id:
+      type: integer
+      primary: true
+    variation_id:
+      type: integer
+      primary: true
+  relations:
+    rtShopStock:
+      local: stock_id
+      foreign: id
+      onDelete: CASCADE
+    rtShopVariation:
+      local: variation_id
+      foreign: id
+      onDelete: CASCADE
+
+
+
+rtShopProductToAttribute:
+  columns:
+    position: integer(3)
+    product_id:
+      type: integer
+      primary: true
+    attribute_id:
+      type: integer
+      primary: true
+    position: integer
+  relations:
+    rtShopProduct:
+      local: product_id
+      foreignAlias: rtShopAttributes
+      foreign: id
+      onDelete: CASCADE
+    rtShopAttribute:
+      local: attribute_id
+      foreign: id
+      onDelete: CASCADE
+
+
+
+rtShopVariation:
+  columns:
+    title:                   { type: string(255) }
+    position:                { type: integer }
+    image:                   { type: string(255) }
+    attribute_id:            { type: integer }
+  relations:
+    rtShopAttribute:
+      local: attribute_id
+      foreign: id
+      foreignAlias: rtShopVariations
+      onDelete: CASCADE
+
+
+
+rtShopAttribute:
+  columns:
+    title:                   { type: string(255) }
+    description:             { type: string(255) }
+    position:                { type: integer }
+
+
+
+rtShopProductToCategory:
+  columns:
+    category_id:
+      type: integer
+      primary: true
+    product_id:
+      type: integer
+      primary: true
+  relations:
+    rtShopCategory:  { onDelete: CASCADE, local: category_id, foreign: id }
+    rtShopProduct:  { onDelete: CASCADE, local: product_id, foreign: id }
+
+
+
+rtShopCategory:
+  actAs:
+    NestedSet:
+      hasManyRoots: true
+      rootColumnName: root_id
+  columns:
+    menu_title:               string(255)
+    display_in_menu:          { type: boolean, default: 1 }
+  inheritance:
+    type:              concrete
+    extends:           rtPage
+  relations:
+    rtShopProducts:
+      class: rtShopProduct
+      local: category_id
+      foreign:  product_id
+      refClass: rtShopProductToCategory
+
+
+
+
