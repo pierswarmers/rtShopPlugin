@@ -20,40 +20,18 @@
 <?php echo $form->renderHiddenFields(false) ?>
 <?php if (!$form->getObject()->isNew()): ?>
 <input type="hidden" name="sf_method" value="put" />
+<?php echo $form->renderGlobalErrors() ?>
 <?php endif; ?>
   <table>
     <tbody>
-      <?php echo $form->renderGlobalErrors() ?>
-      <tr>
-        <th><?php echo $form['title']->renderLabel() ?></th>
-        <td>
-          <?php echo $form['title']->renderError() ?>
-          <?php echo $form['title'] ?>
-        </td>
-      </tr>
-      <tr>
-        <th><?php echo $form['content']->renderLabel() ?></th>
-        <td>
-          <?php echo $form['content']->renderError() ?>
-          <?php echo $form['content'] ?>
-        </td>
-      </tr>
+      
+      <?php echo render_form_row($form['title']); ?>
+      <?php echo render_form_row($form['content']); ?>
     </tbody>
   </table>
 
   <div class="rt-admin-toggle-panel">
-    <h2><?php echo __('Publish Status') ?></h2>
-    <table class="rt-admin-toggle-panel-content">
-      <tbody>
-        <?php echo render_form_row($form['published']); ?>
-        <?php echo render_form_row($form['published_from']); ?>
-        <?php echo render_form_row($form['published_to']); ?>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="rt-admin-toggle-panel">
-    <h2><?php echo __('General Options') ?></h2>
+    <h2><?php echo __('Advanced Options') ?></h2>
     <table class="rt-admin-toggle-panel-content" id="rtSortableAttributes">
       <tbody>
         <?php echo render_form_row($form['sku']); ?>
@@ -70,6 +48,17 @@
       });
     });
     </script>
+  </div>
+
+  <div class="rt-admin-toggle-panel">
+    <h2><?php echo __('Publish Status') ?></h2>
+    <table class="rt-admin-toggle-panel-content">
+      <tbody>
+        <?php echo render_form_row($form['published']); ?>
+        <?php echo render_form_row($form['published_from']); ?>
+        <?php echo render_form_row($form['published_to']); ?>
+      </tbody>
+    </table>
   </div>
 
 
