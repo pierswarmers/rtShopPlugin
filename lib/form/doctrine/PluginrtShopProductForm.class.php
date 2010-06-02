@@ -40,7 +40,7 @@ abstract class PluginrtShopProductForm extends BasertShopProductForm
     $this->widgetSchema['rt_shop_attributes_list']->setLabel('Attributes');
     $this->widgetSchema['rt_shop_categories_list']->setLabel('Categories');
 
-    $this->widgetSchema->setHelp('rt_shop_attributes_list', 'What features (if any) is this product defined by. The order can also be changed by dragging up or down.');
+    $this->widgetSchema->setHelp('rt_shop_attributes_list', 'Optional features this product is defined by. Dragging up or down changes the display order.');
     $this->widgetSchema->setHelp('rt_shop_categories_list', 'One or more categories can be linked to this product.');
 
     $this->widgetSchema->setHelp('is_featured', 'Mark this product as featured.');
