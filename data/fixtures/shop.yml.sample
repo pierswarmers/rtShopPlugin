@@ -3,6 +3,7 @@ rtShopProduct:
     title:          Mens Business Shirt
     content:        A lovely cotton shirt. Perfect for everyday at the office.
     description:    A business shirt, perfect for the office.
+    sku:            SH01
     rtShopAttributes:
       - rtShopAttribute_size_mens
       - rtShopAttribute_color
@@ -11,6 +12,7 @@ rtShopProduct:
     title:          Womens Business Shirt
     content:        A lovely cotton shirt. Perfect for everyday at the office.
     description:    A business shirt, perfect for the office.
+    sku:            SH02
     rtShopAttributes:
       - rtShopAttribute_size_womens
       - rtShopAttribute_color
