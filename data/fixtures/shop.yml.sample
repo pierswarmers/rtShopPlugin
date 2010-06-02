@@ -1,0 +1,71 @@
+rtShopProduct:
+  rtShopProduct_shirt_mens:
+    title:          Mens Business Shirt
+    content:        A lovely cotton shirt. Perfect for everyday at the office.
+    description:    A business shirt, perfect for the office.
+    rtShopAttributes:
+      - rtShopAttribute_size_mens
+      - rtShopAttribute_color
+
+  rtShopProduct_shirt_womens:
+    title:          Womens Business Shirt
+    content:        A lovely cotton shirt. Perfect for everyday at the office.
+    description:    A business shirt, perfect for the office.
+    rtShopAttributes:
+      - rtShopAttribute_size_womens
+      - rtShopAttribute_color
+
+rtShopAttribute:
+  rtShopAttribute_size_mens:
+    title:          Size (Mens Size Range)
+    display_title:  Size
+    description:    Standard range of sizes for men.
+  rtShopAttribute_size_womens:
+    title:          Size (Womens Size Range)
+    display_title:  Size
+    description:    Standard range of sizes for men.
+  rtShopAttribute_color:
+    title:          Color Range (Standard Primary)
+    display_title:  Color
+    description:    Color for new season primary choices.
+
+
+rtShopVariation:
+  rtShopVariation_mens_size_1:
+    title:                   Small
+    position:                1
+    rtShopAttribute:         rtShopAttribute_size_mens
+  rtShopVariation_mens_size_2:
+    title:                   Medium
+    position:                2
+    rtShopAttribute:         rtShopAttribute_size_mens
+  rtShopVariation_mens_size_3:
+    title:                   Large
+    position:                3
+    rtShopAttribute:         rtShopAttribute_size_mens
+
+  rtShopVariation_womens_size_1:
+    title:                   "Small (6-10)"
+    position:                1
+    rtShopAttribute:         rtShopAttribute_size_womens
+  rtShopVariation_womens_size_2:
+    title:                   "Medium (10-14)"
+    position:                2
+    rtShopAttribute:         rtShopAttribute_size_womens
+  rtShopVariation_womens_size_3:
+    title:                   "Large (14-16)"
+    position:                3
+    rtShopAttribute:         rtShopAttribute_size_womens
+
+  rtShopVariation_color_1:
+    title:                   Red
+    position:                1
+    rtShopAttribute:         rtShopAttribute_color
+  rtShopVariation_color_2:
+    title:                   Green
+    position:                2
+    rtShopAttribute:         rtShopAttribute_color
+  rtShopVariation_color_3:
+    title:                   Blue
+    position:                3
+    rtShopAttribute:         rtShopAttribute_color
