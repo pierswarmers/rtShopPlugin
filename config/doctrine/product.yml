@@ -124,9 +124,9 @@ rtShopVariation:
 
 rtShopAttribute:
   columns:
-    title:                   { type: string(255) }
+    title:                   { type: string(100) }
+    display_title:           { type: string(100) }
     description:             { type: string(255) }
-    position:                { type: integer }
 
 
 

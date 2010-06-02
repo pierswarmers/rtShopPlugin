@@ -45,54 +45,31 @@
     <h2><?php echo __('Publish Status') ?></h2>
     <table class="rt-admin-toggle-panel-content">
       <tbody>
-        <tr>
-          <th><?php echo $form['published']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['published']->renderError() ?>
-            <?php echo $form['published'] ?>
-          </td>
-        </tr>
-        <tr>
-          <th><?php echo $form['published_from']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['published_from']->renderError() ?>
-            <?php echo $form['published_from'] ?>
-          </td>
-        </tr>
-        <tr>
-          <th><?php echo $form['published_to']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['published_to']->renderError() ?>
-            <?php echo $form['published_to'] ?>
-          </td>
-        </tr>
+        <?php echo render_form_row($form['published']); ?>
+        <?php echo render_form_row($form['published_from']); ?>
+        <?php echo render_form_row($form['published_to']); ?>
       </tbody>
     </table>
   </div>
 
   <div class="rt-admin-toggle-panel">
     <h2><?php echo __('General Options') ?></h2>
-    <table class="rt-admin-toggle-panel-content">
+    <table class="rt-admin-toggle-panel-content" id="rtSortableAttributes">
       <tbody>
-        <tr>
-          <th><?php echo $form['sku']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['sku']->renderError() ?>
-            <?php echo $form['sku'] ?>
-          </td>
-        </tr>
+        <?php echo render_form_row($form['sku']); ?>
         <?php echo render_form_row($form['is_featured']); ?>
         <?php echo render_form_row($form['backorder_allowed']); ?>
         <?php echo render_form_row($form['is_taxable']); ?>
-        <tr>
-          <th><?php echo $form['rt_shop_attributes_list']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['rt_shop_attributes_list']->renderError() ?>
-            <?php echo $form['rt_shop_attributes_list'] ?>
-          </td>
-        </tr>
+        <?php echo render_form_row($form['rt_shop_attributes_list']); ?>
       </tbody>
     </table>
+    <script type="text/javascript">
+    $(function() {
+      $("#rtSortableAttributes ul.checkbox_list").sortable({
+        revert: true
+      });
+    });
+    </script>
   </div>
 
 
@@ -100,27 +77,9 @@
     <h2><?php echo __('Metadata and SEO') ?></h2>
     <table class="rt-admin-toggle-panel-content">
       <tbody>
-        <tr>
-          <th><?php echo $form['description']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['description']->renderError() ?>
-            <?php echo $form['description'] ?>
-          </td>
-        </tr>
-        <tr>
-          <th><?php echo $form['tags']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['tags']->renderError() ?>
-            <?php echo $form['tags'] ?>
-          </td>
-        </tr>
-        <tr>
-          <th><?php echo $form['searchable']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['searchable']->renderError() ?>
-            <?php echo $form['searchable'] ?>
-          </td>
-        </tr>
+        <?php echo render_form_row($form['description']); ?>
+        <?php echo render_form_row($form['tags']); ?>
+        <?php echo render_form_row($form['searchable']); ?>
       </tbody>
     </table>
   </div>
@@ -129,28 +88,10 @@
     <h2><?php echo __('Location and Referencing') ?></h2>
     <table class="rt-admin-toggle-panel-content">
       <tbody>
-        <tr>
-          <th><?php echo $form['slug']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['slug']->renderError() ?>
-            <?php echo $form['slug'] ?>
-          </td>
-        </tr>
-        <tr>
-          <th><?php echo $form['rt_shop_categories_list']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['rt_shop_categories_list']->renderError() ?>
-            <?php echo $form['rt_shop_categories_list'] ?>
-          </td>
-        </tr>
+        <?php echo render_form_row($form['slug']); ?>
+        <?php echo render_form_row($form['rt_shop_categories_list']); ?>
       <?php if(isset($form['site_id'])): ?>
-        <tr>
-          <th><?php echo $form['site_id']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['site_id']->renderError() ?>
-            <?php echo $form['site_id'] ?>
-          </td>
-        </tr>
+        <?php echo render_form_row($form['site_id']); ?>
       <?php endif; ?>
       </tbody>
     </table>
