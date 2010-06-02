@@ -24,7 +24,6 @@
 <?php endif; ?>
   <table>
     <tbody>
-      
       <?php echo render_form_row($form['title']); ?>
       <?php echo render_form_row($form['content']); ?>
     </tbody>
