@@ -16,4 +16,9 @@ abstract class PluginrtShopProduct extends BasertShopProduct
   {
     return 'Product';
   }
+
+  public function getStockSkus()
+  {
+    return '';
+  }
 }
