@@ -28,7 +28,7 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
     $routing->prependRoute(
       'rt_shop_product_show',
       new sfDoctrineRoute(
-        '/blog/:id/:slug',
+        '/shop/:id/:slug',
           array('module' => 'rtShopProduct', 'action' => 'show'),
           array('id' => '\d+', 'sf_method' => array('get')),
           array('model' => 'rtShopProduct', 'type' => 'object')
