@@ -10,4 +10,9 @@
  */
 abstract class PluginrtShopCategoryForm extends BasertShopCategoryForm
 {
+  public function setup()
+  {
+    parent::setup();
+    unset($this['level'], $this['comment_status'], $this['lft'], $this['rgt'], $this['root_id']);
+  }
 }

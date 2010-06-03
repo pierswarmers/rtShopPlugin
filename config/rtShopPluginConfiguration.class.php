@@ -28,10 +28,20 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
     $routing->prependRoute(
       'rt_shop_product_show',
       new sfDoctrineRoute(
-        '/shop/:id/:slug',
+        '/shop/product/:id/:slug',
           array('module' => 'rtShopProduct', 'action' => 'show'),
           array('id' => '\d+', 'sf_method' => array('get')),
           array('model' => 'rtShopProduct', 'type' => 'object')
+      )
+    );
+
+    $routing->prependRoute(
+      'rt_shop_category_show',
+      new sfDoctrineRoute(
+        '/shop/category/:id/:slug',
+          array('module' => 'rtShopCategory', 'action' => 'show'),
+          array('id' => '\d+', 'sf_method' => array('get')),
+          array('model' => 'rtShopCategory', 'type' => 'object')
       )
     );
 
