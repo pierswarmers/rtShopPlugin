@@ -16,7 +16,7 @@ class PluginrtShopCategoryTable extends rtPageTable
   public function getOrderQuery(Doctrine_Query $query = null)
   {
     $query = $this->getQuery($query);
-    return $query->orderBy('category.root_id ASC, category.lft ASC');
+    return $query->orderBy('page.root_id ASC, page.lft ASC');
   }
 
   /**
@@ -29,7 +29,7 @@ class PluginrtShopCategoryTable extends rtPageTable
   {
     if(is_null($query))
     {
-      $query = parent::createQuery('category');
+      $query = parent::createQuery('page');
     }
 
     return $query;
