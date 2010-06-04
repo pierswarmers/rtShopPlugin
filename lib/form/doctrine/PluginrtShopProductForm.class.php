@@ -30,12 +30,13 @@ abstract class PluginrtShopProductForm extends BasertShopProductForm
       $query->orderBy('a.title');
     }
 
-
-
-//    $c = new sfWidgetFormChoice();
-
     $this->setWidget('rt_shop_attributes_list', new sfWidgetFormDoctrineChoice(array('query' => $query, 'expanded' => true ,'multiple' => true, 'model' => 'rtShopAttribute')));
-    $this->setWidget('rt_shop_categories_list', new sfWidgetFormDoctrineChoice(array('expanded' => true ,'multiple' => true, 'model' => 'rtShopCategory')));
+
+    //$b = new sfWidgetFormSelectCheckbox();
+
+    $query = Doctrine::getTable('rtShopCategory')->getOrderQuery();
+
+    $this->setWidget('rt_shop_categories_list', new rtWidgetFormTreeDoctrineChoice(array('query' => $query, 'expanded' => true ,'multiple' => true, 'model' => 'rtShopCategory')));
 
     $this->widgetSchema['rt_shop_attributes_list']->setLabel('Attributes');
     $this->widgetSchema['rt_shop_categories_list']->setLabel('Categories');

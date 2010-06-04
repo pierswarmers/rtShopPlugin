@@ -7,13 +7,40 @@
  */
 class PluginrtShopCategoryTable extends rtPageTable
 {
-    /**
-     * Returns an instance of this class.
-     *
-     * @return object PluginrtShopCategoryTable
-     */
-    public static function getInstance()
+  public function findAllInOrder(Doctrine_Query $query = null)
+  {
+    $query = $this->getOrderQuery($query);
+    return $query->execute();
+  }
+
+  public function getOrderQuery(Doctrine_Query $query = null)
+  {
+    $query = $this->getQuery($query);
+    return $query->orderBy('category.root_id ASC, category.lft ASC');
+  }
+
+  /**
+   * Return a query object, creting a new one if needed.
+   *
+   * @param Doctrine_Query $query
+   * @return Doctrine_Query
+   */
+  public function getQuery(Doctrine_Query $query = null)
+  {
+    if(is_null($query))
     {
-        return Doctrine_Core::getTable('PluginrtShopCategory');
+      $query = parent::createQuery('category');
     }
+
+    return $query;
+  }
+  /**
+   * Returns an instance of this class.
+   *
+   * @return object PluginrtShopCategoryTable
+   */
+  public static function getInstance()
+  {
+      return Doctrine_Core::getTable('PluginrtShopCategory');
+  }
 }
