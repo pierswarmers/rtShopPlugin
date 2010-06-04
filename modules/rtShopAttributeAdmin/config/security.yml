@@ -1,0 +1,5 @@
+<?php $admin_cred = sfConfig::get('app_rt_shop_attribute_admin_credential', 'admin_shop_attribute') . "\n" ?>
+
+all:
+  is_secure: true
+  credentials: <?php echo $admin_cred ?>

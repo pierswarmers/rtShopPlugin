@@ -12,9 +12,9 @@ class rtShopCategoryAdminActions extends sfActions
 {
   public function executeIndex(sfWebRequest $request)
   {
-    $this->rt_shop_categorys = Doctrine::getTable('rtShopCategory')
-      ->createQuery('a')
-      ->execute();
+    $query = Doctrine::getTable('rtShopCategory')->addSiteQuery();
+    $query->orderBy('page.root_id ASC, page.lft ASC');
+    $this->rt_shop_categorys = $query->execute();
   }
 
   public function getGnShopCategory(sfWebRequest $request)

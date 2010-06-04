@@ -7,13 +7,38 @@
  */
 class PluginrtShopVariationTable extends Doctrine_Table
 {
-    /**
-     * Returns an instance of this class.
-     *
-     * @return object PluginrtShopVariationTable
-     */
-    public static function getInstance()
+  public function findByAttributeId($attribute_id, Doctrine_Query $query = null)
+  {
+    $query = $this->getQuery($query);
+    $query->andWhere('variation.attribute_id =?', $attribute_id)
+          ->orderBy('variation.position ASC');
+    return $query->execute();
+  }
+
+
+  /**
+   * Return a query object, creting a new one if needed.
+   *
+   * @param Doctrine_Query $query
+   * @return Doctrine_Query
+   */
+  public function getQuery(Doctrine_Query $query = null)
+  {
+    if(is_null($query))
     {
-        return Doctrine_Core::getTable('PluginrtShopVariation');
+      $query = parent::createQuery('variation');
     }
+
+    return $query;
+  }
+
+  /**
+   * Returns an instance of this class.
+   *
+   * @return object PluginrtShopVariationTable
+   */
+  public static function getInstance()
+  {
+      return Doctrine_Core::getTable('PluginrtShopVariation');
+  }
 }

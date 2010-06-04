@@ -10,4 +10,43 @@
  */
 abstract class PluginrtShopVariationForm extends BasertShopVariationForm
 {
+  public function setup()
+  {
+    parent::setup();
+
+    $this->useFields(array('position', 'title', 'image'));
+
+    $this->setWidget('position', new sfWidgetFormInputText(array(), array('style' => 'width:50px')));
+
+    if($this->isNew())
+    {
+      $path = '';
+    }
+    else
+    {
+      $this->setWidget('delete', new sfWidgetFormInputCheckbox());
+      $this->validatorSchema['delete'] = new sfValidatorBoolean();
+      $this->setWidget('image_delete', new sfWidgetFormInputCheckbox());
+      $this->validatorSchema['image_delete'] = new sfValidatorBoolean();
+
+      $path = rtAssetToolkit::getThumbnailPath(sfConfig::get('sf_upload_dir') . '/variations/'.$this->getObject()->image, array('maxWidth' => 30, 'maxHeight' => 30));
+    }
+
+    $this->setWidget('image', new sfWidgetFormInputFileEditable(array(
+      'file_src'    => $path,
+      'edit_mode'   => !$this->isNew(),
+      'is_image'    => true,
+      'with_delete' => $this->getObject()->image ? true : false,
+      'template'    => '<div style="float:left; margin-right:10px;">%file%</div> %input%<br />%delete% %delete_label%'
+    )));
+    $this->setValidator('image', new sfValidatorFile(array(
+      'mime_types' => 'web_images',
+      'required' => false,
+      'path' => sfConfig::get('sf_upload_dir').'/variations',
+    ),
+    array('mime_types' => 'Wrong type of file... should be a jpg, gif or png.')));
+
+    $this->validatorSchema['position']->setOption('required', false);
+    $this->validatorSchema['title']->setOption('required', false);
+  }
 }
