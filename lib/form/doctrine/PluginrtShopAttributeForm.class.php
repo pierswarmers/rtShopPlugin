@@ -16,13 +16,13 @@ abstract class PluginrtShopAttributeForm extends BasertShopAttributeForm
 
     unset($this['rt_shop_product_list']);
 
-    $form = new rtShopNewVariationCollectionForm(null, array('attribute' => $this->getObject()));
+    $form = new rtShopVariationCollectionNewForm(null, array('attribute' => $this->getObject()));
 
     $this->embedForm('newVariations', $form);
 
     if(!$this->isNew())
     {
-      $form = new rtShopCurrentVariationCollectionForm(null, array('attribute' => $this->getObject(), 'say' => 'hello'));
+      $form = new rtShopVariationCollectionCurrentForm(null, array('attribute' => $this->getObject(), 'say' => 'hello'));
       $this->embedForm('currentVariations', $form);
     }
     
