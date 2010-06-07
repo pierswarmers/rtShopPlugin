@@ -7,17 +7,39 @@
  */
 class PluginrtShopVariationTable extends Doctrine_Table
 {
+  /**
+   * Return the variations for a given attribute_id value, and ordering them
+   * by their position.
+   * 
+   * @param int $attribute_id
+   * @param Doctrine_Query $query
+   * @return Doctrine_Collection
+   * @see PluginrtShopVariationTable::addQueryFindByAttributeId()
+   */
   public function findByAttributeId($attribute_id, Doctrine_Query $query = null)
+  {
+    return $this->addQueryFindByAttributeId($attribute_id, $query)->execute();
+  }
+
+  /**
+   * Return a query restricting the variations to a given attribute_id value, and ordering them
+   * by their position.
+   *
+   * @param int $attribute_id
+   * @param Doctrine_Query $query
+   * @return Doctrine_Query
+   * @see PluginrtShopVariationTable::findByAttributeId()
+   */
+  public function addQueryFindByAttributeId($attribute_id, Doctrine_Query $query = null)
   {
     $query = $this->getQuery($query);
     $query->andWhere('variation.attribute_id =?', $attribute_id)
           ->orderBy('variation.position ASC');
-    return $query->execute();
+    return $query;
   }
 
-
   /**
-   * Return a query object, creting a new one if needed.
+   * Return a query object, creating a new one if needed.
    *
    * @param Doctrine_Query $query
    * @return Doctrine_Query
@@ -28,7 +50,6 @@ class PluginrtShopVariationTable extends Doctrine_Table
     {
       $query = parent::createQuery('variation');
     }
-
     return $query;
   }
 

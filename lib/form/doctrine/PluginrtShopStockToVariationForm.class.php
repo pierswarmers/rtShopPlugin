@@ -10,4 +10,5 @@
  */
 abstract class PluginrtShopStockToVariationForm extends BasertShopStockToVariationForm
 {
+
 }

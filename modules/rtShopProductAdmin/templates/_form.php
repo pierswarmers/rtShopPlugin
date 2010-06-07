@@ -11,6 +11,9 @@
   <br/>
   <?php echo __('Or') ?>,
   <?php echo link_to('delete this product', 'rtShopProductAdmin/delete?id='.$form->getObject()->getId(), array('method' => 'delete', 'confirm' => 'Are you sure?')) ?>
+  <br/>
+  <?php echo __('Or') ?>,
+  <?php echo link_to('edit stock for this product', 'rtShopProductAdmin/stock?id='.$form->getObject()->getId()) ?>
 <?php endif; ?>
 </p>
 <?php include_component('rtAsset', 'form', array('object' => $form->getObject())) ?>

@@ -66,6 +66,26 @@ class BasertShopProductAdminActions extends sfActions
     $this->redirect('rtShopProductAdmin/index');
   }
 
+  public function executeStock(sfWebRequest $request)
+  {
+    $this->forward404Unless($rt_shop_product = Doctrine::getTable('rtShopProduct')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_product does not exist (%s).', $request->getParameter('id')));
+
+    $vals = $request->getParameter('rt_shop_product');
+
+    $this->form = new rtShopStockCollectionForm($rt_shop_product, array('newRows' => $vals['newRows']));
+    
+    if($request->isMethod('POST'))
+    {
+      $this->form->bind($request->getParameter($this->form->getName()), $request->getFiles($this->form->getName()));
+      if ($this->form->isValid())
+      {
+        $rt_shop_product = $this->form->save();
+        $this->clearCache($rt_shop_product);
+        $this->redirect('rtShopProductAdmin/stock?id='.$rt_shop_product->getId());
+      }
+    }
+  }
+
   public function executeVersions(sfWebRequest $request)
   {
     $this->rt_shop_product = $this->getrtShopProduct($request);

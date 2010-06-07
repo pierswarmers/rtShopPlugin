@@ -7,13 +7,60 @@
  */
 class PluginrtShopAttributeTable extends Doctrine_Table
 {
-    /**
-     * Returns an instance of this class.
-     *
-     * @return object PluginrtShopAttributeTable
-     */
-    public static function getInstance()
+  /**
+   * Return the variations for a given product_id value, and ordering them
+   * by their position.
+   *
+   * @param int $product_id
+   * @param Doctrine_Query $query
+   * @return Doctrine_Collection
+   * @see PluginrtShopAttributeTable::addQueryFindByProductId()
+   */
+  public function findByProductId($product_id, Doctrine_Query $query = null)
+  {
+    return $this->addQueryFindByProductId($product_id, $query)->execute();
+  }
+
+  /**
+   * Return a query restricting the attributes to a given product_id value, and ordering them
+   * by their position in the link table.
+   *
+   * @param int $product_id
+   * @param Doctrine_Query $query
+   * @return Doctrine_Query
+   * @see PluginrtShopAttributeTable::findByProductId()
+   */
+  public function addQueryFindByProductId($product_id, Doctrine_Query $query = null)
+  {
+    $query = $this->getQuery($query);
+    $query->leftJoin('attribute.rtShopProductToAttribute pta')
+          ->andWhere('pta.product_id =?', $product_id)
+          ->orderBy('pta.position ASC');
+    return $query;
+  }
+  
+  /**
+   * Return a query object, creating a new one if needed.
+   *
+   * @param Doctrine_Query $query
+   * @return Doctrine_Query
+   */
+  public function getQuery(Doctrine_Query $query = null)
+  {
+    if(is_null($query))
     {
-        return Doctrine_Core::getTable('PluginrtShopAttribute');
+      $query = parent::createQuery('attribute');
     }
+    return $query;
+  }
+
+  /**
+   * Returns an instance of this class.
+   *
+   * @return object PluginrtShopAttributeTable
+   */
+  public static function getInstance()
+  {
+      return Doctrine_Core::getTable('PluginrtShopAttribute');
+  }
 }

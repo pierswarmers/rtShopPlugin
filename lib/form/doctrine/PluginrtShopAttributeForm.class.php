@@ -25,7 +25,7 @@ abstract class PluginrtShopAttributeForm extends BasertShopAttributeForm
       $form = new rtShopVariationCollectionCurrentForm(null, array('attribute' => $this->getObject(), 'say' => 'hello'));
       $this->embedForm('currentVariations', $form);
     }
-    
+
 //    $this->embedRelation('rtShopVariations');
   }
 
@@ -34,9 +34,9 @@ abstract class PluginrtShopAttributeForm extends BasertShopAttributeForm
     if (null === $forms)
     {
       $forms = $this->embeddedForms;
-      
+
       $varations = $this->getValue('newVariations');
-      
+
       foreach ($this->embeddedForms['newVariations'] as $name => $form)
       {
         if (!isset($varations[$name]))
