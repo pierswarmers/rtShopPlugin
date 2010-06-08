@@ -70,10 +70,16 @@ class BasertShopProductAdminActions extends sfActions
   {
     $this->forward404Unless($rt_shop_product = Doctrine::getTable('rtShopProduct')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_product does not exist (%s).', $request->getParameter('id')));
 
-    $vals = $request->getParameter('rt_shop_product');
-
-    $this->form = new rtShopStockCollectionForm($rt_shop_product, array('newRows' => $vals['newRows']));
+    $count = 1;
     
+    if($request->isMethod('POST'))
+    {
+      $vals = $request->getParameter('rt_shop_product');
+      $count = $vals['newRows'];
+    }
+
+    $this->form = new rtShopStockCollectionForm($rt_shop_product, array('newRows' => $count));
+
     if($request->isMethod('POST'))
     {
       $this->form->bind($request->getParameter($this->form->getName()), $request->getFiles($this->form->getName()));
@@ -84,6 +90,27 @@ class BasertShopProductAdminActions extends sfActions
         $this->redirect('rtShopProductAdmin/stock?id='.$rt_shop_product->getId());
       }
     }
+
+    $this->rt_shop_product = $rt_shop_product;
+  }
+
+  public function executeStockRow(sfWebRequest $request)
+  {
+    $this->forward404Unless($rt_shop_product = Doctrine::getTable('rtShopProduct')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_product does not exist (%s).', $request->getParameter('id')));
+    $this->rt_shop_product = $rt_shop_product;
+    $newRows = $request->getParameter('count');
+
+    $this->attributes = $this->attributes = Doctrine::getTable('rtShopAttribute')->findByProductId($rt_shop_product->getId());;
+    
+    $rt_shop_stock  = new rtShopStock();
+    $rt_shop_stock->setProductId($rt_shop_product->getId());
+
+    $stock_form = new rtShopStockForm($rt_shop_stock, array('name_format' => 'rt_shop_product[newStocks]['.$newRows.'][%s]'));
+
+    $this->setLayout(false);
+    sfConfig::set('sf_debug', false);
+
+    $this->stock_form = $stock_form;
   }
 
   public function executeVersions(sfWebRequest $request)

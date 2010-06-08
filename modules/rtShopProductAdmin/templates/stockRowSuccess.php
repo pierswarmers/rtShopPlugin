@@ -1,0 +1,1 @@
+<?php include_partial('stock_row', array('stock_form' => $stock_form, 'attributes' => $attributes))?>

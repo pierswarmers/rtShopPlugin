@@ -1,4 +1,5 @@
 <?php use_helper('I18N', 'rtAdmin') ?>
+<?php $attributes = $form->getAttributes() ?>
 
 <h1><?php echo __('Editing Shop Product') ?> :: <?php echo __('Stock Levels') ?></h1>
 
@@ -10,60 +11,88 @@
 </p>
 <?php end_slot(); ?>
 
-<form id ="rtAdminForm" action="<?php echo url_for('rtShopProductAdmin/stock?id='. $form->getObject()->getId()) ?>" method="post" <?php $form->isMultipart() and print 'enctype="multipart/form-data" ' ?>>
+<form id="rtAdminForm" class="compressed" action="<?php echo url_for('rtShopProductAdmin/stock?id='. $form->getObject()->getId()) ?>" method="post" <?php $form->isMultipart() and print 'enctype="multipart/form-data" ' ?>>
   <?php echo $form->renderHiddenFields(false) ?>
   <?php echo $form->renderGlobalErrors() ?>
-  <?php echo $form['newRows'] ?>
-  <table>
+  <table id="rtStockTable">
     <thead>
       <tr>
-        <th style="width:10%;"><?php echo __('Delete') ?></th>
+        <th><?php echo __('Delete') ?></th>
+        <th><?php echo __('Batch') ?></th>
         <th><?php echo __('Qty.') ?></th>
         <th><?php echo __('SKU') ?></th>
         <th><?php echo __('$ Retail') ?></th>
         <th><?php echo __('$ Promo.') ?></th>
         <th><?php echo __('$ Whsle.') ?></th>
-        <?php foreach($form->getAttributes() as $attribute): ?>
+        <th class="advanced-panel"><?php echo __('Lgth.') ?></th>
+        <th class="advanced-panel"><?php echo __('Wdth.') ?></th>
+        <th class="advanced-panel"><?php echo __('Hght.') ?></th>
+        <th class="advanced-panel"><?php echo __('Wght.') ?></th>
+        <?php foreach($attributes as $attribute): ?>
           <th><?php echo $attribute->getDisplayTitle() ?></th>
         <?php endforeach; ?>
       </tr>
     </thead>
-    <tbody>
+    <tbody id="rtStockRows">
     <?php if(!$form->isNew()): ?>
       <?php foreach ($form['currentStocks'] as $stock_form): ?>
-      <tr>
-        <td>
-          <?php echo $stock_form['delete']->render() ?>
-          <?php echo $stock_form->renderHiddenFields(false) ?>
-        </td>
-        <td><?php echo $stock_form['quantity']->render() ?><?php echo $stock_form['quantity']->renderError() ?></td>
-        <td><?php echo $stock_form['sku']->render() ?><?php echo $stock_form['sku']->renderError() ?></td>
-        <td><?php echo $stock_form['price_retail']->render() ?><?php echo $stock_form['price_retail']->renderError() ?></td>
-        <td><?php echo $stock_form['price_wholesale']->render() ?><?php echo $stock_form['price_wholesale']->renderError() ?></td>
-        <td><?php echo $stock_form['price_promotion']->render() ?><?php echo $stock_form['price_promotion']->renderError() ?></td>
-        <?php foreach($form->getAttributes() as $attribute): ?>
-          <td><?php echo $stock_form['rt_shop_variations_list_'.$attribute->getId()]->render() ?><?php echo $stock_form['rt_shop_variations_list_'.$attribute->getId()]->renderError() ?></td>
-        <?php endforeach; ?>
-      </tr>
+        <?php include_partial('stock_row', array('stock_form' => $stock_form, 'attributes' => $attributes))?>
       <?php endforeach; ?>
     <?php endif; ?>
 
       <?php foreach ($form['newStocks'] as $stock_form): ?>
-      <tr>
-        <td>
-          &nbsp;
-          <?php echo $stock_form->renderHiddenFields(false) ?>
-        </td>
-        <td><?php echo $stock_form['quantity']->render() ?><?php echo $stock_form['quantity']->renderError() ?></td>
-        <td><?php echo $stock_form['sku']->render() ?><?php echo $stock_form['sku']->renderError() ?></td>
-        <td><?php echo $stock_form['price_retail']->render() ?><?php echo $stock_form['price_retail']->renderError() ?></td>
-        <td><?php echo $stock_form['price_wholesale']->render() ?><?php echo $stock_form['price_wholesale']->renderError() ?></td>
-        <td><?php echo $stock_form['price_promotion']->render() ?><?php echo $stock_form['price_promotion']->renderError() ?></td>
-        <?php foreach($form->getAttributes() as $attribute): ?>
-          <td><?php echo $stock_form['rt_shop_variations_list_'.$attribute->getId()]->render() ?><?php echo $stock_form['rt_shop_variations_list_'.$attribute->getId()]->renderError() ?></td>
-        <?php endforeach; ?>
-      </tr>
+        <?php include_partial('stock_row', array('stock_form' => $stock_form, 'attributes' => $attributes))?>
       <?php endforeach; ?>
     </tbody>
   </table>
 </form>
+
+<ul class="rt-admin-tools">
+  <li><button id="newRow"><?php echo __('Add new stock row') ?></button></li>
+  <li><button id="expandAdvancedCols"><?php echo __('Expand advanced options') ?></button></li>
+</ul>
+
+<script type="text/javascript">
+
+  $('#expandAdvancedCols').button({
+    icons: { primary: 'ui-icon-arrowstop-1-e'}
+  }).click(function(){
+
+    if($(this).hasClass('hide-options')) {
+      $(this).removeClass('hide-options');
+      $('#rtStockTable .advanced-panel').css('display', 'none');
+      $(this).button({ label: "<?php echo __('Show advanced options') ?>", icons: { primary: 'ui-icon-arrowstop-1-e'} });
+    } else {
+      $(this).addClass('hide-options');
+      $('#rtStockTable .advanced-panel').css('display', 'table-cell');
+      $(this).button({ label: "<?php echo __('Hide advanced options') ?>", icons: { primary: 'ui-icon-arrowstop-1-w'} });
+    }
+  });
+  
+  
+  $('#newRow').button({
+    icons: { primary: 'ui-icon-plus'}
+  }).click(function(){
+    
+    var table  = $("#rtStockRows");
+//    var clonedRow = $("#rtStockRows tr").last().clone();
+    var newRows = $('#rt_shop_product_newRows').attr('value');
+
+    var iPref = "rt_shop_product_currentStocks_";
+    var nPref = "rt_shop_product[currentStocks][";
+
+//    clonedRow.children('td').first().html('&nbsp;');
+
+
+    $.get("<?php echo url_for('rtShopProductAdmin/stockRow') ?>", { id: <?php echo $rt_shop_product->getId() ?>, count: newRows }, function(data){
+      table.append(data);
+    });
+
+    
+
+    // update the new row count.
+    $('#rt_shop_product_newRows').attr('value', parseInt(newRows) + 1);
+  });
+
+</script>
+

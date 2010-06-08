@@ -18,9 +18,12 @@ class rtShopStockCollectionForm extends BasertShopProductForm
 
     $newRows = $this->getOption('newRows', 1);
 
+//    echo $newRows;
+//    exit;
+
     $this->useFields(array('id'));
 
-    $this->setWidget('newRows', new sfWidgetFormInputHidden(array('default' => '1')));
+    $this->setWidget('newRows', new sfWidgetFormInputHidden(array('default' => $newRows)));
     $this->setValidator('newRows', new sfValidatorInteger());
 
     $form = new rtShopStockCollectionNewForm(null, array('product' => $this->getObject(), 'size' => $newRows));
@@ -43,11 +46,14 @@ class rtShopStockCollectionForm extends BasertShopProductForm
       $stocks = $this->getValue('newStocks');
       $forms = $this->embeddedForms;
       
-      foreach ($this->embeddedForms['newStocks'] as $name => $form)
+      if(isset($forms['currentStocks']))
       {
-        if (!isset($stocks[$name]))
+        foreach ($this->embeddedForms['newStocks'] as $name => $form)
         {
-          unset($forms['newStocks'][$name]);
+          if (!isset($stocks[$name]))
+          {
+            unset($forms['newStocks'][$name]);
+          }
         }
       }
 

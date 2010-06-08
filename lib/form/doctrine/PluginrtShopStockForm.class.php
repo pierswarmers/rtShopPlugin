@@ -17,6 +17,10 @@ abstract class PluginrtShopStockForm extends BasertShopStockForm
   {
     parent::setup();
 
+
+    $name_format = $this->getOption('name_format', 'rt_shop_stock[%s]');
+    $this->widgetSchema->setNameFormat($name_format);
+
     $this->setWidget('quantity', new sfWidgetFormInputText(array(), array('class' => 'small-text')));
     $this->setDefault('quantity', '');
     $this->setWidget('product_id', new sfWidgetFormInputHidden());
