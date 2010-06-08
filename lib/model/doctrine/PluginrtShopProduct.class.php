@@ -19,6 +19,11 @@ abstract class PluginrtShopProduct extends BasertShopProduct
 
   public function getStockSkus()
   {
-    return '';
+    $string = '';
+    foreach($this->rtShopStocks as $stock)
+    {
+      $string .= ' '.$stock->sku;
+    }
+    return $string;
   }
 }

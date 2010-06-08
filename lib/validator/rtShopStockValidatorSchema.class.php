@@ -30,7 +30,7 @@ class rtShopStockValidatorSchema extends sfValidatorSchema
     {
       $errorSchemaLocal = new sfValidatorErrorSchema($this);
       
-      if ($value['quantity'])
+      if ($value['quantity'] && !$value['delete'])
       {
         foreach($this->getOption('attributes') as $attribute)
         {
@@ -44,7 +44,7 @@ class rtShopStockValidatorSchema extends sfValidatorSchema
       }
 
       // no caption and no filename, remove the empty values
-      if (!$value['quantity'])
+      if (!$value['quantity'] || $value['delete'])
       {
         unset($values[$key]);
       }

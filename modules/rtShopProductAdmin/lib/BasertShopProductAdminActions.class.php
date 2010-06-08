@@ -70,7 +70,7 @@ class BasertShopProductAdminActions extends sfActions
   {
     $this->forward404Unless($rt_shop_product = Doctrine::getTable('rtShopProduct')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_product does not exist (%s).', $request->getParameter('id')));
 
-    $count = 1;
+    $count = 0;
     
     if($request->isMethod('POST'))
     {

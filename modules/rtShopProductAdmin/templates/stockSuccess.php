@@ -33,6 +33,26 @@
         <?php endforeach; ?>
       </tr>
     </thead>
+    <tfoot>
+      <tr>
+        <th>&nbsp;</th>
+        <th><input type="checkbox" id="batchToggle" value="-" /></th>
+        <th><input type="text" name="batch-quantity" value="-" /></th>
+        <th><input type="text" name="batch-sku" value="-" /></th>
+        <th><input type="text" name="batch-price_retail" value="-" /></th>
+        <th><input type="text" name="batch-price_promotion" value="-" /></th>
+        <th><input type="text" name="batch-price_wholesale" value="-" /></th>
+        <th class="advanced-panel"><input type="text" name="batch-length" value="-" /></th>
+        <th class="advanced-panel"><input type="text" name="batch-width" value="-" /></th>
+        <th class="advanced-panel"><input type="text" name="batch-height" value="-" /></th>
+        <th class="advanced-panel"><input type="text" name="batch-weight" value="-" /></th>
+        <th colspan="<?php echo $attributes->count() ?>">
+          <ul class="rt-admin-tools">
+            
+          </ul>
+        </th>
+      </tr>
+    </tfoot>
     <tbody id="rtStockRows">
     <?php if(!$form->isNew()): ?>
       <?php foreach ($form['currentStocks'] as $stock_form): ?>
@@ -49,10 +69,55 @@
 
 <ul class="rt-admin-tools">
   <li><button id="newRow"><?php echo __('Add new stock row') ?></button></li>
-  <li><button id="expandAdvancedCols"><?php echo __('Expand advanced options') ?></button></li>
+  <li><button id="expandAdvancedCols"><?php echo __('Expand metrics options') ?></button></li>
+  <li><button id="runBatch"><?php echo __('Run batch changes') ?></button></li>
 </ul>
 
 <script type="text/javascript">
+
+  $("#batchToggle").click(function(){
+     $("input[name=batch\\[\\]]").each(function(){
+       $(this).attr('checked', $("#batchToggle").is(':checked') ? true : false);
+       if($("#batchToggle").is(':checked'))
+       {
+         $(this).parent().parent().addClass('batch-row');
+       }
+       else
+       {
+         $(this).parent().parent().removeClass('batch-row');
+       }
+     });
+  });
+
+  $('#runBatch').button({
+    icons: { primary: 'ui-icon-transfer-e-w'}
+  }).click(function(){
+    
+    var tmpInputValues = new Array();
+
+    tmpInputValues[0] = 'quantity';
+    tmpInputValues[1] = 'sku';
+    tmpInputValues[2] = 'price_retail';
+    tmpInputValues[3] = 'price_wholesale';
+    tmpInputValues[4] = 'price_promotion';
+    tmpInputValues[5] = 'height';
+    tmpInputValues[6] = 'width';
+    tmpInputValues[7] = 'length';
+    tmpInputValues[8] = 'weight';
+
+    $.each(tmpInputValues,function(i){
+        if($("input[name=batch-"+tmpInputValues[i]+"]").attr('value') != '-')
+          $("tr.batch-row input[name*='"+tmpInputValues[i]+"']").each(function(){$(this).attr('value', $("input[name=batch-"+tmpInputValues[i]+"]").attr('value'))});
+    });
+  
+    return false;
+  });
+  
+  $("input[name=batch\\[\\]]").each(function(){
+    $(this).change(function(){
+      $(this).parent().parent().toggleClass('batch-row');
+    });
+  });
 
   $('#expandAdvancedCols').button({
     icons: { primary: 'ui-icon-arrowstop-1-e'}
@@ -61,12 +126,14 @@
     if($(this).hasClass('hide-options')) {
       $(this).removeClass('hide-options');
       $('#rtStockTable .advanced-panel').css('display', 'none');
-      $(this).button({ label: "<?php echo __('Show advanced options') ?>", icons: { primary: 'ui-icon-arrowstop-1-e'} });
+      $(this).button({ label: "<?php echo __('Show metrics options') ?>", icons: { primary: 'ui-icon-arrowstop-1-e'} });
     } else {
       $(this).addClass('hide-options');
       $('#rtStockTable .advanced-panel').css('display', 'table-cell');
-      $(this).button({ label: "<?php echo __('Hide advanced options') ?>", icons: { primary: 'ui-icon-arrowstop-1-w'} });
+      $(this).button({ label: "<?php echo __('Hide metrics options') ?>", icons: { primary: 'ui-icon-arrowstop-1-w'} });
     }
+
+    return false;
   });
   
   
@@ -74,24 +141,39 @@
     icons: { primary: 'ui-icon-plus'}
   }).click(function(){
     
-    var table  = $("#rtStockRows");
-//    var clonedRow = $("#rtStockRows tr").last().clone();
+    var tableBody  = $("#rtStockRows");
     var newRows = $('#rt_shop_product_newRows').attr('value');
 
-    var iPref = "rt_shop_product_currentStocks_";
-    var nPref = "rt_shop_product[currentStocks][";
-
-//    clonedRow.children('td').first().html('&nbsp;');
-
-
     $.get("<?php echo url_for('rtShopProductAdmin/stockRow') ?>", { id: <?php echo $rt_shop_product->getId() ?>, count: newRows }, function(data){
-      table.append(data);
+      tableBody.append(data);
     });
-
     
-
     // update the new row count.
     $('#rt_shop_product_newRows').attr('value', parseInt(newRows) + 1);
+
+    return false;
+  });
+
+  $("#rtStockRows").ajaxSuccess(function() {
+    var tmpInputValues = new Array();
+    var lastRow = $(this).children().last().prev();
+
+    // Run copy of values from row above.
+    lastRow.find('input[type=text], select').each(function(i) {
+      tmpInputValues[i] = $(this).attr("value");
+    });
+
+    var newRow = $("#rtStockRows").children().last();
+
+    newRow.find('input[type=text], select').each(function(i) {
+      $(this).attr("value", tmpInputValues[i]);
+    });
+
+    newRow.find("input.batch").each(function(){
+      $(this).change(function(){
+        $(this).parent().parent().toggleClass('batch-row');
+      });
+    });
   });
 
 </script>
