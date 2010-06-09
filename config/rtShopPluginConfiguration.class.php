@@ -45,5 +45,9 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
       )
     );
 
+    $routing->prependRoute(
+      'rt_shop_category_index',
+      new sfRoute('/site',array('module' => 'rtShopCategory', 'action' => 'index'))
+    );
   }
 }
