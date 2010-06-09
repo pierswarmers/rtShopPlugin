@@ -18,18 +18,30 @@ abstract class PluginrtShopVariationForm extends BasertShopVariationForm
 
     $this->setWidget('position', new sfWidgetFormInputText(array(), array('style' => 'width:50px')));
 
-    if($this->isNew())
-    {
-      $path = '';
-    }
-    else
+    $file_exists = false;
+    $path = '';
+    
+    if(!$this->isNew())
     {
       $this->setWidget('delete', new sfWidgetFormInputCheckbox());
       $this->validatorSchema['delete'] = new sfValidatorBoolean();
       $this->setWidget('image_delete', new sfWidgetFormInputCheckbox());
       $this->validatorSchema['image_delete'] = new sfValidatorBoolean();
 
-      $path = rtAssetToolkit::getThumbnailPath(sfConfig::get('sf_upload_dir') . '/variations/'.$this->getObject()->image, array('maxWidth' => 30, 'maxHeight' => 30));
+      $file_location =sfConfig::get('sf_upload_dir') . '/variations/'.$this->getObject()->image;
+
+      if(is_file($file_location))
+      {
+        $file_exists = true;
+        $path = rtAssetToolkit::getThumbnailPath(sfConfig::get('sf_upload_dir') . '/variations/'.$this->getObject()->image, array('maxWidth' => 30, 'maxHeight' => 30));
+      }
+    }
+
+    $template = '%input%';
+
+    if($file_exists)
+    {
+      $template = '<div style="float:left; margin-right:10px;">%file%</div> %input%<br />%delete% %delete_label%';
     }
 
     $this->setWidget('image', new sfWidgetFormInputFileEditable(array(
@@ -37,7 +49,7 @@ abstract class PluginrtShopVariationForm extends BasertShopVariationForm
       'edit_mode'   => !$this->isNew(),
       'is_image'    => true,
       'with_delete' => $this->getObject()->image ? true : false,
-      'template'    => '<div style="float:left; margin-right:10px;">%file%</div> %input%<br />%delete% %delete_label%'
+      'template'    => $template
     )));
     $this->setValidator('image', new sfValidatorFile(array(
       'mime_types' => 'web_images',
