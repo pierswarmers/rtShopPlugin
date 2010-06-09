@@ -2,20 +2,11 @@
 <?php use_javascripts_for_form($form) ?>
 <?php use_helper('I18N', 'rtForm') ?>
 
+<?php slot('rt-tools') ?>
+<?php include_partial('rtAdmin/standard_modal_tools', array('show_route_handle' => 'rt_shop_product_show', 'object' => $form->getObject()))?>
+<?php end_slot(); ?>
+
 <?php slot('rt-side') ?>
-<p>
-  <button type="submit" class="button positive" onclick="$('#rtAdminForm').submit()"><?php echo $form->getObject()->isNew() ? __('Create this product') : __('Save and close') ?></button>
-  <?php $back_location = $form->getObject()->isNew() ? 'history.go(-1);' : 'document.location.href=\'' . url_for('rt_shop_product_show', $form->getObject()) . '\';'; ?>
-  <?php echo button_to(__('Cancel'),'rtShopProductAdmin/index', array('class' => 'button cancel')) ?>
-<?php if (!$form->getObject()->isNew()): ?>
-  <br/>
-  <?php echo __('Or') ?>,
-  <?php echo link_to('delete this product', 'rtShopProductAdmin/delete?id='.$form->getObject()->getId(), array('method' => 'delete', 'confirm' => 'Are you sure?')) ?>
-  <br/>
-  <?php echo __('Or') ?>,
-  <?php echo link_to('edit stock for this product', 'rtShopProductAdmin/stock?id='.$form->getObject()->getId()) ?>
-<?php endif; ?>
-</p>
 <?php include_component('rtAsset', 'form', array('object' => $form->getObject())) ?>
 <?php end_slot(); ?>
 
@@ -25,6 +16,7 @@
 <input type="hidden" name="sf_method" value="put" />
 <?php echo $form->renderGlobalErrors() ?>
 <?php endif; ?>
+<input type="hidden" name="rt_post_save_action" value="edit" />
   <table>
     <tbody>
       <?php echo render_form_row($form['title']); ?>

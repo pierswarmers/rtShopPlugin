@@ -127,7 +127,7 @@ class BasertShopProductAdminActions extends sfActions
     if(!$request->hasParameter('version1') || !$request->hasParameter('version2'))
     {
       $this->getUser()->setFlash('error', 'Please select two versions to compare.', false);
-      $this->redirect('rtShopProduct/versions?id='.$this->rt_shop_product->getId());
+      $this->redirect('rtShopProductAdmin/versions?id='.$this->rt_shop_product->getId());
     }
 
     $this->version_1 = $request->getParameter('version1');
@@ -165,6 +165,16 @@ class BasertShopProductAdminActions extends sfActions
     {
       $rt_shop_product = $form->save();
       $this->clearCache($rt_shop_product);
+
+      $action = $request->getParameter('rt_post_save_action', 'index');
+
+      if($action == 'edit')
+      {
+        $this->redirect('rtShopProductAdmin/edit?id='.$rt_shop_product->getId());
+      }elseif($action == 'show')
+      {
+        $this->redirect('rt_shop_product_show',$rt_shop_product);
+      }
 
       $this->redirect('rtShopProductAdmin/index');
     }

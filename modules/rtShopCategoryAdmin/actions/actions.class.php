@@ -88,7 +88,7 @@ class rtShopCategoryAdminActions extends sfActions
     if(!$request->hasParameter('version1') || !$request->hasParameter('version2'))
     {
       $this->getUser()->setFlash('error', 'Please select two versions to compare.', false);
-      $this->redirect('rtShopCategory/versions?id='.$this->rt_shop_category->getId());
+      $this->redirect('rtShopCategoryAdmin/versions?id='.$this->rt_shop_category->getId());
     }
 
     $this->version_1 = $request->getParameter('version1');
@@ -126,6 +126,17 @@ class rtShopCategoryAdminActions extends sfActions
     {
       $rt_shop_category = $form->save();
       $this->clearCache($rt_shop_category);
+
+      $action = $request->getParameter('rt_post_save_action', 'index');
+
+      if($action == 'edit')
+      {
+        $this->redirect('rtShopCategoryAdmin/edit?id='.$rt_shop_category->getId());
+      }elseif($action == 'show')
+      {
+        $this->redirect('rt_shop_category_show',$rt_shop_category);
+      }
+
       $this->redirect('rtShopCategoryAdmin/index');
     }
   }

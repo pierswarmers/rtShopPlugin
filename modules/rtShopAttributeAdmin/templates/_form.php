@@ -2,16 +2,9 @@
 <?php use_javascripts_for_form($form) ?>
 <?php use_helper('I18N', 'rtForm') ?>
 <?php use_javascript('/rtCorePlugin/js/main.js', 'last') ?>
-<?php slot('rt-side') ?>
-<p>
-  <button type="submit" class="button positive" onclick="$('#rtAdminForm').submit()"><?php echo $form->getObject()->isNew() ? __('Create this attribute') : __('Save and close') ?></button>
-  <?php echo button_to(__('Cancel'),'rtShopAttributeAdmin/index', array('class' => 'button cancel')) ?>
-<?php if (!$form->getObject()->isNew()): ?>
-  <br/>
-  <?php echo __('Or') ?>,
-  <?php echo link_to('delete this attribute', 'rtShopAttributeAdmin/delete?id='.$form->getObject()->getId(), array('method' => 'delete', 'confirm' => 'Are you sure?')) ?>
-<?php endif; ?>
-</p>
+
+<?php slot('rt-tools') ?>
+<?php include_partial('rtAdmin/standard_modal_tools', array('object' => $form->getObject()))?>
 <?php end_slot(); ?>
 
 <form id ="rtAdminForm" action="<?php echo url_for('rtShopAttributeAdmin/'.($form->getObject()->isNew() ? 'create' : 'update').(!$form->getObject()->isNew() ? '?id='.$form->getObject()->getId() : '')) ?>" method="post" <?php $form->isMultipart() and print 'enctype="multipart/form-data" ' ?>>
@@ -19,6 +12,7 @@
 <?php if (!$form->getObject()->isNew()): ?>
 <input type="hidden" name="sf_method" value="put" />
 <?php endif; ?>
+<input type="hidden" name="rt_post_save_action" value="edit" />
   <?php echo $form->renderGlobalErrors() ?>
   <table>
     <tbody>

@@ -12,5 +12,8 @@
  */
 abstract class PluginrtShopCategory extends BasertShopCategory
 {
-
+  public function getTypeNice()
+  {
+    return 'Category';
+  }
 }

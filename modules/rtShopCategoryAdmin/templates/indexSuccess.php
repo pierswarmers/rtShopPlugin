@@ -2,6 +2,10 @@
 
 <h1><?php echo __('Listing Shop Categories') ?></h1>
 
+<?php slot('rt-tools') ?>
+<?php include_partial('rtAdmin/standard_modal_tools', array('object' => new rtShopCategory))?>
+<?php end_slot(); ?>
+
 <table>
   <thead>
     <tr>
@@ -33,9 +37,3 @@
     <?php endforeach; ?>
   </tbody>
 </table>
-
-<?php slot('rt-side') ?>
-<p>
-  <?php echo button_to(__('Create new site page'), 'rtShopCategoryAdmin/new', array('class' => 'button positive')) ?>
-</p>
-<?php end_slot(); ?>

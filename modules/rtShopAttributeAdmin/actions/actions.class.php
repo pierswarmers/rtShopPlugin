@@ -67,6 +67,13 @@ class rtShopAttributeAdminActions extends sfActions
     {
       $rt_shop_attribute = $form->save();
 
+      $action = $request->getParameter('rt_post_save_action', 'index');
+
+      if($action == 'edit')
+      {
+        $this->redirect('rtShopAttributeAdmin/edit?id='.$rt_shop_attribute->getId());
+      }
+
       $this->redirect('rtShopAttributeAdmin/edit?id='.$rt_shop_attribute->getId());
     }
   }

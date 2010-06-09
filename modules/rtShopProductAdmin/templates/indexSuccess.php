@@ -2,8 +2,8 @@
 
 <h1><?php echo __('Listing Products') ?></h1>
 
-<?php slot('rt-side') ?>
-<p><?php echo button_to(__('Create new product'), 'rtShopProductAdmin/new', array('class' => 'button positive')) ?></p>
+<?php slot('rt-tools') ?>
+<?php include_partial('rtAdmin/standard_modal_tools', array('object' => new rtShopProduct))?>
 <?php end_slot(); ?>
 
 <table>

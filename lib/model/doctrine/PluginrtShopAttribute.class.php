@@ -12,5 +12,8 @@
  */
 abstract class PluginrtShopAttribute extends BasertShopAttribute
 {
-
+  public function getTypeNice()
+  {
+    return 'Attribute';
+  }
 }

@@ -2,6 +2,10 @@
 
 <h1><?php echo __('Comparing Version') ?> <?php echo $version_1 ?> to <?php echo $version_2 ?></h1>
 
+<?php slot('rt-tools') ?>
+<?php include_partial('rtAdmin/standard_modal_tools', array('object' => $rt_shop_category))?>
+<?php end_slot(); ?>
+
 <table class="rt-version-comparison">
   <thead>
     <tr>
@@ -32,9 +36,3 @@
       </tr>
   </tbody>
 </table>
-
-<?php slot('rt-side') ?>
-<p>
-  <?php echo button_to(__('Cancel'),'rtShopCategoryAdmin/versions?id='.$rt_shop_category->getId(), array('class' => 'button cancel')) ?>
-</p>
-<?php end_slot(); ?>

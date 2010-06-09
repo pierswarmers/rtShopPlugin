@@ -2,8 +2,11 @@
         
 <h1><?php echo __('Listing Versions') ?></h1>
 
+<?php slot('rt-tools') ?>
+<?php include_partial('rtAdmin/standard_modal_tools', array('object' => $rt_shop_category))?>
+<?php end_slot(); ?>
 
-<form id="rtShopCategoryForm" action="<?php echo url_for('rtShopCategoryAdmin/compare?id='.$rt_shop_category->getId()) ?>">
+<form id="rtAdminForm" action="<?php echo url_for('rtShopCategoryAdmin/compare?id='.$rt_shop_category->getId()) ?>">
   <table class="stretch">
     <thead>
       <tr>
@@ -32,10 +35,3 @@
     </tbody>
   </table>
 </form>
-
-<?php slot('rt-side') ?>
-<p>
-  <button type="submit" class="button positive" onclick="$('#rtShopCategoryForm').submit()"><?php echo __('Compare selection') ?></button>
-  <?php echo button_to(__('Cancel'),'rtShopCategoryAdmin/index', array('class' => 'button cancel')) ?>
-</p>
-<?php end_slot(); ?>

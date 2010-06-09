@@ -14,6 +14,7 @@
 <form id="rtAdminForm" class="compressed" action="<?php echo url_for('rtShopProductAdmin/stock?id='. $form->getObject()->getId()) ?>" method="post" <?php $form->isMultipart() and print 'enctype="multipart/form-data" ' ?>>
   <?php echo $form->renderHiddenFields(false) ?>
   <?php echo $form->renderGlobalErrors() ?>
+  <input type="hidden" name="rt_post_save_action" value="edit" />
   <table id="rtStockTable">
     <thead>
       <tr>
@@ -174,6 +175,8 @@
         $(this).parent().parent().toggleClass('batch-row');
       });
     });
+
+    newRow.effect('highlight',{},500);
   });
 
 </script>

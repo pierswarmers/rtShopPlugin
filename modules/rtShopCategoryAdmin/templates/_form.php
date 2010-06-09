@@ -1,17 +1,11 @@
 <?php use_stylesheets_for_form($form) ?>
 <?php use_javascripts_for_form($form) ?>
 
+<?php slot('rt-tools') ?>
+<?php include_partial('rtAdmin/standard_modal_tools', array('show_route_handle' => 'rt_shop_category_show', 'object' => $form->getObject()))?>
+<?php end_slot(); ?>
+
 <?php slot('rt-side') ?>
-<p>
-  <button type="submit" class="button positive" onclick="$('#rtAdminForm').submit()"><?php echo $form->getObject()->isNew() ? __('Create this shop category') : __('Save and close') ?></button>
-  <?php $back_location = $form->getObject()->isNew() ? 'history.go(-1);' : 'document.location.href=\'' . url_for('rt_shop_category_show', $form->getObject()) . '\';'; ?>
-  <?php echo button_to(__('Cancel'),'rtShopCategoryAdmin/index', array('class' => 'button cancel')) ?>
-<?php if (!$form->getObject()->isNew()): ?>
-  <br/>
-  <?php echo __('Or') ?>,
-  <?php echo link_to('delete this shop category', 'rtShopCategoryAdmin/delete?id='.$form->getObject()->getId(), array('method' => 'delete', 'confirm' => 'Are you sure?')) ?>
-<?php endif; ?>
-</p>
 <?php include_component('rtAsset', 'form', array('object' => $form->getObject())) ?>
 <?php end_slot(); ?>
 
@@ -20,6 +14,7 @@
 <?php if (!$form->getObject()->isNew()): ?>
 <input type="hidden" name="sf_method" value="put" />
 <?php endif; ?>
+<input type="hidden" name="rt_post_save_action" value="edit" />
   <table>
     <tbody>
       <?php echo $form->renderGlobalErrors() ?>

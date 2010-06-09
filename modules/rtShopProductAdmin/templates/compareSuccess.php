@@ -2,8 +2,8 @@
 
 <h1><?php echo __('Comparing Version') ?> <?php echo $version_1 ?> to <?php echo $version_2 ?></h1>
 
-<?php slot('rt-side') ?>
-<p><?php echo button_to(__('Cancel'),'rtShopProductAdmin/versions?id='.$rt_shop_product->getId(), array('class' => 'button cancel')) ?></p>
+<?php slot('rt-tools') ?>
+<?php include_partial('rtAdmin/standard_modal_tools', array('object' => $rt_shop_product))?>
 <?php end_slot(); ?>
 
 <table class="rt-version-comparison">
