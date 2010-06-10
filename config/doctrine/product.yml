@@ -1,7 +1,7 @@
 rtShopProduct:
   actAs:
     rtSearchTemplate:
-      fields:      [title, content, description, sku, stock_skus]
+      fields:      [title, content, description, sku, stock_skus, tags_as_string]
   columns:
     sku:                      { type: string(255) }
     is_featured:              { type: boolean, default: 0 }

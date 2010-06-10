@@ -1,5 +1,7 @@
 rtShopPromotion:
   actAs:
+    rtSearchTemplate:
+      fields:      [title, comment]
     Timestampable:
   columns:
     stackable:         { type: boolean, default: 0 }
@@ -11,6 +13,9 @@ rtShopPromotion:
     comment:           { type: string }
 
 rtShopVoucher:
+  actAs:
+    rtSearchTemplate:
+      fields:      [title, comment, code]
   columns:
     code:              string(255)
     batch_reference:   string(255)
