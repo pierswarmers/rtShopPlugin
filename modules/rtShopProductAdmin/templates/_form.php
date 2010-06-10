@@ -47,7 +47,7 @@
 
     $("#rtPrimaryTools .cancel").button({
       icons: { primary: 'ui-icon-cancel' }
-    }).click(function(){ document.location.href='<?php echo url_for('rtShopProduct/index') ?>'; });
+    }).click(function(){ document.location.href='<?php echo url_for('rtShopProductAdmin/index') ?>'; });
 	});
 </script>
 <?php end_slot(); ?>
