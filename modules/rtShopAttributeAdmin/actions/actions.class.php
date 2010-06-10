@@ -74,7 +74,7 @@ class rtShopAttributeAdminActions extends sfActions
         $this->redirect('rtShopAttributeAdmin/edit?id='.$rt_shop_attribute->getId());
       }
 
-      $this->redirect('rtShopAttributeAdmin/edit?id='.$rt_shop_attribute->getId());
+      $this->redirect('rtShopAttributeAdmin/index');
     }
   }
 }
