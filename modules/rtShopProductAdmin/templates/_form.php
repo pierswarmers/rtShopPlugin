@@ -11,9 +11,13 @@
       <button class="save-show"><?php echo __('Save &amp; Show') ?></button>
     </span>
   </li>
+  <?php if(!$form->getObject()->isNew()): ?>
   <li><button class="stock"><?php echo __('Edit Stock Levels') ?></button></li>
+  <?php endif; ?>
   <li><button class="cancel"><?php echo __('Cancel/List') ?></button></li>
+  <?php if(!$form->getObject()->isNew()): ?>
   <li><button class="show"><?php echo __('Show') ?></button></li>
+  <?php endif; ?>
 </ul>
 
 <?php if(!$form->getObject()->isNew()): ?>
