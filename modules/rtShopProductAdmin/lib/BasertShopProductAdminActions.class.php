@@ -87,7 +87,15 @@ class BasertShopProductAdminActions extends sfActions
       {
         $rt_shop_product = $this->form->save();
         $this->clearCache($rt_shop_product);
-        $this->redirect('rtShopProductAdmin/stock?id='.$rt_shop_product->getId());
+
+        $action = $request->getParameter('rt_post_save_action', 'index');
+
+        if($action == 'edit')
+        {
+          $this->redirect('rtShopProductAdmin/stock?id='.$rt_shop_product->getId());
+        }
+
+        $this->redirect('rtShopProductAdmin/edit?id='.$rt_shop_product->getId());
       }
     }
 

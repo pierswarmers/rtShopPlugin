@@ -3,12 +3,34 @@
 
 <h1><?php echo __('Editing Shop Product') ?> :: <?php echo __('Stock Levels') ?></h1>
 
-<?php slot('rt-side') ?>
-<p>
-  <button type="submit" class="button positive" onclick="$('#rtAdminForm').submit()"><?php echo __('Save and close') ?></button>
-  <?php $back_location = $form->getObject()->isNew() ? 'history.go(-1);' : 'document.location.href=\'' . url_for('rtShopProductAdmin/edit', $form->getObject()) . '\';'; ?>
-  <?php echo button_to(__('Cancel'),'rtShopProductAdmin/edit?id='. $form->getObject()->getId(), array('class' => 'button cancel')) ?>
-</p>
+<?php slot('rt-tools') ?>
+<ul id="rtPrimaryTools">
+  <li>
+    <span class="positive save-set">
+      <button class="save"><?php echo __('Save Changes') ?></button>
+      <button class="save-list"><?php echo __('Save &amp; Close') ?></button>
+    </span>
+  </li>
+  <li><button class="cancel"><?php echo __('Cancel/Back to Product') ?></button></li>
+</ul>
+
+<script type="text/javascript">
+	$(function() {
+
+    $("#rtPrimaryTools .save").button({
+      icons: { primary: 'ui-icon-disk' }
+    }).click(function(){ $('#rtAdminForm').submit(); }).next().button({
+      text: false,
+      icons: { secondary: 'ui-icon-close' }
+    }).click(function(){ $('input[name=rt_post_save_action]').attr('value', 'index'); $('#rtAdminForm').submit(); });
+
+    $("#rtPrimaryTools .save").parent().buttonset();
+
+    $("#rtPrimaryTools .cancel").button({
+      icons: { primary: 'ui-icon-cancel' }
+    }).click(function(){ document.location.href='<?php echo url_for('rtShopProductAdmin/edit?id='. $form->getObject()->getId()) ?>'; });
+	});
+</script>
 <?php end_slot(); ?>
 
 <form id="rtAdminForm" class="compressed" action="<?php echo url_for('rtShopProductAdmin/stock?id='. $form->getObject()->getId()) ?>" method="post" <?php $form->isMultipart() and print 'enctype="multipart/form-data" ' ?>>

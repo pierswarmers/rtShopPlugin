@@ -3,8 +3,56 @@
 <?php use_helper('I18N', 'rtForm') ?>
 
 <?php slot('rt-tools') ?>
-<?php include_partial('rtAdmin/standard_modal_tools', array('show_route_handle' => 'rt_shop_product_show', 'object' => $form->getObject()))?>
+<ul id="rtPrimaryTools">
+  <li>
+    <span class="positive save-set">
+      <button class="save"><?php echo __('Save Changes') ?></button>
+      <button class="save-list"><?php echo __('Save &amp; Close') ?></button>
+      <button class="save-show"><?php echo __('Save &amp; Show') ?></button>
+    </span>
+  </li>
+  <li><button class="stock"><?php echo __('Edit Stock Levels') ?></button></li>
+  <li><button class="cancel"><?php echo __('Cancel/List') ?></button></li>
+  <li><button class="show"><?php echo __('Show') ?></button></li>
+</ul>
+
+<?php if(!$form->getObject()->isNew()): ?>
+<p><?php echo __('Or') ?>, <?php echo link_to('delete this product', 'rtShopProductAdmin/delete?id='.$form->getObject()->getId(), array('method' => 'delete', 'confirm' => 'Are you sure?')) ?></p>
+<?php endif; ?>
+
+<script type="text/javascript">
+	$(function() {
+
+    $("#rtPrimaryTools .save").button({
+      icons: { primary: 'ui-icon-disk' }
+    }).click(function(){ $('#rtAdminForm').submit(); }).next().button({
+      text: false,
+      icons: { secondary: 'ui-icon-close' }
+    }).click(function(){ $('input[name=rt_post_save_action]').attr('value', 'index'); $('#rtAdminForm').submit(); }).next().button({
+      text: false,
+      icons: { secondary: 'ui-icon-extlink' }
+    }).click(function(){ $('input[name=rt_post_save_action]').attr('value', 'show'); $('#rtAdminForm').submit(); });
+
+    $("#rtPrimaryTools .save").parent().buttonset();
+
+   $("#rtPrimaryTools .stock").button({
+      icons: { primary: 'ui-icon-pencil' }
+    }).click(function(){ document.location.href='<?php echo url_for('rtShopProductAdmin/stock?id='.$form->getObject()->getId()) ?>'; });
+    
+    <?php if(!$form->getObject()->isNew()): ?>
+    $("#rtPrimaryTools .show").button({
+      icons: { primary: 'ui-icon-extlink' }
+    }).click(function(){ document.location.href='<?php echo url_for('rt_shop_product_show', $form->getObject()) ?>'; });
+    <?php endif; ?>
+
+    $("#rtPrimaryTools .cancel").button({
+      icons: { primary: 'ui-icon-cancel' }
+    }).click(function(){ document.location.href='<?php echo url_for('rtShopProduct/index') ?>'; });
+	});
+</script>
 <?php end_slot(); ?>
+
+
 
 <?php slot('rt-side') ?>
 <?php include_component('rtAsset', 'form', array('object' => $form->getObject())) ?>
