@@ -12,5 +12,26 @@
  */
 abstract class PluginrtShopPromotion extends BasertShopPromotion
 {
+  const REDUCTION_TYPE_PERCENTAGE   = 'percentageOff';
+  const REDUCTION_TYPE_DOLLAR       = 'dollarOff';
 
+  public function getTypeNice()
+  {
+    return 'Promotion';
+  }
+
+  public function isPercentageOff()
+  {
+    return $this->getReductionType() == self::REDUCTION_TYPE_PERCENTAGE;
+  }
+
+  public function isDollarOff()
+  {
+    return !$this->isPercentageOff();
+  }
+
+  public function isValueOff()
+  {
+    return $this->isDollarOff();
+  }
 }

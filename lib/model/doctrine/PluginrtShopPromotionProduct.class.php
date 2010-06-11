@@ -12,5 +12,15 @@
  */
 abstract class PluginrtShopPromotionProduct extends BasertShopPromotionProduct
 {
-
+  /**
+   * Constructor
+   *
+   * @return void
+   */
+  public function construct ()
+  {
+    if($this->isNew()) {
+      $this->setType('rtShopPromotionProduct');
+    }
+  }
 }

@@ -25,6 +25,49 @@ rtShopProduct:
       foreign:  attribute_id
       refClass: rtShopProductToAttribute
 
+rtShopProductToPromotion:
+  columns:
+    product_id:
+      type: integer
+      primary: true
+    promotion_id:
+      type: integer
+      primary: true
+  relations:
+  relations:
+    rtShopProduct:
+      local: product_id
+      foreign: id
+      onDelete: CASCADE
+    rtShopPromotionProduct:
+      local: promotion_id
+      foreign: id
+      onDelete: CASCADE
+
+rtShopProductToProduct:
+  columns:
+    position: integer(3)
+    product_id:
+      type: integer
+      primary: true
+    product_id_target:
+      type: integer
+      primary: true
+    position: integer
+  relations:
+    rtShopProduct:
+      local: product_id
+      foreignAlias: rtShopProducts
+      foreign: id
+      onDelete: CASCADE
+    rtShopProductTarget:
+      class: rtShopProduct
+      local: product_id_target
+      foreignAlias: rtShopProductsLinked
+      foreign: id
+      onDelete: CASCADE
+  checks:
+    self_reference_check: product_id != product_id_target
 
 rtShopStock:
   columns:

@@ -12,5 +12,17 @@
  */
 abstract class PluginrtShopPromotionCart extends BasertShopPromotionCart
 {
+  /**
+   * Constructor
+   *
+   * @return void
+   */
+  public function construct ()
+  {
+    if($this->isNew()) {
+      $this->setType('rtShopPromotionCart');
+    }
+  }
 
+  
 }

@@ -49,5 +49,20 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
       'rt_shop_category_index',
       new sfRoute('/shop/category',array('module' => 'rtShopCategory', 'action' => 'index'))
     );
+
+    $routing->prependRoute(
+      'rt_shop_vouchure_download',
+       new sfRoute('/rtShopVoucherAdmin/download/:id.:sf_format', array('module' => 'rtShopVoucherAdmin', 'action' => 'BatchDownload'))
+    );
+
+    $routing->prependRoute(
+      'rt_shop_promotion_product_correction',
+       new sfRoute('/rtShopPromotionProductAdmin/:action/id/:id', array('module' => 'rtShopPromotionAdmin'))
+    );
+    
+    $routing->prependRoute(
+      'rt_shop_promotion_cart_correction',
+       new sfRoute('/rtShopPromotionCartAdmin/:action/id/:id', array('module' => 'rtShopPromotionAdmin'))
+    );
   }
 }
