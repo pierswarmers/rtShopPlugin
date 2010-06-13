@@ -31,6 +31,7 @@ abstract class PluginrtShopProductForm extends BasertShopProductForm
     }
 
     $this->setWidget('rt_shop_attributes_list', new sfWidgetFormDoctrineChoice(array('query' => $query, 'expanded' => true ,'multiple' => true, 'model' => 'rtShopAttribute')));
+    $this->setWidget('rt_shop_promotions_list', new sfWidgetFormDoctrineChoice(array('expanded' => true ,'multiple' => true, 'model' => 'rtShopPromotionProduct')));
 
     //$b = new sfWidgetFormSelectCheckbox();
 
@@ -40,9 +41,11 @@ abstract class PluginrtShopProductForm extends BasertShopProductForm
 
     $this->widgetSchema['rt_shop_attributes_list']->setLabel('Attributes');
     $this->widgetSchema['rt_shop_categories_list']->setLabel('Categories');
+    $this->widgetSchema['rt_shop_promotions_list']->setLabel('Promotions');
 
     $this->widgetSchema->setHelp('rt_shop_attributes_list', 'Optional features this product is defined by. Dragging up or down changes the display order.');
     $this->widgetSchema->setHelp('rt_shop_categories_list', 'One or more categories can be linked to this product.');
+    $this->widgetSchema->setHelp('rt_shop_promotions_list', 'One or more product promotions can be linked to this product.');
 
     $this->widgetSchema->setHelp('is_featured', 'Mark this product as featured.');
     $this->widgetSchema->setHelp('backorder_allowed', 'Should the stock/inventory level management be disabled.');
@@ -52,6 +55,7 @@ abstract class PluginrtShopProductForm extends BasertShopProductForm
   protected function doSave($con = null)
   {
     $this->savertShopCategoriesList($con);
+    $this->savertShopPromotionsList($con);
 
     if (null === $con)
     {

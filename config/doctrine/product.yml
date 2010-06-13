@@ -24,6 +24,11 @@ rtShopProduct:
       local: product_id
       foreign:  attribute_id
       refClass: rtShopProductToAttribute
+    rtShopPromotions:
+      class: rtShopPromotion
+      local: product_id
+      foreign:  promotion_id
+      refClass: rtShopProductToPromotion
 
 rtShopProductToPromotion:
   columns:
