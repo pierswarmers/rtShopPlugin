@@ -122,14 +122,22 @@
 
   <div class="rt-admin-toggle-panel">
     <h2><?php echo __('Location and Referencing') ?></h2>
-    <table class="rt-admin-toggle-panel-content">
+    <table class="rt-admin-toggle-panel-content" id="rtSortableProducts">
       <tbody>
         <?php echo render_form_row($form['slug']); ?>
+        <?php echo render_form_row($form['rt_shop_products_list']); ?>
         <?php echo render_form_row($form['rt_shop_categories_list']); ?>
       <?php if(isset($form['site_id'])): ?>
         <?php echo render_form_row($form['site_id']); ?>
       <?php endif; ?>
       </tbody>
     </table>
+    <script type="text/javascript">
+    $(function() {
+      $("#rtSortableProducts ul.checkbox_list").last().sortable({
+        revert: true
+      });
+    });
+    </script>
   </div>
 </form>
