@@ -29,6 +29,11 @@ rtShopProduct:
       local: product_id
       foreign:  promotion_id
       refClass: rtShopProductToPromotion
+    rtShopProducts:
+      class: rtShopProduct
+      local: product_id
+      foreign:  product_id_target
+      refClass: rtShopProductToProduct
 
 rtShopProductToPromotion:
   columns:
