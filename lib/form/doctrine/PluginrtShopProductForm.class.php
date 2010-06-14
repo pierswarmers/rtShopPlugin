@@ -14,7 +14,7 @@ abstract class PluginrtShopProductForm extends BasertShopProductForm
   {
     parent::setup();
 
-    unset($this['comment_status'], $this['rt_shop_product_list']);
+    unset($this['comment_status'], $this['rt_shop_product_list'], $this['rt_shop_products_linked_list']);
 
     $query = Doctrine_Query::create()->from('rtShopAttribute a');
 

@@ -8,18 +8,17 @@
  * file that was distributed with this source code.
  */
 
+require_once(dirname(__FILE__).'/../lib/BasertShopCategoryComponents.class.php');
+
 /**
- * BasertShopProductComponents
+ * rtShopCategoryComponents
  *
- * @package    rtShopPlugin
+ * @package    rtSitePlugin
  * @subpackage modules
  * @author     Piers Warmers <piers@wranglers.com.au>
  */
-class BasertShopProductComponents extends sfComponents
+class rtShopCategoryComponents extends BasertShopCategoryComponents
 {
-  public function executeShopProductMini(sfWebRequest $request)
-  {
-    $this->rt_shop_product = Doctrine::getTable('rtShopProduct')->find($this->id);
-  }
+
 }
 

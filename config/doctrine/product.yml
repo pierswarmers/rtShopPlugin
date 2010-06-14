@@ -34,6 +34,11 @@ rtShopProduct:
       local: product_id
       foreign:  product_id_target
       refClass: rtShopProductToProduct
+    rtShopProductsLinked:
+      class: rtShopProduct
+      local: product_id_target
+      foreign:  product_id
+      refClass: rtShopProductToProduct
 
 rtShopProductToPromotion:
   columns:
@@ -154,6 +159,7 @@ rtShopProductToAttribute:
       onDelete: CASCADE
     rtShopAttribute:
       local: attribute_id
+      foreignAlias: rtShopProducts
       foreign: id
       onDelete: CASCADE
 
@@ -179,7 +185,12 @@ rtShopAttribute:
     title:                   { type: string(100) }
     display_title:           { type: string(100) }
     description:             { type: string(255) }
-
+  relations:
+    rtShopProducts:
+      class: rtShopProduct
+      local: attribute_id
+      foreign:  product_id
+      refClass: rtShopProductToAttribute
 
 
 rtShopProductToCategory:

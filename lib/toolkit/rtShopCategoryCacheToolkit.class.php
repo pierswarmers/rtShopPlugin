@@ -36,7 +36,7 @@ class rtShopCategoryCacheToolkit
       if(!is_null($rt_shop_category))
       {
         $cache->remove(sprintf('rtShopCategory/show?id=%s&slug=%s', $rt_shop_category->getId(), $rt_shop_category->getSlug())); // show page
-        $cache->remove('@sf_cache_partial?module=rtShopCategory&action=_blog_page&sf_cache_key='.$rt_shop_category->getId()); // show page partial.
+        $cache->remove('@sf_cache_partial?module=rtShopCategory&action=_shop_category&sf_cache_key='.$rt_shop_category->getId()); // show page partial.
       }
     }
   }

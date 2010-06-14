@@ -67,6 +67,12 @@ class rtShopAttributeAdminActions extends sfActions
     {
       $rt_shop_attribute = $form->save();
 
+      // Clean product cache for linked products
+      foreach($rt_shop_attribute->rtShopProducts as $rt_shop_product)
+      {
+        rtShopProductCacheToolkit::clearCache($rt_shop_product);
+      }
+
       $action = $request->getParameter('rt_post_save_action', 'index');
 
       if($action == 'edit')

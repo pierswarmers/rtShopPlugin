@@ -70,7 +70,7 @@ class BasertShopProductAdminActions extends sfActions
   {
     $this->forward404Unless($rt_shop_product = Doctrine::getTable('rtShopProduct')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_product does not exist (%s).', $request->getParameter('id')));
 
-    $count = 0;
+    $count = 1;
     
     if($request->isMethod('POST'))
     {
@@ -190,20 +190,7 @@ class BasertShopProductAdminActions extends sfActions
 
   private function clearCache($rt_shop_product = null)
   {
-    $cache = $this->getContext()->getViewCacheManager();
-
-    if ($cache)
-    {
-      $cache->remove('rtShopProduct/index'); // index page
-      $cache->remove('rtShopProduct/index?page=*'); // index with page
-      $cache->remove('rtShopProduct/feed?format=*'); // feed
-      $cache->remove('@sf_cache_partial?module=rtShopProduct&action=_latest&sf_cache_key=*');
-
-      if($rt_shop_product)
-      {
-        $cache->remove(sprintf('rtShopProduct/show?id=%s&slug=%s', $rt_shop_product->getId(), $rt_shop_product->getSlug())); // show page
-        $cache->remove('@sf_cache_partial?module=rtShopProduct&action=_shop_product&sf_cache_key='.$rt_shop_product->getId()); // show page partial.
-      }
-    }
+    rtShopProductCacheToolkit::clearCache($rt_shop_product);
   }
+
 }

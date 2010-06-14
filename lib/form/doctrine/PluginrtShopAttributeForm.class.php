@@ -14,7 +14,7 @@ abstract class PluginrtShopAttributeForm extends BasertShopAttributeForm
   {
     parent::setup();
 
-    unset($this['rt_shop_product_list']);
+    unset($this['rt_shop_products_list']);
 
     $form = new rtShopVariationCollectionNewForm(null, array('attribute' => $this->getObject()));
 
