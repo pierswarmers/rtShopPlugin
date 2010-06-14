@@ -1,4 +1,4 @@
-<?php use_helper('I18n', 'rtAdmin', 'Number') ?>
+<?php use_helper('I18N', 'rtAdmin', 'Number') ?>
 
 <h1><?php echo __('Listing Shop Promotions') ?></h1>
 
