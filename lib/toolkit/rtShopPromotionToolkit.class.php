@@ -11,7 +11,7 @@
  * rtShopPromotionToolkit
  *
  * @package    rtShop
- * @subpackage rtShopPluginTools
+ * @subpackage toolkit
  * @author     Piers Warmers <piers@wranglers.com.au>
  * @author     Konny Zurcher <konny@wranglers.com.au>
  */
