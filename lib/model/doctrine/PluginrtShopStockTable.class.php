@@ -16,4 +16,19 @@ class PluginrtShopStockTable extends Doctrine_Table
     {
         return Doctrine_Core::getTable('PluginrtShopStock');
     }
+
+  /**
+   * Returns a Doctrine_Query object.
+   *
+   * @param Doctrine_Query $query
+   * @return Doctrine_Query
+   */
+  private function getQuery(Doctrine_Query $query = null)
+  {
+    if (is_null($query))
+    {
+      $query = $this->getQueryObject()->from($this->getComponentName() .' s');
+    }
+    return $query;
+  }
 }

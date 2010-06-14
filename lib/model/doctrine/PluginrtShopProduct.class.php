@@ -12,6 +12,9 @@
  */
 abstract class PluginrtShopProduct extends BasertShopProduct
 {
+  private $_rt_shop_stock_array = null,
+          $_price_arrays = array();
+  
   public function getTypeNice()
   {
     return 'Product';
@@ -25,5 +28,20 @@ abstract class PluginrtShopProduct extends BasertShopProduct
       $string .= ' '.$stock->sku;
     }
     return $string;
+  }
+
+  /**
+   * Return an array of stock and associated variation for a given product.
+   *
+   * @param Doctrine_Query $query
+   * @return array
+   */
+  public function getStocksAsArray($query = null)
+  {
+    if(is_null($this->_rt_shop_stock_array))
+    {
+      $this->_rt_shop_stock_array = Doctrine::getTable('rtShopStock')->getForProductAsArray($this->getId(), $query);
+    }
+    return $this->_rt_shop_stock_array;
   }
 }
