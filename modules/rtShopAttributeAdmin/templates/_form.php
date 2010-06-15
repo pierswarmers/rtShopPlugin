@@ -37,7 +37,7 @@
       <tbody>
         <?php foreach ($form['currentVariations'] as $variation_form): ?>
         <tr>
-          <td><?php echo $variation_form['delete']->render() ?></td>
+          <td><?php echo $variation_form['delete']->render() ?><?php echo $variation_form->renderHiddenFields(false) ?></td>
           <td><?php echo $variation_form['position']->render() ?><?php echo $variation_form['position']->renderError() ?></td>
           <td><?php echo $variation_form['title']->render() ?><?php echo $variation_form['title']->renderError() ?></td>
           <td><?php echo $variation_form['image']->render() ?><?php echo $variation_form['image']->renderError() ?></td>
