@@ -1,5 +1,19 @@
 # rtShopPlugin
 
+## Modules
+
+You will need to enable the following modules:
+
+    # rtShopPlugin Modules
+    
+    - rtShopProductAdmin
+    - rtShopProduct
+    - rtShopCategory
+    - rtShopCategoryAdmin
+    - rtShopAttributeAdmin
+    - rtShopPromotionAdmin
+    - rtShopVoucherAdmin
+
 ## Security
 
 Administration security (rtShopPageAdmin) is **on** by default and requires the
