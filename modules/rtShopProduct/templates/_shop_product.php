@@ -1,30 +1,11 @@
 <?php
-use_helper('Number', 'Url', 'I18N');
+use_helper('Number', 'Url', 'I18N', 'rtShopProduct');
 
 $assets = $rt_shop_product->getAssets();
 
-$currency  = sfConfig::get('app_rt_currency', 'USD');
-
-$price_str = ' - ';
-
-//$price_min = $rt_shop_product->isOnPromotion() ? $rt_shop_product->getMinPromotionPrice() : $rt_shop_product->getMinRetailPrice();
-//$price_max = max($rt_shop_product->getMaxRetailPrice(), $rt_shop_product->getMaxPromotionPrice());
-//
-//if($rt_shop_product->isOnPromotion())
-//{
-//  $price_str .=  '<span class="steer_shop_regular_price">' . format_currency($price_max, $currency) . '</span> ' . format_currency($price_min, $currency);
-//}
-//elseif($price_min !== $price_max)
-//{
-//  $price_str .=  format_currency($price_min, $currency) . ' &rarr; ' . format_currency($price_max, $currency);
-//}
-//else
-//{
-//  $price_str .=  format_currency($rt_shop_product->getMinRetailPrice(), $currency);
-//}
 ?>
 
-<h1><?php echo $rt_shop_product->getTitle() ?></h1>
+<h1><?php echo $rt_shop_product->getTitle() . ' ' . price_for($rt_shop_product) ?></h1>
 
 <div class="rt-shop-product-content clearfix">
   <?php echo image_tag(rtAssetToolkit::getThumbnailPath($rt_shop_product->getPrimaryImage() ? $rt_shop_product->getPrimaryImage()->getSystemPath() : '', array('maxHeight' => 250, 'maxWidth' => 200)), array('class' => 'primary-image')) ?>
