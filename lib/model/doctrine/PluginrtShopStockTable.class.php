@@ -7,15 +7,40 @@
  */
 class PluginrtShopStockTable extends Doctrine_Table
 {
-    /**
-     * Returns an instance of this class.
-     *
-     * @return object PluginrtShopStockTable
-     */
-    public static function getInstance()
+  /**
+   * Return an array of stock and associated variation for a given product.
+   *
+   * @param int $product_id
+   * @param Doctrine_Query $query
+   * @return array
+   */
+  public function getForProductAsArray($product_id, Doctrine_Query $query = null)
+  {
+    $query_1 = $this->getQuery($query);
+    $query_1->andWhere('s.product_id = ?', $product_id);
+    $query_1->innerJoin('s.rtShopVariations v');
+    $result = $query_1->fetchArray();
+
+    if(count($result) == 0)
     {
-        return Doctrine_Core::getTable('PluginrtShopStock');
+      $query_2 = $this->getQuery($query);
+      $query_2->andWhere('s.product_id = ?', $product_id);
+      $result = $query_2->fetchArray();
     }
+
+    return $result;
+  }
+
+  
+  /**
+   * Returns an instance of this class.
+   *
+   * @return object PluginrtShopStockTable
+   */
+  public static function getInstance()
+  {
+      return Doctrine_Core::getTable('PluginrtShopStock');
+  }
 
   /**
    * Returns a Doctrine_Query object.
