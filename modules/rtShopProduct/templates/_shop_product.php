@@ -5,7 +5,9 @@ $assets = $rt_shop_product->getAssets();
 
 ?>
 
-<h1><?php echo $rt_shop_product->getTitle() . ' ' . price_for($rt_shop_product) ?></h1>
+<h1><?php echo $rt_shop_product->getTitle() ?></h1>
+
+<p><?php echo price_for($rt_shop_product) ?></p>
 
 <div class="rt-shop-product-content clearfix">
   <?php echo image_tag(rtAssetToolkit::getThumbnailPath($rt_shop_product->getPrimaryImage() ? $rt_shop_product->getPrimaryImage()->getSystemPath() : '', array('maxHeight' => 250, 'maxWidth' => 200)), array('class' => 'primary-image')) ?>
