@@ -44,4 +44,218 @@ abstract class PluginrtShopProduct extends BasertShopProduct
     }
     return $this->_rt_shop_stock_array;
   }
+
+
+  /**
+   * Return the maximum retail price.
+   *
+   * @return float
+   */
+  public function getMaxRetailPrice()
+  {
+    $prices = $this->getPriceArray();
+    return (float) (isset ($prices[0])) ? $prices[0] : NULL;
+  }
+
+  /**
+   * Return the minimum retail price.
+   *
+   * @return float
+   */
+  public function getMinRetailPrice()
+  {
+    $prices = $this->getPriceArray();
+    sort($prices);
+    return (float) (isset ($prices[0])) ? $prices[0] : NULL;
+  }
+
+  /**
+   * Is this product on promotion?
+   *
+   * @return boolean
+   */
+  public function isOnPromotion()
+  {
+    return $this->getMaxPromotionPrice() > 0;
+  }
+
+  /**
+   * Return the minimum promotional price.
+   *
+   * @return float
+   */
+  public function getMaxPromotionPrice()
+  {
+    $prices = $this->getPriceArray('price_promotion');
+    return (float) (isset ($prices[0])) ? $prices[0] : NULL;
+  }
+
+  /**
+   * Return the minimum promotional price.
+   *
+   * @param boolean $excluding_zero Should zero be excluded as a minimum value. Defaults to true.
+   * @return mixed
+   */
+  public function getMinPromotionPrice($excluding_zero = true)
+  {
+    if(!$this->isOnPromotion())
+    {
+      return NULL;
+    }
+
+    $prices = $this->getPriceArray('price_promotion');
+    sort($prices);
+
+    if(!$excluding_zero)
+    {
+      return (float) (isset ($prices[0])) ? $prices[0] : NULL;
+    }
+
+    foreach($prices as $price)
+    {
+      if($price > 0)
+      {
+        return $price;
+      }
+    }
+    return NULL;
+  }
+
+  /**
+   * Return the minimum wholesale price.
+   *
+   * @return float
+   */
+  public function getMaxWholesalePrice()
+  {
+    $prices = $this->getPriceArray('price_wholesale');
+    return (integer) (isset ($prices[0])) ? $prices[0] : NULL;
+  }
+
+  /**
+   * Return the minimum wholesale price.
+   *
+   * @return float
+   */
+  public function getMinWholesalePrice()
+  {
+    $prices = $this->getPriceArray('price_wholesale');
+    sort($prices);
+    return (float) (isset ($prices[0])) ? $prices[0] : NULL;
+  }
+
+  /**
+   * Return an array with all price options
+   *
+   * @param string $type should be either 'price_retail' or 'price_wholesale'
+   * @return array
+   */
+  public function getPriceArray($type = 'price_retail')
+  {
+    if(!isset($this->_price_arrays[$type]))
+    {
+      $this->_price_arrays[$type] = array();
+
+      foreach($this->getStocksAsArray() as $stock)
+      {
+        $this->_price_arrays[$type][] = $stock[$type];
+      }
+      rsort($this->_price_arrays[$type]);
+    }
+    return $this->_price_arrays[$type];
+  }
+
+  /**
+   * Return the total stock quantity.
+   *
+   * @return integer
+   */
+  public function getTotalStock()
+  {
+    $quantity = 0;
+    foreach($this->getStocksAsArray() as $stock)
+    {
+      $quantity += $stock['quantity'];
+    }
+    return $quantity;
+  }
+
+  /**
+   * Does this product have any stock set to it?
+   *
+   * @return boolean
+   */
+  public function hasStock()
+  {
+    return count($this->getStocksAsArray()) > 0;
+  }
+
+  /**
+   * Does this product have any stock and is the total quatity over 0?
+   *
+   * @return boolean
+   */
+  public function hasAvailableStock()
+  {
+    return count($this->getStocksAsArray()) > 0 && $this->getTotalStock() > 0;
+  }
+
+  /**
+   * Does this product have any stock for a provided set of variations.If any variation match
+   * is made, the quantity is returned. Otherwise a false will be returned.
+   *
+   * @param array $variation_ids
+   * @return integer|boolean
+   */
+  public function hasAvailableStockFor($variation_ids)
+  {
+    if(!$this->hasVariations())
+    {
+      // stop if no variations have been set.
+      return false;
+    }
+
+    foreach($this->getStocksAsArray() as $stock)
+    {
+      $found_count = 0;
+      foreach($stock['rtShopVariations'] as $variation)
+      {
+        if(in_array($variation['id'], $variation_ids))
+        {
+          $found_count++;
+        }
+      }
+      if(count($variation_ids) == $found_count)
+      {
+        return (integer) $stock['quantity'];
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Does this product contain complex stock with varations?
+   *
+   * @return boolean
+   */
+  public function hasVariations()
+  {
+    $test = false;
+    foreach($this->getStocksAsArray() as $stock)
+    {
+      $test = isset($stock['rtShopVariations']);
+    }
+    return $test;
+  }
+
+  /**
+   * This is a convinience method which determines if a product can be purchased. This is
+   * based on the results of backorder and stock quantity.
+   *
+   * @return boolean
+   */
+  public function isPurchasable()
+  {
+    return $this->hasAvailableStock() || ($this->getBackorderAllowed() && count($this->getStocksAsArray()) > 0);
+  }
 }
