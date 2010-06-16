@@ -20,10 +20,13 @@ abstract class PluginrtShopProductForm extends BasertShopProductForm
 
     if(!$this->isNew())
     {
-      $query->leftJoin('a.rtShopProductToAttribute pta')
-        ->select(sprintf('a.id, a.title, (pta.product_id = %s) as current, (pta.position IS NULL) as has_position, pta.attribute_id, pta.position', $this->object->id))
-        ->groupBy('pta.product_id, pta.attribute_id')
-        ->orderBy('current DESC, has_position ASC, pta.position ASC');
+      $query->select(sprintf('
+        a.id,
+        a.title,
+        (select position from rt_shop_product_to_attribute where product_id = %s and attribute_id = a.id) as position,
+        ((select position from rt_shop_product_to_attribute where product_id = %s and attribute_id = a.id) IS NULL) as has_position
+        ', $this->object->id, $this->object->id))
+        ->orderBy('has_position ASC, position ASC');
     }
     else
     {
