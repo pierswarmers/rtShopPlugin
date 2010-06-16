@@ -139,6 +139,7 @@ class rtShopCategoryAdminActions extends sfActions
 
       $this->redirect('rtShopCategoryAdmin/index');
     }
+    $this->getUser()->setFlash('default_error', true, false);
   }
 
   private function clearCache($rt_shop_category = null)

@@ -2,6 +2,8 @@
 
 <h1><?php echo __('Comparing Version') ?> <?php echo $version_1 ?> to <?php echo $version_2 ?></h1>
 
+<?php include_partial('rtAdmin/flashes') ?>
+
 <?php slot('rt-tools') ?>
 <?php include_partial('rtAdmin/standard_modal_tools', array('object' => $rt_shop_category))?>
 <?php end_slot(); ?>

@@ -33,6 +33,8 @@
 </script>
 <?php end_slot(); ?>
 
+<?php include_partial('rtAdmin/flashes') ?>
+
 <form id="rtAdminForm" class="compressed" action="<?php echo url_for('rtShopProductAdmin/stock?id='. $form->getObject()->getId()) ?>" method="post" <?php $form->isMultipart() and print 'enctype="multipart/form-data" ' ?>>
   <?php echo $form->renderHiddenFields(false) ?>
   <?php echo $form->renderGlobalErrors() ?>

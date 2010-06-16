@@ -91,5 +91,6 @@ class BasertShopPromotionAdminActions extends sfActions
 
       $this->redirect('rtShopPromotionAdmin/index');
     }
+    $this->getUser()->setFlash('default_error', true, false);
   }
 }

@@ -82,5 +82,6 @@ class rtShopAttributeAdminActions extends sfActions
 
       $this->redirect('rtShopAttributeAdmin/index');
     }
+    $this->getUser()->setFlash('default_error', true, false);
   }
 }

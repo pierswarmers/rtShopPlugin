@@ -27,6 +27,8 @@
 </script>
 <?php end_slot(); ?>
 
+<?php include_partial('rtAdmin/flashes') ?>
+
 <table>
   <tbody>
     <tr>

@@ -186,6 +186,8 @@ class BasertShopProductAdminActions extends sfActions
 
       $this->redirect('rtShopProductAdmin/index');
     }
+
+    $this->getUser()->setFlash('default_error', true, false);
   }
 
   private function clearCache($rt_shop_product = null)

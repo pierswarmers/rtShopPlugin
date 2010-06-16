@@ -24,7 +24,7 @@
 
 <?php end_slot(); ?>
 
-<?php include_partial('rtShopVoucherAdmin/flashes')?>
+<?php include_partial('rtAdmin/flashes') ?>
 
 <form id ="rtAdminForm" action="<?php echo url_for('rtShopVoucherAdmin/batchCreate') ?>" method="post">
 <?php echo $form->renderHiddenFields(false) ?>

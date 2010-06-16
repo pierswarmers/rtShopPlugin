@@ -6,6 +6,8 @@
 <?php include_partial('rtAdmin/standard_modal_tools', array('object' => $rt_shop_product))?>
 <?php end_slot(); ?>
 
+<?php include_partial('rtAdmin/flashes') ?>
+
 <form id="rtAdminForm" action="<?php echo url_for('rtShopProductAdmin/compare?id='.$rt_shop_product->getId()) ?>">
   <table class="stretch">
     <thead>
