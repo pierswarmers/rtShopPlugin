@@ -205,7 +205,6 @@ class BasertShopOrderActions extends sfActions
       $address_billing = new rtAddress;
     }
 
-    $address_billing = new rtAddress;
     $address_billing->setModel('rtShopOrder');
     $address_billing->setModelId($this->getOrder()->getId());
     $address_billing->setType('billing');
