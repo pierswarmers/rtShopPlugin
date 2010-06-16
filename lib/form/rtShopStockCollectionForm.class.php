@@ -11,7 +11,7 @@
 class rtShopStockCollectionForm extends BasertShopProductForm
 {
   private $attributes;
-  
+
   public function setup()
   {
     parent::setup();
@@ -38,14 +38,14 @@ class rtShopStockCollectionForm extends BasertShopProductForm
 
 //    $this->embedRelation('rtShopStocks');
   }
-  
+
   public function saveEmbeddedForms($con = null, $forms = null)
   {
     if (null === $forms)
     {
       $stocks = $this->getValue('newStocks');
       $forms = $this->embeddedForms;
-      
+
       if(isset($forms['currentStocks']))
       {
         foreach ($this->embeddedForms['newStocks'] as $name => $form)
@@ -117,7 +117,7 @@ class rtShopStockCollectionForm extends BasertShopProductForm
 
 //        echo $stock_object->getId();
 //        exit;
-        
+
         foreach($this->getAttributes() as $attribute)
         {
           $tmp_val = $form['rt_shop_variations_list_'.$attribute->getId()];
