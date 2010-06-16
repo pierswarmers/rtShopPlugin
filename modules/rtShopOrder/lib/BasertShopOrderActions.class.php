@@ -180,7 +180,7 @@ class BasertShopOrderActions extends sfActions
                   ->from('rtAddress a')
                   ->andWhere('a.model = ?', 'rtShopOrder')
                   ->andWhere('a.model_id = ?', $this->getOrder()->getId())
-                  ->andWhere('type = ?', 'shipping');
+                  ->andWhere('a.type = ?', 'shipping');
     $address_shipping = $q->fetchOne();
 
     if(!$address_shipping)
@@ -197,7 +197,7 @@ class BasertShopOrderActions extends sfActions
                   ->from('rtAddress a')
                   ->andWhere('a.model = ?', 'rtShopOrder')
                   ->andWhere('a.model_id = ?', $this->getOrder()->getId())
-                  ->andWhere('type = ?', 'billing');
+                  ->andWhere('a.type = ?', 'billing');
     $address_billing = $q->fetchOne();
 
     if(!$address_billing)
