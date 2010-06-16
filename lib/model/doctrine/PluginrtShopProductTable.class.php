@@ -7,13 +7,14 @@
  */
 class PluginrtShopProductTable extends rtPageTable
 {
-    /**
-     * Returns an instance of this class.
-     *
-     * @return object PluginrtShopProductTable
-     */
-    public static function getInstance()
-    {
-        return Doctrine_Core::getTable('PluginrtShopProduct');
-    }
+  /**
+   * Returns an instance of this class.
+   *
+   * @return object PluginrtShopProductTable
+   */
+  public static function getInstance()
+  {
+      return Doctrine_Core::getTable('PluginrtShopProduct');
+  }
+  
 }

@@ -29,7 +29,7 @@ class rtShopStockCollectionCurrentForm extends sfForm
       }
     }
 
-    $this->mergePostValidator(new rtShopStockValidatorSchema(null, array('attributes' => $product->rtShopAttributes)));
+    //$this->mergePostValidator(new rtShopStockValidatorSchema(null, array('attributes' => $product->rtShopAttributes)));
   }
 
 }
