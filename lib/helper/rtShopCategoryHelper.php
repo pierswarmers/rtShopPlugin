@@ -73,7 +73,7 @@ function rt_shop_category_map($rt_shop_category = null, $options = array())
     $query = Doctrine::getTable('rtShopCategory')->getQuery();
     $query->andWhere('page.display_in_menu = 1');
     $query->andWhere('page.level <= ?', $options['limit_upper']);
-    $query->andWhere('page.level >= ?', $options['limit_lower']);
+    $query->andWhere('page.level >= ?', $options['limit_lower']); 
     $tree = Doctrine::getTable('rtShopCategory')->getDescendantsOfRoot($root_page, $query, true);;
   }
 
