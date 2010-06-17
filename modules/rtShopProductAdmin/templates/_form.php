@@ -20,7 +20,7 @@
   <?php endif; ?>
 </ul>
 
-<?php if(!$form->getObject()->isNew()): ?>
+<?php if(!$form->getObject()->isNew() && false): ?>
 <p><?php echo __('Or') ?>, <?php echo link_to('delete this product', 'rtShopProductAdmin/delete?id='.$form->getObject()->getId(), array('method' => 'delete', 'confirm' => 'Are you sure?')) ?></p>
 <?php endif; ?>
 
@@ -136,7 +136,7 @@
     </table>
     <script type="text/javascript">
     $(function() {
-      $("#rtSortableProducts ul.checkbox_list").last().sortable({
+      $("#rtSortableProducts ul.checkbox_list").first().sortable({
         revert: true
       });
     });
