@@ -46,7 +46,7 @@
     <?php if(!$form->getObject()->isNew()): ?>
     $("#rtPrimaryTools .show").button({
       icons: { primary: 'ui-icon-extlink' }
-    }).click(function(){ document.location.href='<?php echo url_for('rt_shop_product_show', $form->getObject()) ?>'; });
+    }).click(function(){ document.location.href='<?php echo url_for('rtShopProductAdmin/show?id='.$form->getObject()->getId()) ?>'; });
     <?php endif; ?>
 
     $("#rtPrimaryTools .cancel").button({

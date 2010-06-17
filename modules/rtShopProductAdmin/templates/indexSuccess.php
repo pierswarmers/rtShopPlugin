@@ -27,7 +27,7 @@
       <td><?php echo $rt_shop_product->getCreatedAt() ?></td>
       <td>
         <ul class="rt-admin-tools">
-          <li><?php echo rt_button_show(url_for('rt_shop_product_show', $rt_shop_product)) ?></li>
+          <li><?php echo rt_button_show(url_for('rtShopProductAdmin/show?id='.$rt_shop_product->getId())) ?></li>
           <li><?php echo rt_button_edit(url_for('rtShopProductAdmin/edit?id='.$rt_shop_product->getId())) ?></li>
           <li><?php echo rt_button_delete(url_for('rtShopProductAdmin/delete?id='.$rt_shop_product->getId())) ?></li>
         </ul>

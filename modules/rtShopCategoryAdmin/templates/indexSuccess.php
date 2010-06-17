@@ -27,7 +27,7 @@
       <td><?php echo $rt_shop_category->getCreatedAt() ?></td>
       <td>
         <ul class="rt-admin-tools">
-          <li><?php echo rt_button_show(url_for('rt_shop_category_show', $rt_shop_category)) ?></li>
+          <li><?php echo rt_button_show(url_for('rtShopCategoryAdmin/show?id='.$rt_shop_category->getId())) ?></li>
           <li><?php echo rt_button_edit(url_for('rtShopCategoryAdmin/edit?id='.$rt_shop_category->getId())) ?></li>
           <li><?php echo rt_button_delete(url_for('rtShopCategoryAdmin/delete?id='.$rt_shop_category->getId())) ?></li>
           <?php if($rt_shop_category->getNode()->isRoot()): ?>

@@ -23,6 +23,11 @@ class BasertShopProductAdminActions extends sfActions
     return $rt_shop_product;
   }
 
+  public function executeShow(sfWebRequest $request)
+  {
+    rtSiteToolkit::siteRedirect($this->getrtShopProduct($request));
+  }
+
   public function executeNew(sfWebRequest $request)
   {
     $this->form = new rtShopProductForm();
