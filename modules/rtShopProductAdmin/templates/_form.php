@@ -127,11 +127,11 @@
     <table class="rt-admin-toggle-panel-content" id="rtSortableProducts">
       <tbody>
         <?php echo render_form_row($form['slug']); ?>
+        <?php if(isset($form['site_id'])): ?>
+          <?php echo render_form_row($form['site_id']); ?>
+        <?php endif; ?>
         <?php echo render_form_row($form['rt_shop_products_list']); ?>
         <?php echo render_form_row($form['rt_shop_categories_list']); ?>
-      <?php if(isset($form['site_id'])): ?>
-        <?php echo render_form_row($form['site_id']); ?>
-      <?php endif; ?>
       </tbody>
     </table>
     <script type="text/javascript">
