@@ -7,20 +7,7 @@
  */
 class PluginrtShopProductTable extends rtPageTable
 {
-  /**
-   * Return a query object, creating a new one if needed.
-   *
-   * @param Doctrine_Query $query
-   * @return Doctrine_Query
-   */
-  public function getQuery(Doctrine_Query $query = null)
-  {
-    if(is_null($query))
-    {
-      $query = parent::createQuery('p');
-    }
-    return $query;
-  }
+
 
   /**
    * Returns an instance of this class.
