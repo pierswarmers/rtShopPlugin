@@ -6,7 +6,7 @@
 <?php include_partial('rtAdmin/standard_modal_tools', array('object' => new rtShopPromotion))?>
 <?php end_slot(); ?>
 
-<?php include_partial('rtShopPromotionAdmin/flashes')?>
+<?php include_partial('rtAdmin/flashes') ?>
 
 <table>
   <thead>

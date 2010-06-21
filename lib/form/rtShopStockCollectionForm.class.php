@@ -59,14 +59,14 @@ class rtShopStockCollectionForm extends BasertShopProductForm
 
       if(isset($forms['currentStocks']))
       {
-        $varations = $this->getValue('currentStocks');
+        $stocks = $this->getValue('currentStocks');
 
-        foreach ($varations as $name => $form)
+        foreach ($stocks as $name => $form)
         {
           if (isset($form['delete']) && $form['delete'])
           {
-            $variation = Doctrine::getTable('rtShopStock')->find($form['id']);
-            $variation->delete();
+            $stock = Doctrine::getTable('rtShopStock')->find($form['id']);
+            $stock->delete();
             unset($forms['currentStocks'][$name]);
           }
         }
@@ -110,23 +110,21 @@ class rtShopStockCollectionForm extends BasertShopProductForm
         $stock_object->save();
 
         $query = new Doctrine_Query();
-
+        
+//        $stock_object->unlink('rtShopVariations', array(), true);
         $query->delete('rtShopStockToVariation s2v')
               ->where('s2v.stock_id = ?', $stock_object->getId())
-              ->execute();
+              ->execute()
+         ;
 
-//        echo $stock_object->getId();
-//        exit;
+        $values = array();
 
         foreach($this->getAttributes() as $attribute)
         {
           $tmp_val = $form['rt_shop_variations_list_'.$attribute->getId()];
           $values[$tmp_val[0]] = $tmp_val[0];
         }
-//        echo $stock_object->getId();
-//        var_dump($values);
-//        exit;
-//
+        
         $stock_object->link('rtShopVariations', array_values($values), true);
       }
     }

@@ -45,6 +45,18 @@ class rtShopCategoryActions extends sfActions
     }
 
     $this->updateResponse($this->rt_shop_category);
+
+    $pager = new sfDoctrinePager('rtShopProduct', sfConfig::get('app_rt_shop_product_per_page', 1));
+
+    $query = Doctrine::getTable('rtShopProduct')->getQuery();
+    $query->leftJoin('p.rtShopCategories c');
+    $query->andWhere('c.id = ?', $this->rt_shop_category->getId());
+    $pager->setQuery($query);
+    $pager->setPage($request->getParameter('page', 1));
+    $pager->init();
+
+
+    $this->pager = $pager;
   }
 
   private function updateResponse(rtShopCategory $page)

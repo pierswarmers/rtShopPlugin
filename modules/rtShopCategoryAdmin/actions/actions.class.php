@@ -17,7 +17,7 @@ class rtShopCategoryAdminActions extends sfActions
     $this->rt_shop_categorys = $query->execute();
   }
 
-  public function getGnShopCategory(sfWebRequest $request)
+  public function getrtShopCategory(sfWebRequest $request)
   {
     $this->forward404Unless($rt_shop_category = Doctrine::getTable('rtShopCategory')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_category does not exist (%s).', $request->getParameter('id')));
     return $rt_shop_category;
@@ -25,6 +25,11 @@ class rtShopCategoryAdminActions extends sfActions
   
   public function executeTree(sfWebRequest $request)
   {
+  }
+
+  public function executeShow(sfWebRequest $request)
+  {
+    rtSiteToolkit::siteRedirect($this->getrtShopCategory($request));
   }
   
   public function executeNew(sfWebRequest $request)
@@ -76,13 +81,13 @@ class rtShopCategoryAdminActions extends sfActions
 
   public function executeVersions(sfWebRequest $request)
   {
-    $this->rt_shop_category = $this->getGnShopCategory($request);
+    $this->rt_shop_category = $this->getrtShopCategory($request);
     $this->rt_shop_category_versions = Doctrine::getTable('rtShopCategoryVersion')->findById($this->rt_shop_category->getId());
   }
 
   public function executeCompare(sfWebRequest $request)
   {
-    $this->rt_shop_category = $this->getGnShopCategory($request);
+    $this->rt_shop_category = $this->getrtShopCategory($request);
     $this->current_version = $this->rt_shop_category->version;
 
     if(!$request->hasParameter('version1') || !$request->hasParameter('version2'))
@@ -111,7 +116,7 @@ class rtShopCategoryAdminActions extends sfActions
 
   public function executeRevert(sfWebRequest $request)
   {
-    $this->rt_shop_category = $this->getGnShopCategory($request);
+    $this->rt_shop_category = $this->getrtShopCategory($request);
     $this->rt_shop_category->revert($request->getParameter('revert_to'));
     $this->rt_shop_category->save();
     $this->getUser()->setFlash('notice', 'Reverted to version ' . $request->getParameter('revert_to'), false);
@@ -139,6 +144,7 @@ class rtShopCategoryAdminActions extends sfActions
 
       $this->redirect('rtShopCategoryAdmin/index');
     }
+    $this->getUser()->setFlash('default_error', true, false);
   }
 
   private function clearCache($rt_shop_category = null)

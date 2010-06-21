@@ -64,6 +64,7 @@ function rt_shop_category_map($rt_shop_category = null, $options = array())
   }
   else
   {
+
     if(!$options['render_full'])
     {
       $options['limit_upper'] =1;
@@ -72,6 +73,7 @@ function rt_shop_category_map($rt_shop_category = null, $options = array())
     $query = Doctrine::getTable('rtShopCategory')->getQuery();
     $query->andWhere('page.display_in_menu = 1');
     $query->andWhere('page.level <= ?', $options['limit_upper']);
+    $query->andWhere('page.level >= ?', $options['limit_lower']); 
     $tree = Doctrine::getTable('rtShopCategory')->getDescendantsOfRoot($root_page, $query, true);;
   }
 
@@ -85,7 +87,7 @@ function rt_shop_category_map($rt_shop_category = null, $options = array())
       {
         continue;
       }
-
+      
       if(!$options['render_full'] && !is_null($rt_shop_category))
       {
         if(($node['level'] < $options['limit_lower'] || $node['level'] > $options['limit_upper']))
@@ -135,7 +137,6 @@ function rt_shop_category_map($rt_shop_category = null, $options = array())
       $string .= '</li></ul>';
     }
   }
-
   return '<ul class="rt-site-page-navigation">' . $string . '</li></ul>';
 }
 

@@ -10,7 +10,7 @@ class PluginrtShopVariationTable extends Doctrine_Table
   /**
    * Return the variations for a given attribute_id value, and ordering them
    * by their position.
-   * 
+   *
    * @param int $attribute_id
    * @param Doctrine_Query $query
    * @return Doctrine_Collection
@@ -19,6 +19,31 @@ class PluginrtShopVariationTable extends Doctrine_Table
   public function findByAttributeId($attribute_id, Doctrine_Query $query = null)
   {
     return $this->addQueryFindByAttributeId($attribute_id, $query)->execute();
+  }
+
+  /**
+   * Return the variations for a given attribute_id value, and ordering them
+   * by their position.
+   *
+   * @param int $attribute_id
+   * @param Doctrine_Query $query
+   * @return Doctrine_Collection
+   * @see PluginrtShopVariationTable::addQueryFindByAttributeId()
+   */
+  public function findByAttributeIdAndProductId($attribute_id, $product_id, Doctrine_Query $query = null)
+  {
+    $query = $this->getQuery($query);
+    $query = $this->addQueryFindByAttributeId($attribute_id, $query);
+
+    // Connect the product via stock, and the stock level.
+    $query->leftJoin('variation.rtShopStocks stock')
+          ->leftJoin('stock.rtShopProduct product')
+          //->andWhere('(stock.quantity > 0 OR product.backorder_allowed = true)')
+          ->andWhere('product.id = stock.product_id')
+          ->andWhere('product.id = ?', $product_id)
+          //->groupBy('variation.id')
+    ;
+    return $query->execute();
   }
 
   /**

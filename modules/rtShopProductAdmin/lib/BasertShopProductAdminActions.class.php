@@ -23,6 +23,11 @@ class BasertShopProductAdminActions extends sfActions
     return $rt_shop_product;
   }
 
+  public function executeShow(sfWebRequest $request)
+  {
+    rtSiteToolkit::siteRedirect($this->getrtShopProduct($request));
+  }
+
   public function executeNew(sfWebRequest $request)
   {
     $this->form = new rtShopProductForm();
@@ -186,6 +191,8 @@ class BasertShopProductAdminActions extends sfActions
 
       $this->redirect('rtShopProductAdmin/index');
     }
+
+    $this->getUser()->setFlash('default_error', true, false);
   }
 
   private function clearCache($rt_shop_product = null)

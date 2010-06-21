@@ -2,12 +2,14 @@
 <?php use_javascripts_for_form($form) ?>
 
 <?php slot('rt-tools') ?>
-<?php include_partial('rtAdmin/standard_modal_tools', array('show_route_handle' => 'rt_shop_category_show', 'object' => $form->getObject()))?>
+<?php include_partial('rtAdmin/standard_modal_tools', array('show_route_handle' => 'admin', 'object' => $form->getObject()))?>
 <?php end_slot(); ?>
 
 <?php slot('rt-side') ?>
 <?php include_component('rtAsset', 'form', array('object' => $form->getObject())) ?>
 <?php end_slot(); ?>
+
+<?php include_partial('rtAdmin/flashes') ?>
 
 <form id ="rtAdminForm" action="<?php echo url_for('rtShopCategoryAdmin/'.($form->getObject()->isNew() ? 'create' : 'update').(!$form->getObject()->isNew() ? '?id='.$form->getObject()->getId() : '')) ?>" method="post" <?php $form->isMultipart() and print 'enctype="multipart/form-data" ' ?>>
 <?php echo $form->renderHiddenFields(false) ?>

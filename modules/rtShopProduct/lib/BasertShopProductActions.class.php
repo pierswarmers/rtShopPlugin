@@ -46,6 +46,9 @@ class BasertShopProductActions extends sfActions
       $this->forward404('Page isn\'t published.');
     }
 
+    //$this->options = new rtShopVariationToolkit(Doctrine_Manager::connection(), $this->rt_shop_product->getId());
+    
+
     $this->updateResponse($this->rt_shop_product);
   }
 

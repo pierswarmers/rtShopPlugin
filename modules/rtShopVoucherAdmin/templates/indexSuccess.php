@@ -23,7 +23,7 @@
 </script>
 <?php end_slot(); ?>
 
-<?php include_partial('rtShopVoucherAdmin/flashes')?>
+<?php include_partial('rtAdmin/flashes') ?>
 
 <table>
   <thead>

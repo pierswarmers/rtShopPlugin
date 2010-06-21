@@ -105,10 +105,7 @@ class BasertShopVoucherAdminActions extends sfActions
           $this->getUser()->setFlash('error','An error occured while creating batch vouchers', false);
         }
       } 
-      else
-      {
-        $this->getUser()->setFlash('error','An error occured while vouchers were processed', false);
-      }
+      $this->getUser()->setFlash('default_error', true, false);
     }
   }
 
@@ -231,5 +228,6 @@ class BasertShopVoucherAdminActions extends sfActions
 
       $this->redirect('rtShopVoucherAdmin/index');
     }
+    $this->getUser()->setFlash('default_error', true, false);
   }
 }
