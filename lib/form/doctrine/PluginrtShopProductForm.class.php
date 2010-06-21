@@ -40,11 +40,14 @@ abstract class PluginrtShopProductForm extends BasertShopProductForm
     
     if(!$this->isNew())
     {
-      $query->leftJoin('p.rtShopProductToProduct ptp')
-        ->select(sprintf('p.id, p.title, (ptp.product_id = %s) as current, (ptp.position IS NULL) as has_position, ptp.product_id_target, ptp.position', $this->object->id))
-        ->groupBy('ptp.product_id, ptp.product_id_target')
-        ->andWhere('p.id != ?',  $this->object->id)
-        ->orderBy('current DESC, has_position ASC, ptp.position ASC');
+      $query->select(sprintf('
+        p.id,
+        p.title,
+        (select position from rt_shop_product_to_product where product_id = %s and product_id_target = p.id) as position,
+        ((select position from rt_shop_product_to_product where product_id = %s and product_id_target = p.id) IS NULL) as has_position
+        ', $this->object->id, $this->object->id))
+              ->andWhere('p.id != ?', $this->getObject()->getId())
+        ->orderBy('has_position ASC, position ASC');
     }
     else
     {

@@ -20,7 +20,7 @@
   <?php endif; ?>
 </ul>
 
-<?php if(!$form->getObject()->isNew()): ?>
+<?php if(!$form->getObject()->isNew() && false): ?>
 <p><?php echo __('Or') ?>, <?php echo link_to('delete this product', 'rtShopProductAdmin/delete?id='.$form->getObject()->getId(), array('method' => 'delete', 'confirm' => 'Are you sure?')) ?></p>
 <?php endif; ?>
 
@@ -46,7 +46,7 @@
     <?php if(!$form->getObject()->isNew()): ?>
     $("#rtPrimaryTools .show").button({
       icons: { primary: 'ui-icon-extlink' }
-    }).click(function(){ document.location.href='<?php echo url_for('rt_shop_product_show', $form->getObject()) ?>'; });
+    }).click(function(){ document.location.href='<?php echo url_for('rtShopProductAdmin/show?id='.$form->getObject()->getId()) ?>'; });
     <?php endif; ?>
 
     $("#rtPrimaryTools .cancel").button({
@@ -127,16 +127,16 @@
     <table class="rt-admin-toggle-panel-content" id="rtSortableProducts">
       <tbody>
         <?php echo render_form_row($form['slug']); ?>
+        <?php if(isset($form['site_id'])): ?>
+          <?php echo render_form_row($form['site_id']); ?>
+        <?php endif; ?>
         <?php echo render_form_row($form['rt_shop_products_list']); ?>
         <?php echo render_form_row($form['rt_shop_categories_list']); ?>
-      <?php if(isset($form['site_id'])): ?>
-        <?php echo render_form_row($form['site_id']); ?>
-      <?php endif; ?>
       </tbody>
     </table>
     <script type="text/javascript">
     $(function() {
-      $("#rtSortableProducts ul.checkbox_list").last().sortable({
+      $("#rtSortableProducts ul.checkbox_list").first().sortable({
         revert: true
       });
     });
