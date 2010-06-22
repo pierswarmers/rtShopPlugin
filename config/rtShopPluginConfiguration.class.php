@@ -66,12 +66,12 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
     );
 
     $routing->prependRoute('rt_shop_order_add_to_bag', new sfRoute('/order/add-to-bag', array('module' => 'rtShopOrder', 'action' => 'addToBag')));
-    $routing->prependRoute('rt_shop_order_cart', new sfRoute('/rtShopOrderCart/:action', array('module' => 'rtShopOrder', 'action' => 'cart')));
-    $routing->prependRoute('rt_shop_order_checkout', new sfRoute('/rtShopOrderCheckout/:action', array('module' => 'rtShopOrder', 'action' => 'checkout')));
-    $routing->prependRoute('rt_shop_order_address', new sfRoute('/rtShopOrderAddress/:action', array('module' => 'rtShopOrder', 'action' => 'address')));
-    $routing->prependRoute('rt_shop_order_payment', new sfRoute('/rtShopOrderPayment/:action', array('module' => 'rtShopOrder', 'action' => 'payment')));
-    $routing->prependRoute('rt_shop_order_update', new sfRoute('/rtShopOrderUpdate/:action', array('module' => 'rtShopOrder', 'action' => 'update')));
-    $routing->prependRoute('rt_shop_order_stock_delete', new sfRoute('/rtShopOrderStockDelete/:action/:id/:act', array('module' => 'rtShopOrder', 'action' => 'deleteStock', 'act' => 'cart')));
+    $routing->prependRoute('rt_shop_order_cart', new sfRoute('/order/cart', array('module' => 'rtShopOrder', 'action' => 'cart')));
+    $routing->prependRoute('rt_shop_order_checkout', new sfRoute('/order/checkout', array('module' => 'rtShopOrder', 'action' => 'checkout')));
+    $routing->prependRoute('rt_shop_order_address', new sfRoute('/order/address', array('module' => 'rtShopOrder', 'action' => 'address')));
+    $routing->prependRoute('rt_shop_order_payment', new sfRoute('/order/payment', array('module' => 'rtShopOrder', 'action' => 'payment')));
+    $routing->prependRoute('rt_shop_order_update', new sfRoute('/order/update', array('module' => 'rtShopOrder', 'action' => 'update')));
+    $routing->prependRoute('rt_shop_order_stock_delete', new sfRoute('/order/delete-stock', array('module' => 'rtShopOrder', 'action' => 'deleteStock', 'act' => 'cart')));
     //$routing->prependRoute('rt_shop_order_receipt', new sfRoute('/rtShopOrderReceipt/:action', array('module' => 'rtShopOrder', 'action' => 'receipt')));
     //$routing->prependRoute('rt_shop_order_invoice', new sfRoute('/rtShopOrderInvoice/:action', array('module' => 'rtShopOrder', 'action' => 'invoice')));
   }

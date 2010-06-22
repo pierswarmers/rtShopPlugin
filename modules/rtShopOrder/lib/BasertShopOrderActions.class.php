@@ -30,6 +30,7 @@ class BasertShopOrderActions extends sfActions
   {
     sfConfig::set('app_rt_node_title', 'Order');
     rtTemplateToolkit::setFrontendTemplateDir();
+    $this->rt_shop_order = $this->getOrder();
   }
 
   /**
@@ -93,7 +94,9 @@ class BasertShopOrderActions extends sfActions
 
     $this->_cart->addToCart($rt_shop_stock->getId(),(int) $request->getParameter('rt-shop-quantity'));
 
-    $this->forward('rtShopOrder', 'cart');
+    $this->getUser()->setFlash('notice', "Item was added to cart.");
+
+    $this->redirect('@rt_shop_order_cart');
   }
 
   /**
