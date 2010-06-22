@@ -29,13 +29,9 @@
         <?php echo link_to(sprintf('%s', __('Continue Shopping')),'/rtShopProduct', 'class="rt_shop_cart_actions_continue button"') ?>
         <button type="submit" name="_update_quantities" class="button"><?php echo __('Update Quantities') ?></button>
         <button type="submit" name="_proceed_to_checkout" class="button"><?php echo __('Proceed to Checkout') ?></button>
-        <?php //echo link_to_if(count($rt_shop_order->getStockInfoArray()) > 0, __('Proceed to Checkout'),'@rt_shop_order_checkout', 'class="rt_shop_cart_actions_proceed button"') ?>
       </div>
     </form>
-
   <?php else: ?>
-
     <p><?php echo sprintf('%s %s',__('You have nothing in your cart, '),link_to(__('go buy something!'),'/rtShopProduct')); ?></p>
-
   <?php endif; ?>
 </div>

@@ -170,17 +170,18 @@ class BasertShopOrderActions extends sfActions
   public function executeAddress(sfWebRequest $request)
   {
     $this->rt_shop_order = $this->getOrder();
-    $this->redirectIf(count($this->rt_shop_order->Stocks) == 0, '@rt_shop_order_cart');
+    $this->redirectIf(count($this->getOrder()->Stocks) == 0, '@rt_shop_order_cart');
 
     $this->billing_address_shown = $request->getParameter('billing_address_shown', false);
 
-    $this->order_form = new rtShopOrderEmailForm($this->rt_shop_order);
+    $this->order_form = new rtShopOrderEmailForm($this->getOrder());
 
+    // Shipping address object
     $q = Doctrine_Query::create()
-                  ->from('rtAddress a')
-                  ->andWhere('a.model = ?', 'rtShopOrder')
-                  ->andWhere('a.model_id = ?', $this->getOrder()->getId())
-                  ->andWhere('a.type = ?', 'shipping');
+        ->from('rtAddress a')
+        ->andWhere('a.model = ?', 'rtShopOrder')
+        ->andWhere('a.model_id = ?', $this->getOrder()->getId())
+        ->andWhere('a.type = ?', 'shipping');
     $address_shipping = $q->fetchOne();
 
     if(!$address_shipping)
@@ -188,16 +189,17 @@ class BasertShopOrderActions extends sfActions
       $address_shipping = new rtAddress;
     }
 
+    // Billing address object
     $address_shipping->setModel('rtShopOrder');
     $address_shipping->setModelId($this->getOrder()->getId());
     $address_shipping->setType('shipping');
     $this->shipping_order_form = new rtShopShippingAddressForm($address_shipping);
 
     $q = Doctrine_Query::create()
-                  ->from('rtAddress a')
-                  ->andWhere('a.model = ?', 'rtShopOrder')
-                  ->andWhere('a.model_id = ?', $this->getOrder()->getId())
-                  ->andWhere('a.type = ?', 'billing');
+        ->from('rtAddress a')
+        ->andWhere('a.model = ?', 'rtShopOrder')
+        ->andWhere('a.model_id = ?', $this->getOrder()->getId())
+        ->andWhere('a.type = ?', (count($address_shipping) > 0 && count($this->getOrder()->getBillingAddressArray()) == 0) ? 'shipping' : 'billing');
     $address_billing = $q->fetchOne();
 
     if(!$address_billing)
@@ -214,15 +216,17 @@ class BasertShopOrderActions extends sfActions
     {
       $this->processForm($request, $this->order_form);
       $this->processForm($request, $this->shipping_order_form);
+      //$this->processForm($request, $this->billing_order_form);
 
-      // The values of the billing address are sometimes taken from the shipping address
-      $ad2_form_name = $this->billing_address_shown ? $this->shipping_order_form->getName() : null;
-      $this->processForm($request, $this->billing_order_form, $ad2_form_name);
+      // The values of the billing address are sometimes the same as the shipping address
+      $billing_form_name = $this->billing_address_shown ? $this->shipping_order_form->getName() : null;
+      $this->processForm($request, $this->billing_order_form, $billing_form_name);
 
+      // Save email address in order
       if($this->order_form->isValid())
       {
-        $this->rt_shop_order->setEmail($this->order_form->getValue('email'));
-        $this->rt_shop_order->save();
+        $this->getOrder()->setEmail($this->order_form->getValue('email'));
+        $this->getOrder()->save();
       }
 
       if(!$this->order_form->isValid() || !$this->shipping_order_form->isValid() || !$this->billing_order_form->isValid())
@@ -231,18 +235,7 @@ class BasertShopOrderActions extends sfActions
         return;
       }
 
-      // Remove any existing shipping / billing addresses already stored.
-      Doctrine_Query::create()
-        ->delete('rtAddress')
-        ->andWhere('model = ?', 'rtShopOrder')
-        ->andWhere('model_id = ?', $this->getOrder()->getId())
-        ->andWhereIn('type', array('shipping', 'billing'))
-        ->execute();
-
-      // Create the shipping address
       $this->shipping_order_form->save();
-
-      // Create the billing address
       $this->billing_order_form->save();
 
       $this->redirect('@rt_shop_order_payment');
@@ -256,9 +249,25 @@ class BasertShopOrderActions extends sfActions
    */
   public function executePayment(sfWebRequest $request)
   {
+    $this->rt_shop_order = $this->getOrder();
 
+    $this->voucher_form = new rtShopVoucherCodeForm();
+    $this->creditcard_form = new rtShopCreditcardForm();
 
-    // clean session
+    if ($this->getRequest()->isMethod('PUT') || $this->getRequest()->isMethod('POST'))
+    {
+      $this->processForm($request, $this->voucher_form);
+      $this->processForm($request, $this->creditcard_form);
+
+      if(!$this->voucher_form->isValid() || !$this->creditcard_form->isValid())
+      {
+        $this->getUser()->setFlash('error', 'Some form data is missing or incorrect. Please check.');
+      }
+
+      $voucher_code = $this->voucher_form->getValue('code');
+      $this->_cart->setVoucher($voucher_code);
+      $this->total = (isset($voucher_code)) ? $this->_cart->getTotal() : $this->getOrder()->getGrandTotalPrice();
+    }
   }
 
   /**

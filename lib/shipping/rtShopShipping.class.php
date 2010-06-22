@@ -42,7 +42,7 @@ class rtShopShipping
     $response = array();
 
     $address = $this->_order->getShippingAddressArray();
-    $handling_charge = sfConfig::get('app_rt_shop_shipping rate');
+    $handling_charge = sfConfig::get('app_rt_shop_shipping_rate',array('domestic' => 0, 'international' => 0));
 
     if (!isset($address['country']) || is_null($address['country']) || $address['country'] == '') {
       return false;

@@ -204,7 +204,11 @@ abstract class PluginrtShopOrder extends BasertShopOrder
   {
     if(is_null($this->_address_info))
     {
-      $this->_address_info = array();
+      $q = Doctrine_Query::create()
+          ->from('rtAddress a')
+          ->andWhere('a.model = ?', 'rtShopOrder')
+          ->andWhere('a.model_id = ?', $this->getId());
+      $this->_address_info = $q->fetchArray();
     }
 
     return $this->_address_info;
@@ -219,7 +223,12 @@ abstract class PluginrtShopOrder extends BasertShopOrder
   {
     if(is_null($this->_address_shipping))
     {
-      $this->_address_shipping = array();
+      $q = Doctrine_Query::create()
+        ->from('rtAddress a')
+        ->andWhere('a.model = ?', 'rtShopOrder')
+        ->andWhere('a.model_id = ?', $this->getId())
+        ->andWhere('a.type = ?', 'shipping');
+      $this->_address_shipping = $q->fetchArray();
     }
 
     return $this->_address_shipping;
@@ -234,7 +243,12 @@ abstract class PluginrtShopOrder extends BasertShopOrder
   {
     if(is_null($this->_address_billing))
     {
-      $this->_address_billing = array();
+      $q = Doctrine_Query::create()
+        ->from('rtAddress a')
+        ->andWhere('a.model = ?', 'rtShopOrder')
+        ->andWhere('a.model_id = ?', $this->getId())
+        ->andWhere('a.type = ?', 'billing');
+      $this->_address_billing = $q->fetchArray();
     }
 
     return $this->_address_billing;
@@ -344,7 +358,7 @@ abstract class PluginrtShopOrder extends BasertShopOrder
       return $this->_shipping_info;
     }
 
-    $class = sfConfig::get('app_rt_shop_shipping_class');
+    $class = sfConfig::get('app_rt_shop_shipping_class','rtShopShipping');
 
     $shipping = new $class($this);
 

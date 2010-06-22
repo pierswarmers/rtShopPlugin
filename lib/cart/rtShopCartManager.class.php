@@ -287,7 +287,7 @@ class rtShopCartManager
 		{
 			return $total;
 		}
-		return rtShopVoucherToolkit::applyVoucher($this->getVoucher()->getCode(), $total);
+		return rtShopVoucherToolkit::applyVoucher($this->getVoucher(), $total);
 	}
 
   /**

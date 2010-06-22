@@ -19,14 +19,12 @@ class rtShopCreditcardForm extends sfForm
 {
   public function setup()
   {
-    $this->widgetSchema->setFormFormatterName('table'); // or list
-
     // Credit card input fields
-    $this->widgetSchema['cc_type']    = new sfWidgetFormSelect(array('choices' => sfConfig::get('app_payment_methods')));
+    $this->widgetSchema['cc_type']    = new sfWidgetFormSelect(array('choices' => sfConfig::get('app_rt_shop_payment_methods',array('Mastercard' => 'Mastercard', 'Visa' => 'Visa'))));
     $this->widgetSchema['cc_number']  = new sfWidgetFormInput(array(), array('class'=>'text'));
     $this->widgetSchema['cc_name']    = new sfWidgetFormInput(array(), array('class'=>'text'));
     $this->widgetSchema['cc_expire']  = new sfWidgetFormDate(array('format' => '%month%/%year%','default' => date("n/j/Y", mktime(0,0,0,date("m"),0,date("Y")+5))),array('style' => 'width:60px'));
-    $this->widgetSchema['cc_verification']  = new sfWidgetFormInput(array(),array('size' => 3, 'maxlength' => 3, 'class'=>'medium text'));
+    $this->widgetSchema['cc_verification']  = new sfWidgetFormInput(array(),array('size' => 4, 'maxlength' => 4, 'class'=>'medium text'));
 
     // Add labels
     $this->widgetSchema->setLabel('cc_type',"Card type:");
@@ -35,6 +33,7 @@ class rtShopCreditcardForm extends sfForm
     $this->widgetSchema->setLabel('cc_expire',"Expiry Date:");
     $this->widgetSchema->setLabel('cc_verification',"Verification Number (CCV):");
 
+    $this->widgetSchema->setHelp('cc_number', '<i style="font-size:10px;">Example: 4100 0000 0000 0000</i>');
     $this->widgetSchema->setHelp('cc_verification', '<i style="font-size:10px;">The CCV is a three or four-digit number on the back or front of your cc</i>');
 
     // Validators
@@ -47,7 +46,6 @@ class rtShopCreditcardForm extends sfForm
     ));
 
     $this->widgetSchema->setNameFormat('rt_shop_order_creditcard[%s]');
-
     $this->errorSchema = new sfValidatorErrorSchema($this->validatorSchema);
 
     parent::setup();

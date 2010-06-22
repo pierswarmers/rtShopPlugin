@@ -29,7 +29,6 @@
       <button type="submit" class="steer_shop_address_actions_submit button"><?php echo __('Proceed to payment') ?></button>
     </div>
   </form>
-
 </div>
 <script type="text/javascript">
   $(document).ready(function()
