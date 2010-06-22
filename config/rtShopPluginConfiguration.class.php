@@ -28,7 +28,7 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
     $routing->prependRoute(
       'rt_shop_product_show',
       new sfDoctrineRoute(
-        '/rt_shop/product/:id/:slug',
+        '/shop/product/:id/:slug',
           array('module' => 'rtShopProduct', 'action' => 'show'),
           array('id' => '\d+', 'sf_method' => array('get')),
           array('model' => 'rtShopProduct', 'type' => 'object')
@@ -38,7 +38,7 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
     $routing->prependRoute(
       'rt_shop_category_show',
       new sfDoctrineRoute(
-        '/rt_shop/category/:id/:slug',
+        '/shop/category/:id/:slug',
           array('module' => 'rtShopCategory', 'action' => 'show'),
           array('id' => '\d+', 'sf_method' => array('get')),
           array('model' => 'rtShopCategory', 'type' => 'object')
@@ -47,7 +47,7 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
 
     $routing->prependRoute(
       'rt_shop_category_index',
-      new sfRoute('/rt_shop/category',array('module' => 'rtShopCategory', 'action' => 'index'))
+      new sfRoute('/shop/category',array('module' => 'rtShopCategory', 'action' => 'index'))
     );
 
     $routing->prependRoute(
@@ -65,7 +65,7 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
        new sfRoute('/rtShopPromotionCartAdmin/:action/id/:id', array('module' => 'rtShopPromotionAdmin'))
     );
 
-    $routing->prependRoute('rt_shop_order_add_to_bag', new sfRoute('/rtShopOrderAddtobag/:action/:stock_id/:quantity', array('module' => 'rtShopOrder', 'action' => 'addToBag')));
+    $routing->prependRoute('rt_shop_order_add_to_bag', new sfRoute('/order/add-to-bag', array('module' => 'rtShopOrder', 'action' => 'addToBag')));
     $routing->prependRoute('rt_shop_order_cart', new sfRoute('/rtShopOrderCart/:action', array('module' => 'rtShopOrder', 'action' => 'cart')));
     $routing->prependRoute('rt_shop_order_checkout', new sfRoute('/rtShopOrderCheckout/:action', array('module' => 'rtShopOrder', 'action' => 'checkout')));
     $routing->prependRoute('rt_shop_order_address', new sfRoute('/rtShopOrderAddress/:action', array('module' => 'rtShopOrder', 'action' => 'address')));
