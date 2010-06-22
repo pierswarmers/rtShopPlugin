@@ -15,9 +15,10 @@
   <?php
     $item_price = $stock['price_promotion'] != 0 ? $stock['price_promotion'] : $stock['price_retail'];
     $class = ($has_quantity_errors && in_array($stock['id'], $stock_keys)) ? 'error' : '';
+    $product = Doctrine::getTable('rtShopProduct')->find($stock['product_id']);
   ?>
   <tr class="<?php echo $class; ?>">
-    <td><?php echo image_tag(rtAssetToolkit::getThumbnailPath(Doctrine::getTable('rtShopProduct')->find($stock['product_id'])->getPrimaryImage()->getSystemPath(), array('maxHeight' => 70, 'maxWidth' => 50))) ?></td>
+    <td><?php echo (is_callable($product->getPrimaryImage())) ? image_tag(rtAssetToolkit::getThumbnailPath($product->getPrimaryImage()->getSystemPath(), array('maxHeight' => 70, 'maxWidth' => 50))) : '' ?></td>
     <td><?php echo link_to($stock['rtShopProduct']['title'], '@rt_shop_product_show?id='.$stock['rtShopProduct']['id'].'&slug='.$stock['rtShopProduct']['slug']) ?>
         <p><?php echo $stock['rtShopProduct']['description'] ?></p>
         <input type="hidden" name="product_id[]" value="<?php echo $stock['rtShopProduct']['id']; ?>" />
