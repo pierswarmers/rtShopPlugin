@@ -1,6 +1,6 @@
 <?php
 
-use_helper('I18N');
+use_helper('I18N', 'Number');
 
 function price_for($rt_shop_product, $config = array())
 {
