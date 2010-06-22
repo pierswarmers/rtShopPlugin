@@ -34,4 +34,21 @@ abstract class PluginrtShopPromotion extends BasertShopPromotion
   {
     return $this->isDollarOff();
   }
+
+  /**
+   * Proxy save function. Check for title not null or empty
+   *
+   * @param   Doctrine_Connection $conn
+   * @return  void
+   * @throws  SteerShopException
+   */
+  public function save(Doctrine_Connection $conn = null)
+  {
+    // Only promotions with a title can be saved.
+    if ($this['title'] == null || empty($this['title'])) {
+      throw new Exception('Cannot save rtShopPromotion with an empty or null title.');
+    }
+
+    parent::save();
+  }
 }

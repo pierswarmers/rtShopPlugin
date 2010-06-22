@@ -1,0 +1,21 @@
+# default values
+all:
+  rt_shop:
+    default_country:              AU                      # Country where shipping is handled in
+    order_title:                  Order                   # Header for order view
+    cart_title:                   Cart                    # Header for cart view
+    checkout_title:               Checkout                # Header for checkout view
+    address_title:                Address                 # Header for address view
+    payment_title:                Payment                 # Header for payment view
+    #payment_currency:             AU                      # Currency acronym (e.g AU = Australian Dollar)
+    payment_class:                "rtShopPayment"         # Name of payment class
+    #shipping_class:               "rtShopShipping"        # Name of shipping class
+    #shipping_rate:
+      #domestic:                   8                       # Domestic shipping rate applicable to order (i.e 8 = $8)
+      #international:              15                      # International shipping rate applicable to order (i.e 15 = $15)
+    #tax_rate:                     5                       # Tax rate in % (e.g 5 = 5%)
+    #payment_methods:
+      #Mastercard:           Mastercard
+      #Visa:                 Visa
+      #Discover:             Discover
+      #American Express:     American Express

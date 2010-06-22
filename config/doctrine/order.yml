@@ -1,0 +1,44 @@
+rtShopOrderToStock:
+  columns:
+    quantity:                 { type: integer, default: 5 }
+    stock_id:
+      type: integer
+      primary: true
+    order_id:
+      type: integer
+      primary: true
+  relations:
+    rtShopOrder:              { onDelete: CASCADE, local: order_id, foreign: id }
+    rtShopStock:              { onDelete: CASCADE, local: stock_id, foreign: id }
+
+
+rtShopOrder:
+  actAs:
+    Timestampable:
+      created:
+        name:                created_at
+        type:                timestamp
+        format:              Y-m-d H:i:s
+      updated:
+        name:                updated_at
+        type:                timestamp
+        format:              Y-m-d H:i:s
+  columns:
+    reference:                { type: string(255) }
+    status:                   { type: string(255) }
+    email:                    { type: string(255) }
+    notes_user:               { type: string }
+    notes_admin:              { type: string }
+    user_id:                  { type: integer }
+    is_wholesale:             { type: boolean, default: false }
+    closed_shipping_rate:     { type: float, default: 0.00 }
+    closed_taxes:             { type: float, default: 0.00 }
+    closed_promotions:        { type: float, default: 0.00 }
+    closed_products:          { type: array(10000) }
+    closed_total:             { type: float, default: 0.00 }
+  relations:
+    Stocks:
+      class: rtShopStock
+      local: order_id
+      foreign:  stock_id
+      refClass: rtShopOrderToStock
