@@ -32,9 +32,15 @@ class rtShopCategoryCacheToolkit
       $cache->remove('@sf_cache_partial?module=rtShopCategory&action=_navigation&sf_cache_key=*');
       $cache->remove('@sf_cache_partial?module=rtShopCategory&action=_navigation&sf_cache_key=40cd750bba9870f18aada2478b24840a');
       $cache->remove('rtShopCategory/_navigation?module=rtShopCategory&action=*&sf_cache_key=*');
+      
+      //   '/1_mysite_com/all/rtShopCategory/index/page/1';
 
       if(!is_null($rt_shop_category))
       {
+        if($rt_shop_category->getNode()->isRoot())
+        {
+          $cache->remove('rtShopCategory/index?page=*');
+        }
         $cache->remove(sprintf('rtShopCategory/show?id=%s&slug=%s', $rt_shop_category->getId(), $rt_shop_category->getSlug())); // show page
         $cache->remove('@sf_cache_partial?module=rtShopCategory&action=_shop_category&sf_cache_key='.$rt_shop_category->getId()); // show page partial.
       }

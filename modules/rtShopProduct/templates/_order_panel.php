@@ -1,10 +1,15 @@
 <?php
+
 use_helper('Number', 'Url', 'I18N', 'rtShopProduct');
+
+use_javascript('/rtCorePlugin/vendor/jquery/js/jquery.min.js');
+use_javascript('/rtCorePlugin/vendor/jquery/js/jquery.ui.min.js');
 use_stylesheet('/rtCorePlugin/vendor/jquery/css/ui/jquery.ui.css');
 use_stylesheet('/rtShopPlugin/css/main.css', 'last');
+
 ?>
 <?php if($rt_shop_product->isPurchasable()): ?>
-<form method="post" action="<?php //echo url_for('@rt_shop_order_add_to_bag'); ?>">
+<form method="post" class="rt-shop-product-order-panel" action="<?php //echo url_for('@rt_shop_order_add_to_bag'); ?>">
 
   <input type="hidden" name="id" value="<?php echo $rt_shop_product->getId(); ?>" />
   
@@ -51,9 +56,9 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
 
   <?php $i++; endforeach; ?>
 
-  <p class="rt_shop_item_quantity">
-    <label for="rt_shop_item_quantity"><?php echo __('Quantity') ?></label>
-    <input type="text" name="rt_shop_item_quantity" class="text minitext" value="1" />
+  <p class="rt-shop-item-quantity">
+    <label for="rt-shop-item-quantity"><?php echo __('Quantity') ?>:</label>
+    <input type="text" name="rt-shop-item-quantity" class="text minitext" value="1" />
   </p>
   
   <p><button type="submit"><?php echo __('Add to Cart') ?></button></p>
@@ -64,7 +69,7 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
     $(".rt-shop-option-set").find(':radio').click(function() {
       // run image selection switch
       var match = $(this).attr("title").toLowerCase().replace(/ /g, "_").replace(/-/g, "_");
-      $(".rt-shop-product-primary-image img[title*="+match+"]").css("display","inline").siblings('img').css("display","none");
+      $(".rt-shop-product-primary-image a[title*="+match+"]").css("display","inline").siblings('a').css("display","none");
       // de-focus all options
       $(".rt-shop-option-set input[type=radio]").each(function(){
         $(this).button( "widget" ).fadeTo(1, 0.3).removeClass('available');
