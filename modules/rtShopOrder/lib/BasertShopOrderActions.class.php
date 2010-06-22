@@ -58,9 +58,42 @@ class BasertShopOrderActions extends sfActions
    *
    * @param sfWebRequest $request
    */
-  public function executeAddToOrder(sfWebRequest $request)
+  public function executeAddToBag(sfWebRequest $request)
   {
+    if($request->hasParameter('rt-shop-stock-id'))
+    {
+      $stock_id = $request->getParameter('rt-shop-stock-id');
+    }
+    else
+    {
+      if(!$request->hasParameter('rt-shop-variation-ids'))
+      {
+        throw new sfException('Missing parameter: rt-shop-variation-ids');
+      }
+      
+      $variation_ids = $request->getParameter('rt-shop-variation-ids');
+      
+      $rt_shop_product = Doctrine::getTable('rtShopProduct')->find($request->getParameter('rt-shop-product-id'));
+      $this->forward404Unless($rt_shop_product);
 
+      if(count($rt_shop_product->rtShopAttributes) != count($variation_ids))
+      {
+        throw new sfException('Attribute count incorrect.');
+      }
+
+      $rt_shop_stock = Doctrine::getTable('rtShopStock')->findOneByVariationsAndProductId($variation_ids, $rt_shop_product->getId());
+
+      if(!$rt_shop_stock)
+      {
+        throw new sfException('Stock error, no match found for variations: ' . implode(', ', $variation_ids));
+      }
+    }
+
+    $this->rt_shop_order = $this->getOrder();
+
+    $this->_cart->addToCart($rt_shop_stock->getId(),(int) $request->getParameter('rt-shop-quantity'));
+
+    $this->forward('rtShopOrder', 'cart');
   }
 
   /**
