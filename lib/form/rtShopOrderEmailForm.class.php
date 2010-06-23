@@ -37,7 +37,12 @@ class rtShopOrderEmailForm extends BasertShopOrderForm
       $this['closed_taxes'],
       $this['closed_promotions'],
       $this['closed_products'],
-      $this['closed_total']
+      $this['closed_total'],
+      $this['payment_transaction_id'],
+      $this['payment_type'],
+      $this['payment_charge'],
+      $this['payment_approved'],
+      $this['payment_response']
     );
     
     $order_id = sfContext::getInstance()->getUser()->getAttribute('rt_shop_frontend_order_id');

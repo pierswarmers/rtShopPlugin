@@ -20,7 +20,7 @@ class BasertShopOrderActions extends sfActions
   private $_session_token = 'rt_shop_frontend_order_id';
   private $_cart;
   private $_order;
-  
+
   /**
    * Executes an application defined process prior to execution of this sfAction object.
    *
@@ -30,7 +30,6 @@ class BasertShopOrderActions extends sfActions
   {
     sfConfig::set('app_rt_node_title', 'Order');
     rtTemplateToolkit::setFrontendTemplateDir();
-    $this->rt_shop_order = $this->getOrder();
   }
 
   /**
@@ -50,7 +49,7 @@ class BasertShopOrderActions extends sfActions
    */
   public function executeCart(sfWebRequest $request)
   {
-    $this->rt_shop_order = $this->getOrder();
+    $this->order = $this->getOrder();
   }
 
   /**
@@ -90,11 +89,16 @@ class BasertShopOrderActions extends sfActions
       }
     }
 
-    $this->rt_shop_order = $this->getOrder();
+    $this->order = $this->getOrder();
 
-    $this->_cart->addToCart($rt_shop_stock->getId(),(int) $request->getParameter('rt-shop-quantity'));
-
-    $this->getUser()->setFlash('notice', "Item was added to cart.");
+    if($this->_cart->addToCart($rt_shop_stock->getId(),(int) $request->getParameter('rt-shop-quantity')))
+    {
+      $this->getUser()->setFlash('notice', "Item was added to cart.");
+    }
+    else
+    {
+      $this->getUser()->setFlash('error', "Item was not added to cart The quantity ordered is not in stock.");
+    }
 
     $this->redirect('@rt_shop_order_cart');
   }
@@ -177,6 +181,9 @@ class BasertShopOrderActions extends sfActions
    */
   public function executeCheckout(sfWebRequest $request)
   {
+    $this->order = $this->getOrder();
+    $this->redirectUnless(count($this->_order->Stocks) > 0, '@rt_shop_order_cart');
+    
     $this->redirect('@rt_shop_order_address');
   }
 
@@ -205,18 +212,19 @@ class BasertShopOrderActions extends sfActions
    */
   public function executeAddress(sfWebRequest $request)
   {
-    $this->rt_shop_order = $this->getOrder();
-    $this->redirectIf(count($this->getOrder()->Stocks) == 0, '@rt_shop_order_cart');
+    $this->order = $this->getOrder();
+
+    $this->redirectUnless(count($this->order->Stocks) > 0, '@rt_shop_order_cart');
 
     $this->billing_address_shown = $request->getParameter('billing_address_shown', false);
 
-    $this->order_form = new rtShopOrderEmailForm($this->getOrder());
+    $this->order_form = new rtShopOrderEmailForm($this->order);
 
     // Shipping address object
     $q = Doctrine_Query::create()
         ->from('rtAddress a')
         ->andWhere('a.model = ?', 'rtShopOrder')
-        ->andWhere('a.model_id = ?', $this->getOrder()->getId())
+        ->andWhere('a.model_id = ?', $this->order->getId())
         ->andWhere('a.type = ?', 'shipping');
     $address_shipping = $q->fetchOne();
 
@@ -227,15 +235,15 @@ class BasertShopOrderActions extends sfActions
 
     // Billing address object
     $address_shipping->setModel('rtShopOrder');
-    $address_shipping->setModelId($this->getOrder()->getId());
+    $address_shipping->setModelId($this->order->getId());
     $address_shipping->setType('shipping');
     $this->shipping_order_form = new rtShopShippingAddressForm($address_shipping);
 
     $q = Doctrine_Query::create()
         ->from('rtAddress a')
         ->andWhere('a.model = ?', 'rtShopOrder')
-        ->andWhere('a.model_id = ?', $this->getOrder()->getId())
-        ->andWhere('a.type = ?', (count($address_shipping) > 0 && count($this->getOrder()->getBillingAddressArray()) == 0) ? 'shipping' : 'billing');
+        ->andWhere('a.model_id = ?', $this->order->getId())
+        ->andWhere('a.type = ?', (count($this->order->getBillingAddressArray()) == 0) ? 'shipping' : 'billing');
     $address_billing = $q->fetchOne();
 
     if(!$address_billing)
@@ -244,7 +252,7 @@ class BasertShopOrderActions extends sfActions
     }
 
     $address_billing->setModel('rtShopOrder');
-    $address_billing->setModelId($this->getOrder()->getId());
+    $address_billing->setModelId($this->order->getId());
     $address_billing->setType('billing');
     $this->billing_order_form = new rtShopBillingAddressForm($address_billing);
 
@@ -254,14 +262,14 @@ class BasertShopOrderActions extends sfActions
       $this->processForm($request, $this->shipping_order_form);
 
       // The values of the billing address are sometimes the same as the shipping address
-      $billing_form_name = $this->billing_address_shown ? $this->shipping_order_form->getName() : null;
+      $billing_form_name = $this->billing_address_shown ? $this->shipping_order_form->getName() : $this->billing_order_form->getName();
       $this->processForm($request, $this->billing_order_form, $billing_form_name);
 
       // Save email address in order
       if($this->order_form->isValid())
       {
-        $this->getOrder()->setEmail($this->order_form->getValue('email'));
-        $this->getOrder()->save();
+        $this->order->setEmail($this->order_form->getValue('email'));
+        $this->order->save();
       }
 
       if(!$this->order_form->isValid() || !$this->shipping_order_form->isValid() || !$this->billing_order_form->isValid())
@@ -284,7 +292,9 @@ class BasertShopOrderActions extends sfActions
    */
   public function executePayment(sfWebRequest $request)
   {
-    $this->rt_shop_order = $this->getOrder();
+    $this->order = $this->getOrder();
+    
+    $this->redirectUnless(count($this->order->Stocks) > 0, '@rt_shop_order_cart');
 
     $this->voucher_form = new rtShopVoucherCodeForm();
     $this->creditcard_form = new rtShopCreditcardForm();
@@ -297,20 +307,90 @@ class BasertShopOrderActions extends sfActions
       if(!$this->voucher_form->isValid() || !$this->creditcard_form->isValid())
       {
         $this->getUser()->setFlash('error', 'Some form data is missing or incorrect. Please check.');
+        return;
       }
 
       // Apply voucher to order total
       $voucher_code = $this->voucher_form->getValue('code');
       $this->_cart->setVoucher($voucher_code);
-      $this->total = (isset($voucher_code)) ? $this->_cart->getTotal() : $this->getOrder()->getGrandTotalPrice();
+      $this->total = (isset($voucher_code)) ? $this->_cart->getTotal() : $this->order->getGrandTotalPrice();
+
+      $cc_array = $this->FormatCcInfoArray($this->creditcard_form->getValues());
+      $address = (count($this->order->getBillingAddressArray()) > 0) ? $this->order->getBillingAddressArray() : $this->order->getShippingAddressArray();
+      $address = (count($address) > 1) ? $address[0] : $address;
+      $customer_array = $this->FormatCustomerInfoArray($address, $this->order->getEmail());
+
+      $payment = rtShopPaymentToolkit::getPaymentObject(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
+      if($payment->doPayment((int) $this->total*100, $cc_array, $customer_array)) //$total, $credit_card, $customer = array(), $options = array()
+      {
+        if($payment->isApproved()) {
+          $this->order->setPaymentApproved($payment->isApproved());
+          $this->order->setPaymentTransactionId($payment->getTransactionNumber());
+          $this->order->setPaymentCharge($this->total);
+          $this->order->setPaymentResponse($payment->getLog());
+          $this->order->setStatus(rtShopOrder::STATUS_PAID); // Set status to paid
+          $this->order->save();
+
+          $this->getUser()->setFlash('notice', 'Payment approved. Order was saved.');
+        }
+        else
+        {
+          $this->order->setPaymentCharge($this->total);
+          $this->order->setPaymentResponse($payment->getLog());
+          $this->order->save();
+
+          $this->getUser()->setFlash('error', sprintf('%s',$payment->getResponseMessage()));
+          return;
+        }
+      }
+      else
+      {
+        throw new sfException("Something went very wrong - our technicians are looking into it right now.");
+      }
+
+      //send mail
+
+      //$this->redirect('@rt_shop_order_receipt');
     }
+  }
 
-    $cc_values = $this->creditcard_form->getValues();
-    $billing_address = $this->getOrder()->getBillingAddressArray();
+  /**
+   * Get formatted info array for payment
+   *
+   * @param array $cc_values Credit card details
+   * @return Array
+   */
+  protected function FormatCcInfoArray($cc_values)
+  {
+    $options = array('CardHoldersName'  => $cc_values['cc_name'],
+                     'CardType'         => $cc_values['cc_type'],
+                     'CardNumber'       => $cc_values['cc_number'],
+                     'CardExpiryMonth'  => $cc_values['cc_expire']['month'],
+                     'CardExpiryYear'   => $cc_values['cc_expire']['year'],
+                     'CVN'              => $cc_values['cc_verification']);
 
-    var_dump($billing_address);
+    return $options;
+  }
 
-    //$this->redirect('@rt_shop_order_receipt');
+  /**
+   * Get formatted customer array for payment
+   *
+   * @param array $customer  Customer details
+   * @return Array
+   */
+  protected function FormatCustomerInfoArray($address, $email, $invoice_desc = '', $invoice_ref = '')
+  {
+    $adr = sprintf('%s%s%s', (isset($address['address_1'])) ? $address['address_1']:'',(isset($address['town'])) ? ', '.$address['town']:'',(isset($address['state'])) ? ', '.$address['state']:'');
+
+    $options = array('CustomerFirstName' => '',
+                     'CustomerLastName' => (isset($address['care_of'])) ? $address['care_of']: '',
+                     'CustomerEmail' => $email,
+                     'CustomerAddress' => $adr,
+                     'CustomerPostcode' => (isset($address['postcode'])) ? $address['postcode']: '',
+                     'CustomerInvoiceDescription' => $invoice_desc,
+                     'CustomerInvoiceRef' => $invoice_ref);
+
+    return $options;
   }
 
   /**
@@ -321,6 +401,8 @@ class BasertShopOrderActions extends sfActions
   public function executeReceipt(sfWebRequest $request)
   {
     // Show receipt and send mail
+
+    //$this->cleanSession();
   }
 
   /**
@@ -351,16 +433,16 @@ class BasertShopOrderActions extends sfActions
    * @param $session_token Session_token
    * @return rtShopOrder A rtShopOrder object with id
    */
-  public function getOrder()
+  public function getOrder($session_token = null)
   {
     if(!is_null($this->_order))
     {
       return $this->_order;
     }
-    
+
     $cm = new rtShopCartManager($this->getUser());
     $order = $cm->getOrder();
-
+    
     $this->_cart = $cm;
     $this->_order = $order;
     return $this->_order;

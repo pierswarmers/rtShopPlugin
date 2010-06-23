@@ -121,6 +121,41 @@
           <?php echo $form['stocks_list'] ?>
         </td>
       </tr>
+      <tr>
+        <th><?php echo $form['payment_transaction_id']->renderLabel() ?></th>
+        <td>
+          <?php echo $form['payment_transaction_id']->renderError() ?>
+          <?php echo $form['payment_transaction_id'] ?>
+        </td>
+      </tr>
+      <tr>
+        <th><?php echo $form['payment_type']->renderLabel() ?></th>
+        <td>
+          <?php echo $form['payment_type']->renderError() ?>
+          <?php echo $form['payment_type'] ?>
+        </td>
+      </tr>
+      <tr>
+        <th><?php echo $form['payment_charge']->renderLabel() ?></th>
+        <td>
+          <?php echo $form['payment_charge']->renderError() ?>
+          <?php echo $form['payment_charge'] ?>
+        </td>
+      </tr>
+      <tr>
+        <th><?php echo $form['payment_approved']->renderLabel() ?></th>
+        <td>
+          <?php echo $form['payment_approved']->renderError() ?>
+          <?php echo $form['payment_approved'] ?>
+        </td>
+      </tr>
+      <tr>
+        <th><?php echo $form['payment_response']->renderLabel() ?></th>
+        <td>
+          <?php echo $form['payment_response']->renderError() ?>
+          <?php echo $form['payment_response'] ?>
+        </td>
+      </tr>
     </tbody>
   </table>
 </form>

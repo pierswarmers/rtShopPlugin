@@ -21,17 +21,17 @@ class rtShopPaymentToolkit
   /**
    * Retrieve payment class
    *
+   * @param string $class  Payment class name
    * @return rtShopPayment Object
    */
-	public static function getPaymentObject()
+	public static function getPaymentObject($class)
 	{
-    $class = sfConfig::get('app_rt_shop_payment_class','rtPaymentShipping');
     if (is_null($class) || !class_exists($class))
     {
       throw new sfException('No valid payment class specified.');
     }
 
-		$payment = new $class($this);
+		$payment = new $class();
 
 		return $payment;
 	}
