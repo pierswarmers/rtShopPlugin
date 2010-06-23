@@ -7,6 +7,7 @@ all:
     checkout_title:               Checkout                # Header for checkout view
     address_title:                Address                 # Header for address view
     payment_title:                Payment                 # Header for payment view
+    receipt_title:                Order Receipt           # Header for receipt
     #payment_currency:             AU                      # Currency acronym (e.g AU = Australian Dollar)
     payment_class:                "rtShopPayment"         # Name of payment class
     #shipping_class:               "rtShopShipping"        # Name of shipping class
