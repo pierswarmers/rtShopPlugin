@@ -72,7 +72,7 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
     $routing->prependRoute('rt_shop_order_payment', new sfRoute('/order/payment', array('module' => 'rtShopOrder', 'action' => 'payment')));
     $routing->prependRoute('rt_shop_order_update', new sfRoute('/order/update', array('module' => 'rtShopOrder', 'action' => 'update')));
     $routing->prependRoute('rt_shop_order_stock_delete', new sfRoute('/order/delete-stock', array('module' => 'rtShopOrder', 'action' => 'deleteStock', 'act' => 'cart')));
-    //$routing->prependRoute('rt_shop_order_receipt', new sfRoute('/rtShopOrderReceipt/:action', array('module' => 'rtShopOrder', 'action' => 'receipt')));
-    //$routing->prependRoute('rt_shop_order_invoice', new sfRoute('/rtShopOrderInvoice/:action', array('module' => 'rtShopOrder', 'action' => 'invoice')));
+    $routing->prependRoute('rt_shop_order_receipt', new sfRoute('/order/receipt', array('module' => 'rtShopOrder', 'action' => 'receipt')));
+    //$routing->prependRoute('rt_shop_order_invoice', new sfRoute('/order/invoice', array('module' => 'rtShopOrder', 'action' => 'invoice')));
   }
 }

@@ -304,6 +304,18 @@ class BasertShopOrderActions extends sfActions
       $this->_cart->setVoucher($voucher_code);
       $this->total = (isset($voucher_code)) ? $this->_cart->getTotal() : $this->getOrder()->getGrandTotalPrice();
     }
+
+    //$this->redirect('@rt_shop_order_receipt');
+  }
+
+  /**
+   * Show order receipt
+   *
+   * @param sfWebRequest $request
+   */
+  public function executeReceipt(sfWebRequest $request)
+  {
+    // Show receipt and send mail
   }
 
   /**
