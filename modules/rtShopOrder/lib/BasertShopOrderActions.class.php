@@ -20,7 +20,7 @@ class BasertShopOrderActions extends sfActions
   private $_session_token = 'rt_shop_frontend_order_id';
   private $_cart;
   private $_order;
-  
+
   /**
    * Executes an application defined process prior to execution of this sfAction object.
    *
@@ -439,7 +439,7 @@ class BasertShopOrderActions extends sfActions
     {
       return $this->_order;
     }
-    
+
     $cm = new rtShopCartManager($this->getUser());
     $order = $cm->getOrder();
 
