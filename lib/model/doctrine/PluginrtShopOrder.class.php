@@ -251,11 +251,6 @@ abstract class PluginrtShopOrder extends BasertShopOrder
       $this->_address_billing = $q->fetchArray();
     }
 
-    if(count($this->_address_billing) == 0)
-    {
-      return $this->getShippingAddressArray();
-    }
-
     return $this->_address_billing;
   }
 

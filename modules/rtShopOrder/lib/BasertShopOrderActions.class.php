@@ -235,7 +235,7 @@ class BasertShopOrderActions extends sfActions
         ->from('rtAddress a')
         ->andWhere('a.model = ?', 'rtShopOrder')
         ->andWhere('a.model_id = ?', $this->getOrder()->getId())
-        ->andWhere('a.type = ?', (count($address_shipping) > 0 && count($this->getOrder()->getBillingAddressArray()) == 0) ? 'shipping' : 'billing');
+        ->andWhere('a.type = ?', (count($this->getOrder()->getBillingAddressArray()) == 0) ? 'shipping' : 'billing');
     $address_billing = $q->fetchOne();
 
     if(!$address_billing)
@@ -254,7 +254,7 @@ class BasertShopOrderActions extends sfActions
       $this->processForm($request, $this->shipping_order_form);
 
       // The values of the billing address are sometimes the same as the shipping address
-      $billing_form_name = $this->billing_address_shown ? $this->shipping_order_form->getName() : null;
+      $billing_form_name = $this->billing_address_shown ? $this->shipping_order_form->getName() : $this->billing_order_form->getName();
       $this->processForm($request, $this->billing_order_form, $billing_form_name);
 
       // Save email address in order
@@ -307,8 +307,6 @@ class BasertShopOrderActions extends sfActions
 
     $cc_values = $this->creditcard_form->getValues();
     $billing_address = $this->getOrder()->getBillingAddressArray();
-
-    var_dump($billing_address);
 
     //$this->redirect('@rt_shop_order_receipt');
   }
