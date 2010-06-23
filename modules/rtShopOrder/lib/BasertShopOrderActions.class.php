@@ -433,7 +433,7 @@ class BasertShopOrderActions extends sfActions
    * @param $session_token Session_token
    * @return rtShopOrder A rtShopOrder object with id
    */
-  public function getOrder()
+  public function getOrder($session_token = null)
   {
     if(!is_null($this->_order))
     {
@@ -442,7 +442,7 @@ class BasertShopOrderActions extends sfActions
 
     $cm = new rtShopCartManager($this->getUser());
     $order = $cm->getOrder();
-
+    
     $this->_cart = $cm;
     $this->_order = $order;
     return $this->_order;
