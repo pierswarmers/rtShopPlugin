@@ -60,16 +60,21 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
     <label for="rt-shop-quantity"><?php echo __('Quantity') ?>:</label>
     <input type="text" name="rt-shop-quantity" class="text minitext" value="1" />
   </p>
-  
+
+  <?php if(sfConfig::get('rt_shop_ordering_enabled', true)): ?>
   <p><button type="submit"><?php echo __('Add to Cart') ?></button></p>
+  <?php endif; ?>
 
   <script type="text/javascript">
+
+  $("form.rt-shop-product-order-panel").hide();
+
   $(function() {
     $(".rt-shop-option-set").buttonset().find(':radio');
     $(".rt-shop-option-set").find(':radio').click(function() {
       // run image selection switch
       var match = $(this).attr("title").toLowerCase().replace(/ /g, "_").replace(/-/g, "_");
-      $(".rt-shop-product-primary-image a[title*="+match+"]").css("display","inline").siblings('a').css("display","none");
+      $(".rt-shop-product-primary-image a[class*=rt-image-ref-"+match+"]").css("display","inline").siblings('a').css("display","none");
       // de-focus all options
       $(".rt-shop-option-set input[type=radio]").each(function(){
         $(this).button( "widget" ).fadeTo(1, 0.3).removeClass('available');
@@ -81,6 +86,7 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
         $(this).button('disable', true);
       }
     });
+    $("form.rt-shop-product-order-panel").show();
   });
   </script>
 </form>

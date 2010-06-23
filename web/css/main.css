@@ -8,11 +8,11 @@ Category
 Product Mini
 
 */
-.rt-shop-product-mini { width: 190px;float:left;margin-right:10px;position:relative;}
+.rt-shop-product-mini { width: 190px;float:left;margin-right:10px;position:relative;margin-bottom:10px;}
 .sfWebDebugActionCache .rt-shop-product-mini {margin-right:9px;}
 .rt-list-item-3 .rt-shop-product-mini, .rt-list-item-6 .rt-shop-product-mini, .rt-list-item-9 .rt-shop-product-mini, .rt-list-item-12 .rt-shop-product-mini, .rt-list-item-15 .rt-shop-product-mini {margin-right:0;}
 .rt-shop-product-mini div.rt-shop-product-mini-image { width: 190px; height:210px; padding-top:10px; text-align: center; border-bottom:1px solid #ccc;}
-.rt-shop-product-mini div.rt-shop-product-mini-details { padding:10px; }
+.rt-shop-product-mini div.rt-shop-product-mini-details { padding:10px 0 10px 10px; }
 .rt-shop-product-mini h3 { font-size:1em; margin-bottom:0; }
 .rt-shop-product-mini .rt-shop-product-price {  font-size:1em; margin-bottom:0; }
 .rt-shop-product-mini a { text-decoration:none; font-weight: bold; }

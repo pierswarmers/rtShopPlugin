@@ -63,7 +63,7 @@ class BasertShopCategoryActions extends sfActions
              ->leftJoin('page.rtShopCategories c')
              ->andWhere('c.id = ?', $this->rt_shop_category->getId());
 
-    $this->pager = new sfDoctrinePager('rtShopProduct', sfConfig::get('app_rt_shop_product_per_page', 10));
+    $this->pager = new sfDoctrinePager('rtShopProduct', sfConfig::get('app_rt_shop_product_per_page', 9));
     $this->pager->setQuery($query);
     $this->pager->setPage($request->getParameter('page', 1));
     $this->pager->init();
