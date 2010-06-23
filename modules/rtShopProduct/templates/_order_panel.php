@@ -9,9 +9,9 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
 
 ?>
 <?php if($rt_shop_product->isPurchasable()): ?>
-<form method="post" class="rt-shop-product-order-panel" action="<?php //echo url_for('@rt_shop_order_add_to_bag'); ?>">
+<form method="post" class="rt-shop-product-order-panel" action="<?php echo url_for('@rt_shop_order_add_to_bag', $rt_shop_product); ?>">
 
-  <input type="hidden" name="id" value="<?php echo $rt_shop_product->getId(); ?>" />
+  <input type="hidden" name="rt-shop-product-id" value="<?php echo $rt_shop_product->getId(); ?>" />
   
   <?php $i = 0; foreach (Doctrine::getTable('rtShopAttribute')->findByProductId($rt_shop_product->getId()) as $rt_shop_attribute): ?>
   <?php $variations = Doctrine::getTable('rtShopVariation')->findByAttributeIdAndProductId($rt_shop_attribute->getId(), $rt_shop_product->getId());  ?>
@@ -47,7 +47,7 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
 
     $class .= ' '. implode(' ', $ref);
     ?>
-      <input title="<?php echo $variation->getTitle() ?>" id="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo $class ?>" type="radio" name="rt-attribute-group-<?php echo $i ?>" value="1" />
+      <input  name="rt-shop-variation-ids[<?php echo $i ?>]" title="<?php echo $variation->getTitle() ?>" id="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo $class ?>" type="radio" value="<?php echo $variation->getId() ?>" />
       <span class="ref" style="display:none">.<?php echo implode(', .', $ref) ?></span>
       <label for="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo $available ? '' : 'unavailable' ?> <?php echo $is_image ? 'image-swatch' : '' ?>" <?php echo $image ?>><?php echo $variation->getTitle() ?></label>
     <?php endforeach; ?>
@@ -57,8 +57,8 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
   <?php $i++; endforeach; ?>
 
   <p class="rt-shop-item-quantity">
-    <label for="rt-shop-item-quantity"><?php echo __('Quantity') ?>:</label>
-    <input type="text" name="rt-shop-item-quantity" class="text minitext" value="1" />
+    <label for="rt-shop-quantity"><?php echo __('Quantity') ?>:</label>
+    <input type="text" name="rt-shop-quantity" class="text minitext" value="1" />
   </p>
   
   <p><button type="submit"><?php echo __('Add to Cart') ?></button></p>

@@ -31,6 +31,28 @@ class PluginrtShopStockTable extends Doctrine_Table
     return $result;
   }
 
+    /**
+   * Return the stock for a given set of variations.
+   *
+   * @param array $variation_ids
+   * @param int $rt_shop_product
+   * @param Doctrine_Query $query
+   * @return Doctrine_Collection|boolean
+   */
+  public function findOneByVariationsAndProductId($variation_ids, $rt_shop_product, Doctrine_Query $query = null)
+  {
+    $query = $this->getQuery($query);
+
+    $query->leftJoin('s.rtShopVariations v')
+          ->andWhereIn('v.id', $variation_ids)
+          ->andWhere('s.product_id = ?', $rt_shop_product)
+          ->groupBy('s.id');
+
+    $results = $query->execute();
+
+    return count($results[0]) > 0 ? $results[0] : false;
+  }
+  
   public function getForProductIdAndVariationId($product_id, $variation_id, Doctrine_Query $query = null)
   {
     $query = $this->getQuery($query);

@@ -1,0 +1,27 @@
+# default values
+all:
+  rt_shop:
+    default_country:              AU                      # Country where shipping is handled in
+    #payment_currency:             AU                      # Currency acronym (e.g AU = Australian Dollar)
+    payment_class:                "rtShopPayment"         # Name of payment class
+    #shipping_class:               "rtShopShipping"        # Name of shipping class
+    #shipping_rate:
+      #domestic:                   8                       # Domestic shipping rate applicable to order (i.e 8 = $8)
+      #international:              15                      # International shipping rate applicable to order (i.e 15 = $15)
+    #tax_rate:                     5                       # Tax rate in % (e.g 5 = 5%)
+    #payment_methods:
+      #Mastercard:           Mastercard
+      #Visa:                 Visa
+      #Discover:             Discover
+      #American Express:     American Express
+
+  eway:
+    customer_id:            87654321                       # eWay customer ID [required] (e.g 87654321 default for testing)
+    #payment_method:         REAL_TIME_CVN                  # eWay payment method
+    #api_error_codes:        [06,22,40,92,96]               # eWay error codes
+    #use_live:               false                          # Switch between testing and live status
+    #cc_mandatory_fields:                                   # Mandatory fields for customer, credit card details
+      #CardHoldersName:      CardHoldersName
+      #CardNumber:           CardNumber
+      #CardExpiryMonth:      CardExpiryMonth
+      #CardExpiryYear:       CardExpiryYear

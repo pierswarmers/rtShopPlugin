@@ -64,5 +64,15 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
       'rt_shop_promotion_cart_correction',
        new sfRoute('/rtShopPromotionCartAdmin/:action/id/:id', array('module' => 'rtShopPromotionAdmin'))
     );
+
+    $routing->prependRoute('rt_shop_order_add_to_bag', new sfRoute('/order/add-to-bag', array('module' => 'rtShopOrder', 'action' => 'addToBag')));
+    $routing->prependRoute('rt_shop_order_cart', new sfRoute('/order/cart', array('module' => 'rtShopOrder', 'action' => 'cart')));
+    $routing->prependRoute('rt_shop_order_checkout', new sfRoute('/order/checkout', array('module' => 'rtShopOrder', 'action' => 'checkout')));
+    $routing->prependRoute('rt_shop_order_address', new sfRoute('/order/address', array('module' => 'rtShopOrder', 'action' => 'address')));
+    $routing->prependRoute('rt_shop_order_payment', new sfRoute('/order/payment', array('module' => 'rtShopOrder', 'action' => 'payment')));
+    $routing->prependRoute('rt_shop_order_update', new sfRoute('/order/update', array('module' => 'rtShopOrder', 'action' => 'update')));
+    $routing->prependRoute('rt_shop_order_stock_delete', new sfRoute('/order/delete-stock', array('module' => 'rtShopOrder', 'action' => 'deleteStock', 'act' => 'cart')));
+    $routing->prependRoute('rt_shop_order_receipt', new sfRoute('/order/receipt', array('module' => 'rtShopOrder', 'action' => 'receipt')));
+    //$routing->prependRoute('rt_shop_order_invoice', new sfRoute('/order/invoice', array('module' => 'rtShopOrder', 'action' => 'invoice')));
   }
 }
