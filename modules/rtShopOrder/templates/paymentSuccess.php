@@ -2,10 +2,7 @@
 
 <div class="rt-rtShopOrder rt-payment rt-primary-container">
 
-  <?php $heading_tag = sfConfig::has('app_rt_shop_payment_title') ? 'h2' : 'h1' ?>
-  <?php if(sfConfig::has('app_rt_shop_payment_title')): ?>
-    <h1><?php echo __(sfConfig::get('app_rt_shop_payment_title', 'payment')) ?></h1>
-  <?php endif; ?>
+  <h1><?php echo __(sfConfig::get('app_rt_shop_payment_title', 'Payment')) ?></h1>
 
   <div class="rt-container">
 

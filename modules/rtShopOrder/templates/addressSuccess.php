@@ -2,9 +2,7 @@
 
 <?php $heading_tag = sfConfig::has('app_rt_shop_address_title') ? 'h2' : 'h1' ?>
 <div class="rt-shop-order-address">
-  <?php if(sfConfig::has('app_rt_shop_address_title')): ?>
-    <h1><?php echo __(sfConfig::get('app_rt_shop_address_title', 'address')) ?></h1>
-  <?php endif; ?>
+  <h1><?php echo __(sfConfig::get('app_rt_shop_address_title', 'Address')) ?></h1>
 
   <?php include_partial('breadcrumb', array('sf_request' => $sf_request)) ?>
   <?php include_partial('rtShopOrder/flashes') ?>
