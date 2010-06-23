@@ -20,3 +20,14 @@ all:
       #Visa:                 Visa
       #Discover:             Discover
       #American Express:     American Express
+
+  eway:
+    customer_id:            87654321                       # eWay customer ID [required] (e.g 87654321 default for testing)
+    #payment_method:         REAL_TIME_CVN                  # eWay payment method
+    #api_error_codes:        [06,22,40,92,96]               # eWay error codes
+    #use_live:               false                          # Switch between testing and live status
+    #cc_mandatory_fields:                                   # Mandatory fields for customer, credit card details
+      #CardHoldersName:      CardHoldersName
+      #CardNumber:           CardNumber
+      #CardExpiryMonth:      CardExpiryMonth
+      #CardExpiryYear:       CardExpiryYear

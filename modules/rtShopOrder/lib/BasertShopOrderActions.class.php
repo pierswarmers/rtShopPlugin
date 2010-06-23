@@ -252,7 +252,6 @@ class BasertShopOrderActions extends sfActions
     {
       $this->processForm($request, $this->order_form);
       $this->processForm($request, $this->shipping_order_form);
-      //$this->processForm($request, $this->billing_order_form);
 
       // The values of the billing address are sometimes the same as the shipping address
       $billing_form_name = $this->billing_address_shown ? $this->shipping_order_form->getName() : null;
@@ -300,10 +299,16 @@ class BasertShopOrderActions extends sfActions
         $this->getUser()->setFlash('error', 'Some form data is missing or incorrect. Please check.');
       }
 
+      // Apply voucher to order total
       $voucher_code = $this->voucher_form->getValue('code');
       $this->_cart->setVoucher($voucher_code);
       $this->total = (isset($voucher_code)) ? $this->_cart->getTotal() : $this->getOrder()->getGrandTotalPrice();
     }
+
+    $cc_values = $this->creditcard_form->getValues();
+    $billing_address = $this->getOrder()->getBillingAddressArray();
+
+    var_dump($billing_address);
 
     //$this->redirect('@rt_shop_order_receipt');
   }
@@ -316,6 +321,25 @@ class BasertShopOrderActions extends sfActions
   public function executeReceipt(sfWebRequest $request)
   {
     // Show receipt and send mail
+  }
+
+  /**
+   * Clean defined session variables
+   *
+   */
+  private function cleanSession() {
+    // Overwrite session token for order id
+    $this->getUser()->setAttribute($this->_session_token, '');
+
+    // Reset transaction token
+    if ($this->getUser()->hasAttribute($this->_transaction_token)) {
+      $this->getUser()->setAttribute($this->_transaction_token, '');
+    }
+
+    // Reset unique user token
+    if ($this->getUser()->hasAttribute($this->_user_id_token)) {
+      $this->getUser()->setAttribute($this->_user_id_token, '');
+    }
   }
 
   /**
