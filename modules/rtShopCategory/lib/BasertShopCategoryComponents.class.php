@@ -32,10 +32,17 @@ class BasertShopCategoryComponents extends sfComponents
       {
         $rt_shop_category = Doctrine::getTable('rtShopCategory')->findOnePublishedById($request->getParameter('id'));
       }
-      if($rt_shop_category)
-      {
-        $this->rt_shop_category= $rt_shop_category;
-      }
+    }
+
+    // For product display...
+    elseif($module === 'rtShopProduct' && $action === 'show' && $this->getUser()->hasAttribute('rt_shop_category_id'))
+    {
+      $rt_shop_category = Doctrine::getTable('rtShopCategory')->findOnePublishedById($this->getUser()->getAttribute('rt_shop_category_id'));
+    }
+
+    if(isset ($rt_shop_category) && $rt_shop_category)
+    {
+      $this->rt_shop_category = $rt_shop_category;
     }
   }
 }
