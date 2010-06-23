@@ -307,22 +307,23 @@ abstract class PluginrtShopOrder extends BasertShopOrder
        if(count($stock['rtShopVariations']) > 0) {
          $deliminator = '';
          foreach ($stock['rtShopVariations'] as $variation) {
-           $variations .= $deliminator.$variation['value'];
+           $variations .= $deliminator.$variation['title'];
            $deliminator = ', ';
          }
        }
+
        // Put together the small products array
        $products[$i]['id'] = $stock['rtShopProduct']['id'];
        $products[$i]['sku'] = $stock['rtShopProduct']['sku'];
-       $products[$i]['title'] = $stock['rtShopProduct']['Translation'][sfContext::getInstance()->getUser()->getCulture()]['title'];
+       $products[$i]['title'] = $stock['rtShopProduct']['title'];
        $products[$i]['variations'] = $variations;
-       $products[$i]['summary'] = rtrim(ltrim(strip_tags($stock['rtShopProduct']['Translation'][sfContext::getInstance()->getUser()->getCulture()]['summary'])));
+       $products[$i]['summary'] = rtrim(ltrim(strip_tags($stock['rtShopProduct']['description'])));
        $products[$i]['quantity'] = $stock['rtShopOrderToStock'][0]['quantity'];
        $products[$i]['charge_price'] = $stock['price_promotion'] != 0 ? $stock['price_promotion'] : $stock['price_retail'];
        $products[$i]['price_promotion'] = $stock['price_promotion'];
        $products[$i]['price_retail'] = $stock['price_retail'];
        $products[$i]['price_wholesale'] = $stock['price_wholesale'];
-       $products[$i]['currency'] = rtShopConfiguration::get('app_rt_shop_payment_currency');
+       $products[$i]['currency'] = sfConfig::get('app_rt_shop_payment_currency','AU');
        $i++;
      }
 

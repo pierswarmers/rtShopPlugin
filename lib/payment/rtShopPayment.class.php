@@ -14,34 +14,27 @@
  * @author     Piers Warmers <piers@wranglers.com.au>
  * @author     Konny Zurcher <konny@wranglers.com.au>
  */
-class rtShopPayment
+class rtShopPayment implements rtShopPaymentInterface
 {
   private $_log,
-    $_response_code,
-    $_response_message,
-    $_transaction_id;
+          $_transaction_number,
+          $_transaction_reference,
+          $_response_code,
+          $_response_message;
 
-  private $_session_token = 'rt_shop_order_transaction_id';
-  private $_user_id_token = 'rt_shop_user_unique_id';
   private $_is_approved = false;
   private $_is_testing = false;
-  
-  /**
-   * Constructor
-   *
-   * @param $order Order Object
-   * @param $options Options
-   */
-  public function __construct()
-  {
-  }
 
   /**
-   * Executes payment
+   * Proxy for doPayment method
    *
-   * @param $options Options array
+   * @param Integer $total Total in cents e.g 1 dollar = 100
+   * @param Array   $credit_card Credit card details
+   * @param Array   $customer Customer details
+   * @param Array   $options Additional details
+   * @return Boolean True if payment successful
    */
-  public function execute()
+  public function doPayment($total, $credit_card, $customer = array(), $options = array())
   {
     return true;
   }
@@ -66,12 +59,21 @@ class rtShopPayment
 	}
 
   /**
-   * Return transaction ID
+   * Return transaction number
    *
-   * @return _transaction_id
+   * @return _transaction_number
    */
-  public function getTransactionID() {
-    return $this->_transaction_id;
+  public function getTransactionNumber() {
+    return $this->_transaction_number;
+  }
+
+  /**
+   * Return transaction reference
+   *
+   * @return _transaction_reference
+   */
+  public function getTransactionReference() {
+    return $this->_transaction_reference;
   }
 
   /**
@@ -94,14 +96,6 @@ class rtShopPayment
   }
 
   /**
-   * Check for core API errors
-   */
-  public function isApiError($string) {
-    $api_errors = array(sfConfig::get('app_rt_shop_payment_api_error_codes'));
-    return in_array($string, $api_errors) ? true : false;
-  }
-
-  /**
    * Get response message
    *
    * @return Message
@@ -109,6 +103,16 @@ class rtShopPayment
 	public function getResponseMessage(){
     return $this->_response_message;
 	}
+
+  /**
+   * Check for core API errors
+   *
+   * @return Boolean True if found
+   */
+  public function isApiError($string) {
+    $api_errors = array();
+    return in_array($string, $api_errors) ? true : false;
+  }
 
   /**
    * Get log data

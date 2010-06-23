@@ -16,7 +16,7 @@
       <h2><?php echo __('Creditcard Details') ?></h2>
       <?php include_partial('form', array('form' => $creditcard_form)) ?>
 
-      <h3><?php echo __('Total to be charged to your credit card: '); ?> <?php echo format_currency((isset($total)) ? $total :$rt_shop_order->getGrandTotalPrice(), sfConfig::get('app_rt_shop_payment_currency','AU')); ?></h3>
+      <h3><?php echo __('Total to be charged to your credit card: '); ?> <?php echo format_currency((isset($total)) ? $total :$order->getGrandTotalPrice(), sfConfig::get('app_rt_shop_payment_currency','AU')); ?></h3>
 
       <div class="rt-shop-address-actions">
         <button type="submit" class="rt_shop_payment_actions_submit button"><?php echo __('Place your order') ?></button>

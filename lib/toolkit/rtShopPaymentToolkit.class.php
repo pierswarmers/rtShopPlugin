@@ -31,7 +31,7 @@ class rtShopPaymentToolkit
       throw new sfException('No valid payment class specified.');
     }
 
-		$payment = new $class($this);
+		$payment = new $class();
 
 		return $payment;
 	}

@@ -8,7 +8,7 @@
     <?php include_partial('breadcrumb', array()) ?>
     <?php include_partial('rtShopOrder/flashes') ?>
 
-    <?php if(count($rt_shop_order->Stocks) > 0): ?>
+    <?php if(count($order->Stocks) > 0): ?>
       <?php echo form_tag(url_for('@rt_shop_order_update'), array('id' => 'order_cart', 'name' => 'order_cart')); ?>
         <table class="rt-shop-order-summary">
           <thead>
@@ -22,7 +22,7 @@
               <th><?php echo __('Actions') ?></th>
             </tr>
           </thead>
-          <?php include_partial('cart', array('rt_shop_order' => $rt_shop_order)) ?>
+          <?php include_partial('cart', array('rt_shop_order' => $order)) ?>
         </table>
         <div>
           <?php echo link_to(sprintf('%s', __('Continue Shopping')),'/rtShopProduct', 'class="rt_shop_cart_actions_continue button"') ?>

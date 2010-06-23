@@ -42,7 +42,7 @@ class rtShopCreditcardForm extends sfForm
       'cc_name'   => new sfValidatorString(array('max_length' => 50, 'required' => true), array('required' => 'Please enter the name as shown on the credit card')),
       'cc_number' => new sfValidatorString(array('required' => true), array('required' => 'Please provide a credit card number')),
       'cc_expire' => new sfValidatorPass(),
-      'cc_verification' => new sfValidatorNumber(array('min' => 0,'max' => 999,'required' => true), array('required' => 'Please provide a verification number')),
+      'cc_verification' => new sfValidatorNumber(array('min' => 0,'max' => 9999,'required' => true), array('required' => 'Please provide a verification number')),
     ));
 
     $this->widgetSchema->setNameFormat('rt_shop_order_creditcard[%s]');
