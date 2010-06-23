@@ -66,6 +66,9 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
   <?php endif; ?>
 
   <script type="text/javascript">
+
+  $("form.rt-shop-product-order-panel").hide();
+
   $(function() {
     $(".rt-shop-option-set").buttonset().find(':radio');
     $(".rt-shop-option-set").find(':radio').click(function() {
@@ -83,6 +86,7 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
         $(this).button('disable', true);
       }
     });
+    $("form.rt-shop-product-order-panel").show();
   });
   </script>
 </form>
