@@ -15,10 +15,11 @@ use_stylesheet('/rtCorePlugin/vendor/jquery/css/ui/jquery.ui.css');
       $image_large   = rtAssetToolkit::getThumbnailPath($image->getSystemPath(), array('maxHeight' => 500, 'maxWidth' => 800));
       $image_medium  = rtAssetToolkit::getThumbnailPath($image->getSystemPath(), array('maxHeight' => 250, 'maxWidth' => 190));
 
-      $image_color = $image->getOriginalFilename();
-      $image_color = str_replace(array('_','.jpg','.jpeg','.gif','.png'),'',substr($image_color,strrpos($image->getOriginalFilename(),"_")));
+      $image_variation_key = $image->getOriginalFilename();
+      $image_variation_key = str_replace(array('_','.jpg','.jpeg','.gif','.png'),'',substr($image_variation_key,strrpos($image->getOriginalFilename(),"_")));
+      $image_variation_key = strtolower($image_variation_key);
     ?>
-    <a style="<?php echo $style ?>" href="<?php echo $image_large ?>" id="primary-image-holder-<?php echo $image->getId() ?>" class="rt-image-ref-<?php echo $image_color; ?>" title="<?php echo $image->getOriginalFilename() ?>" rel="gallery-images">
+    <a style="<?php echo $style ?>" href="<?php echo $image_large ?>" id="primary-image-holder-<?php echo $image->getId() ?>" class="rt-image-ref-<?php echo $image_variation_key; ?>" title="<?php echo $image->getOriginalFilename() ?>" rel="gallery-images">
       <?php echo image_tag($image_medium) ?>
     </a>
   <?php $style = 'display:none'; endforeach; ?>

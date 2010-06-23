@@ -73,7 +73,7 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
     $(".rt-shop-option-set").buttonset().find(':radio');
     $(".rt-shop-option-set").find(':radio').click(function() {
       // run image selection switch
-      var match = $(this).attr("title").toLowerCase().replace(/ /g, "_").replace(/-/g, "_");
+      var match = $(this).attr("title").toLowerCase().replace(/ /g, "").replace(/-/g, "");
       $(".rt-shop-product-primary-image a[class*=rt-image-ref-"+match+"]").css("display","inline").siblings('a').css("display","none");
       // de-focus all options
       $(".rt-shop-option-set input[type=radio]").each(function(){
