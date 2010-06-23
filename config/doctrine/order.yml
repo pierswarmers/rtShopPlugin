@@ -36,6 +36,11 @@ rtShopOrder:
     closed_promotions:        { type: float, default: 0.00 }
     closed_products:          { type: array(10000) }
     closed_total:             { type: float, default: 0.00 }
+    payment_transaction_id:   { type: string(255) }
+    payment_type:             { type: string(255) }
+    payment_charge:           { type: float, default: 0.00 }
+    payment_approved:         { type: integer, default: 0 }
+    payment_response:         { type: string }
   relations:
     Stocks:
       class: rtShopStock

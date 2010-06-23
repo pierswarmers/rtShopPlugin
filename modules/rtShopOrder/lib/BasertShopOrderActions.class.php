@@ -297,18 +297,49 @@ class BasertShopOrderActions extends sfActions
       if(!$this->voucher_form->isValid() || !$this->creditcard_form->isValid())
       {
         $this->getUser()->setFlash('error', 'Some form data is missing or incorrect. Please check.');
+        //return;
       }
 
       // Apply voucher to order total
       $voucher_code = $this->voucher_form->getValue('code');
       $this->_cart->setVoucher($voucher_code);
       $this->total = (isset($voucher_code)) ? $this->_cart->getTotal() : $this->getOrder()->getGrandTotalPrice();
+      $cc_values = $this->creditcard_form->getValues();
+      $address = (count($this->getOrder()->getBillingAddressArray()) != 0) ? $this->getOrder()->getBillingAddressArray() : $this->getOrder()->getShippingAddressArray();
+
+      $options = $this->getPaymentInfoArray($cc_values, $address, $this->total);
+
+      // Payment object
+      $payment = rtShopPaymentToolkit::getPaymentObject(sfConfig::get('app_rt_shop_payment_class','rtPaymentShipping'));
+      $payment->setRule(sfConfig::get('app_rt_shop_payment_class','rtPaymentShipping'));
     }
 
-    $cc_values = $this->creditcard_form->getValues();
-    $billing_address = $this->getOrder()->getBillingAddressArray();
-
     //$this->redirect('@rt_shop_order_receipt');
+  }
+
+  /**
+   * Get info array for payment
+   *
+   * @param array $cc_values Credit card details
+   * @param array $address   Address details
+   * @param float $total     Order total
+   * @return Array
+   */
+  protected function getPaymentInfoArray($cc_values, $address, $total)
+  {
+    $options = array('cc_name'         => $cc_values['cc_name'],
+                     'cc_type'         => $cc_values['cc_type'],
+                     'cc_number'       => $cc_values['cc_number'],
+                     'cc_expire'       => array('month' => $cc_values['cc_expire']['month'], 'year'  => $cc_values['cc_expire']['year']),
+                     'cc_verification' => $cc_values['cc_verification'],
+                     'address_1'       => $address['address_1'],
+                     'address_2'       => $address['address_2'],
+                     'state'           => $address['state'],
+                     'city'            => $address['city'],
+                     'postcode'        => $address['postcode'],
+                     'charge'          => $total);
+
+    return $options;
   }
 
   /**
