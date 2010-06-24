@@ -170,6 +170,9 @@ class BasertShopOrderActions extends sfActions
     {
       $this->getUser()->setFlash('notice', ucfirst(sfConfig::get('rt_shop_cart_name', 'shopping bag')) . ' was updated.');
     }
+
+    $this->updateUserSession();
+
     $this->redirect('@rt_shop_order_cart');
   }
   
@@ -181,7 +184,7 @@ class BasertShopOrderActions extends sfActions
   public function executeCheckout(sfWebRequest $request)
   {
     $this->rt_shop_order = $this->getOrder();
-    $this->redirectUnless(count($this->_rt_shop_order->Stocks) > 0, '@rt_shop_order_cart');
+    $this->redirectUnless(count($this->getOrder()->Stocks) > 0, '@rt_shop_order_cart');
     
     $this->redirect('@rt_shop_order_address');
   }
@@ -311,8 +314,8 @@ class BasertShopOrderActions extends sfActions
 
       // Apply voucher to order total
       $voucher_code = $this->voucher_form->getValue('code');
-      $this->_rt_shop_cart_manager->setVoucher($voucher_code);
-      $this->total = (isset($voucher_code)) ? $this->_rt_shop_cart_manager->getTotal() : $this->rt_shop_order->getGrandTotalPrice();
+      $this->getCartManager()->setVoucher($voucher_code);
+      $this->total = (isset($voucher_code)) ? $this->getCartManager()->getTotal() : $this->rt_shop_order->getGrandTotalPrice();
 
       $cc_array = $this->FormatCcInfoArray($this->creditcard_form->getValues());
       $address = (count($this->rt_shop_order->getBillingAddressArray()) > 0) ? $this->rt_shop_order->getBillingAddressArray() : $this->rt_shop_order->getShippingAddressArray();
