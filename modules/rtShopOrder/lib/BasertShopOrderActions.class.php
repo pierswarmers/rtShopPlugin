@@ -304,8 +304,7 @@ class BasertShopOrderActions extends sfActions
   public function executePayment(sfWebRequest $request)
   {
     $this->rt_shop_order = $this->getOrder();
-    
-    $this->redirectUnless(count($this->rt_shop_order->Stocks) > 0, '@rt_shop_order_cart');
+    $this->redirectUnless(count($this->getOrder()->Stocks) > 0, 'rt_shop_order_cart');
 
     $this->voucher_form = new rtShopVoucherCodeForm();
     $this->creditcard_form = new rtShopCreditcardForm();
@@ -324,31 +323,35 @@ class BasertShopOrderActions extends sfActions
       // Apply voucher to order total
       $voucher_code = $this->voucher_form->getValue('code');
       $this->getCartManager()->setVoucher($voucher_code);
-      $this->total = (isset($voucher_code)) ? $this->getCartManager()->getTotal() : $this->rt_shop_order->getGrandTotalPrice();
+      $this->total = (isset($voucher_code)) ? $this->getCartManager()->getTotal() : $this->getOrder()->getGrandTotalPrice();
 
       $cc_array = $this->FormatCcInfoArray($this->creditcard_form->getValues());
-      $address = (count($this->rt_shop_order->getBillingAddressArray()) > 0) ? $this->rt_shop_order->getBillingAddressArray() : $this->rt_shop_order->getShippingAddressArray();
+      $address = (count($this->getOrder()->getBillingAddressArray()) > 0) ? $this->getOrder()->getBillingAddressArray() : $this->getOrder()->getShippingAddressArray();
       $address = (count($address) > 1) ? $address[0] : $address;
-      $customer_array = $this->FormatCustomerInfoArray($address, $this->rt_shop_order->getEmail());
+      $customer_array = $this->FormatCustomerInfoArray($address, $this->getOrder()->getEmail());
 
       $payment = rtShopPaymentToolkit::getPaymentObject(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
-      if($payment->doPayment((int) $this->total*100, $cc_array, $customer_array)) //$total, $credit_card, $customer = array(), $options = array()
+      if($payment->doPayment((int) $this->total*100, $cc_array, $customer_array))
       {
         if($payment->isApproved()) {
-          $this->rt_shop_order->setPaymentApproved($payment->isApproved());
-          $this->rt_shop_order->setPaymentTransactionId($payment->getTransactionNumber());
-          $this->rt_shop_order->setPaymentCharge($this->total);
-          $this->rt_shop_order->setPaymentResponse($payment->getLog());
-          $this->rt_shop_order->setStatus(rtShopOrder::STATUS_PAID); // Set status to paid
-          $this->rt_shop_order->save();
+          $this->getOrder()->setStatus(rtShopOrder::STATUS_PAID); // Set status to paid
+          $this->getOrder()->setPaymentType(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
+          $this->getOrder()->setPaymentApproved($payment->isApproved());
+          $this->getOrder()->setPaymentTransactionId($payment->getTransactionNumber());
+          $this->getOrder()->setPaymentCharge($this->total);
+          $this->getOrder()->setPaymentResponse($payment->getLog());
+          $this->getOrder()->save();
+
+          var_dump($this->getOrder()->getData());
 
           $this->getUser()->setFlash('notice', 'Payment approved. Order was saved.');
         }
         else
         {
-          $this->rt_shop_order->setPaymentCharge($this->total);
-          $this->rt_shop_order->setPaymentResponse($payment->getLog());
-          $this->rt_shop_order->save();
+          $this->getOrder()->setPaymentType(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
+          $this->getOrder()->setPaymentCharge($this->total);
+          $this->getOrder()->setPaymentResponse($payment->getLog());
+          $this->getOrder()->save();
 
           $this->getUser()->setFlash('error', sprintf('%s',$payment->getResponseMessage()));
           return;
@@ -359,7 +362,7 @@ class BasertShopOrderActions extends sfActions
         throw new sfException("Something went very wrong - our technicians are looking into it right now.");
       }
 
-      //send mail
+      // Send mail
 
       //$this->redirect('@rt_shop_order_receipt');
     }
