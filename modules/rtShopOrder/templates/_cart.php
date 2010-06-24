@@ -1,23 +1,14 @@
 <?php
-  $has_quantity_errors = false;
-  if (sfContext::getInstance()->getUser()->hasAttribute('update_quantities')) {
-    $update_quantities = sfContext::getInstance()->getUser()->getAttribute('update_quantities');
-  }
-  $stock_errors = $sf_user->getFlash('rtShopStock');
-  $stock_errors = (is_object($stock_errors)) ? $stock_errors->getRawValue() : array(); // needed for output escaping
-  $stock_keys = (count($stock_errors) > 0) ? array_keys($stock_errors) : array();
-  if ($sf_user->hasFlash('rtShopStock') && count($stock_errors) > 0) {
-    $has_quantity_errors = true;
-  }
+  $update_quantities = isset($update_quantities) ? $update_quantities : array();
+  $stock_exceeded = isset($stock_exceeded) ? $stock_exceeded : array(); // needed for output escaping
 ?>
 <tbody>
 <?php $i = 0; foreach($rt_shop_order->getStockInfoArray() as $stock): ?>
   <?php
     $item_price = $stock['price_promotion'] != 0 ? $stock['price_promotion'] : $stock['price_retail'];
-    $class = ($has_quantity_errors && in_array($stock['id'], $stock_keys)) ? 'error' : '';
     $product = Doctrine::getTable('rtShopProduct')->find($stock['product_id']);
   ?>
-  <tr class="<?php echo $class; ?>">
+  <tr class="<?php echo (isset($stock_exceeded[$stock['id']])) ? 'error' : '' ?>">
     <td class="rt-shop-cart-primary-image-thumb"><?php echo ($product->getPrimaryImage()) ? image_tag(rtAssetToolkit::getThumbnailPath($product->getPrimaryImage()->getSystemPath(), array('maxHeight' => 70, 'maxWidth' => 50))) : '' ?></td>
     <td class="rt-shop-cart-details">
       <input type="hidden" name="product_id[]" value="<?php echo $stock['rtShopProduct']['id']; ?>" />
@@ -41,9 +32,11 @@
         <?php echo format_currency($item_price, sfConfig::get('app_rt_currency', 'USD')); ?>
     </td>
     <td class="rt-shop-cart-quantity">
-      <input type="text" name="quantity[]" class="minitext" value="<?php echo ($sf_user->getFlash('rtShopStock') && isset($update_quantities)) ? $update_quantities[$stock['id']] :$stock['rtShopOrderToStock'][0]['quantity']; ?>" />
+      <input type="text" name="quantity[]" class="minitext" value="<?php echo isset($update_quantities[$stock['id']]) ? $update_quantities[$stock['id']] :$stock['rtShopOrderToStock'][0]['quantity']; ?>" />
+      <?php if(isset($stock_exceeded[$stock['id']])): ?>
+      <span>(<?php echo $stock_exceeded[$stock['id']] . ' ' . __('available') ?>)</span>
+      <?php endif; ?>
       <input type="hidden" name="stock_id[]" value="<?php echo $stock['id']; ?>" />
-      <?php echo ($has_quantity_errors && in_array($stock['id'], $stock_keys)) ? "[ max. ".$stock_errors[$stock['id']]." ]" : ""; ?>
     </td>
     <td class="rt-shop-cart-price-total">
       <?php echo format_currency($stock['rtShopOrderToStock'][0]['quantity'] * $item_price, sfConfig::get('app_rt_currency', 'USD')) ?>

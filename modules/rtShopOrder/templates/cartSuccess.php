@@ -6,7 +6,7 @@
 
   <?php if(count($rt_shop_order->Stocks) > 0): ?>
   
-  <form action="<?php echo url_for('@rt_shop_order_update') ?>">
+  <form action="<?php echo url_for('@rt_shop_order_update') ?>" method="post">
     <div class="rt-container">
       <?php include_partial('breadcrumb', array()) ?>
       <table class="rt-shop-order-summary">
@@ -20,7 +20,7 @@
             <th><?php echo __('Actions') ?></th>
           </tr>
         </thead>
-        <?php include_partial('cart', array('rt_shop_order' => $rt_shop_order)) ?>
+        <?php include_partial('cart', array('rt_shop_order' => $rt_shop_order, 'stock_exceeded' => isset($stock_exceeded) ? $stock_exceeded : array(), 'update_quantities' => isset($update_quantities) ? $update_quantities : array())) ?>
       </table>
     </div>
 

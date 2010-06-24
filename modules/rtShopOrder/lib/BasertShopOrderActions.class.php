@@ -61,7 +61,8 @@ class BasertShopOrderActions extends sfActions
   {
     $rt_shop_product = Doctrine::getTable('rtShopProduct')->find($request->getParameter('rt-shop-product-id'));
     $this->forward404Unless($rt_shop_product);
-
+    $stock_id = null;
+    
     if($request->hasParameter('rt-shop-stock-id'))
     {
       $stock_id = $request->getParameter('rt-shop-stock-id');
@@ -82,7 +83,7 @@ class BasertShopOrderActions extends sfActions
         $this->redirect('rt_shop_product_show', $rt_shop_product);
       }
 
-      $rt_shop_stock = Doctrine::getTable('rtShopStock')->findOneByVariationsAndProductId($variation_ids, $rt_shop_product->getId());
+      $rt_shop_stock = Doctrine::getTable('rtShopStock')->findOneByVariationsAndProductId($variation_ids, $rt_shop_product);
 
       if(!$rt_shop_stock)
       {
@@ -124,6 +125,11 @@ class BasertShopOrderActions extends sfActions
    */
   public function executeUpdate(sfWebRequest $request)
   {
+    if($request->getMethod() !== 'POST')
+    {
+      $this->redirect('rt_shop_order_cart');
+    }
+    
     $stock_exceeded = array();
     $stock_error = false;
 
@@ -159,8 +165,7 @@ class BasertShopOrderActions extends sfActions
       $this->redirect('@rt_shop_order_checkout');
     }
 
-    $this->getUser()->setAttribute('update_quantities', $comb_array);
-    $this->getUser()->setFlash('rtShopStock',$stock_exceeded);
+
     
     if($stock_error)
     {
@@ -172,8 +177,11 @@ class BasertShopOrderActions extends sfActions
     }
 
     $this->updateUserSession();
+    $this->rt_shop_order = $this->getOrder();
+    $this->update_quantities = $comb_array;
+    $this->stock_exceeded = $stock_exceeded;
 
-    $this->redirect('@rt_shop_order_cart');
+    $this->setTemplate('cart');
   }
   
   /**

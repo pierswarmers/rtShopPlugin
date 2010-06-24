@@ -59,13 +59,6 @@ class rtShopCartManager
       throw new Exception('No stock found for given id ' . $stock_id);
     }
 
-    // Remove existing order to stock element
-    Doctrine_Query::create()
-      ->delete('rtShopOrderToStock os')
-      ->addWhere('os.stock_id = ?', $stock_id)
-      ->addWhere('os.order_id = ?', $order->getId())
-      ->execute();
-
     $product = $stock->rtShopProduct;
 
     // Check if backorder allowed and quantities available
@@ -73,6 +66,18 @@ class rtShopCartManager
     {
       sfContext::getInstance()->getLogger()->info('{rtShopCartManager} Stock not added due to quantity to high.');
       return false;
+    }
+
+    // Remove existing order to stock element
+    Doctrine_Query::create()
+      ->delete('rtShopOrderToStock os')
+      ->addWhere('os.stock_id = ?', $stock_id)
+      ->addWhere('os.order_id = ?', $order->getId())
+      ->execute();
+
+    if($quantity == 0)
+    {
+      return true;
     }
 
     // Add new order_to_stock element
