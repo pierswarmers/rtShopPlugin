@@ -15,9 +15,17 @@ use_stylesheet('/rtCorePlugin/vendor/jquery/css/ui/jquery.ui.css');
       $image_large   = rtAssetToolkit::getThumbnailPath($image->getSystemPath(), array('maxHeight' => 500, 'maxWidth' => 800));
       $image_medium  = rtAssetToolkit::getThumbnailPath($image->getSystemPath(), array('maxHeight' => 250, 'maxWidth' => 190));
 
-      $image_variation_key = $image->getOriginalFilename();
-      $image_variation_key = str_replace(array('_','.jpg','.jpeg','.gif','.png'),'',substr($image_variation_key,strrpos($image->getOriginalFilename(),"_")));
-      $image_variation_key = strtolower($image_variation_key);
+      $image_variation_key  = $image->getOriginalFilename();
+      $needles              = array("_","-");
+      
+      foreach($needles as $needle) {
+        $needle_pos = strrpos($image_variation_key,$needle);
+        if($needle_pos == true)
+        {
+          $image_variation_key = substr($image_variation_key,$needle_pos);
+          $image_variation_key = strtolower(str_replace(array('_','-','.jpg','.jpeg','.gif','.png'),'',$image_variation_key));
+        }
+      }
     ?>
     <a style="<?php echo $style ?>" href="<?php echo $image_large ?>" id="primary-image-holder-<?php echo $image->getId() ?>" class="rt-image-ref-<?php echo $image_variation_key; ?>" title="<?php echo $image->getOriginalFilename() ?>" rel="gallery-images">
       <?php echo image_tag($image_medium) ?>
