@@ -4,7 +4,7 @@
   
   <h1><?php echo ucwords(__(sfConfig::get('rt_shop_cart_name', 'shopping bag'))) ?></h1>
 
-  <?php if(count($order->Stocks) > 0): ?>
+  <?php if(count($rt_shop_order->Stocks) > 0): ?>
   
   <form action="<?php echo url_for('@rt_shop_order_update') ?>">
     <div class="rt-container">
@@ -20,7 +20,7 @@
             <th><?php echo __('Actions') ?></th>
           </tr>
         </thead>
-        <?php include_partial('cart', array('rt_shop_order' => $order)) ?>
+        <?php include_partial('cart', array('rt_shop_order' => $rt_shop_order)) ?>
       </table>
     </div>
 
