@@ -62,7 +62,7 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
   </p>
 
   <?php if(sfConfig::get('rt_shop_ordering_enabled', true)): ?>
-    <p><button type="submit"><?php echo __('Add to Cart') ?></button></p>
+  <p><button type="submit" class="disabled" disabled><?php echo __('Add to Cart') ?></button></p>
   <?php endif; ?>
 
   <script type="text/javascript">
