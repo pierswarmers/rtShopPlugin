@@ -60,47 +60,52 @@ class BasertShopOrderActions extends sfActions
    */
   public function executeAddToBag(sfWebRequest $request)
   {
+    $rt_shop_product = Doctrine::getTable('rtShopProduct')->find($request->getParameter('rt-shop-product-id'));
+    $this->forward404Unless($rt_shop_product);
+
     if($request->hasParameter('rt-shop-stock-id'))
     {
       $stock_id = $request->getParameter('rt-shop-stock-id');
     }
     else
     {
-      if(!$request->hasParameter('rt-shop-variation-ids'))
+      if(count($rt_shop_product->rtShopAttributes) > 0 && !$request->hasParameter('rt-shop-variation-ids'))
       {
-        throw new sfException('Missing parameter: rt-shop-variation-ids');
+        $this->getUser()->setFlash('error', 'Please select one of each product options.');
+        $this->redirect('rt_shop_product_show', $rt_shop_product);
       }
-      
+
       $variation_ids = $request->getParameter('rt-shop-variation-ids');
-      
-      $rt_shop_product = Doctrine::getTable('rtShopProduct')->find($request->getParameter('rt-shop-product-id'));
-      $this->forward404Unless($rt_shop_product);
 
       if(count($rt_shop_product->rtShopAttributes) != count($variation_ids))
       {
-        throw new sfException('Attribute count incorrect.');
+        $this->getUser()->setFlash('error', 'Please select one of each product options. It looks like you missed one or more.');
+        $this->redirect('rt_shop_product_show', $rt_shop_product);
       }
 
       $rt_shop_stock = Doctrine::getTable('rtShopStock')->findOneByVariationsAndProductId($variation_ids, $rt_shop_product->getId());
 
       if(!$rt_shop_stock)
       {
-        throw new sfException('Stock error, no match found for variations: ' . implode(', ', $variation_ids));
+        $this->getUser()->setFlash('error', 'We don\'t seem to have any stock available for that selection.');
+        $this->redirect('rt_shop_product_show', $rt_shop_product);
       }
+
+      $stock_id = $rt_shop_stock->getId();
     }
 
     $this->order = $this->getOrder();
 
-    if($this->_cart->addToCart($rt_shop_stock->getId(),(int) $request->getParameter('rt-shop-quantity')))
+    if(!$this->_cart->addToCart($stock_id,(int) $request->getParameter('rt-shop-quantity')))
     {
-      $this->getUser()->setFlash('notice', "Item was added to cart.");
-    }
-    else
-    {
-      $this->getUser()->setFlash('error', "Item was not added to cart The quantity ordered is not in stock.");
+      $this->getUser()->setFlash('error', 'We don\'t seem to have enough stock available for that selection.');
     }
 
-    $this->redirect('@rt_shop_order_cart');
+    $this->getUser()->setAttribute('rt_shop_order_cart_items', count($this->order->getStockInfoArray()));
+    $this->getUser()->setAttribute('rt_shop_order_cart_total', $this->order->getGrandTotalPrice());
+
+    $this->getUser()->setFlash('notice', 'Product added to ' . sfConfig::get('rt_shop_cart_name', 'shopping bag') . '.');
+    $this->redirect('rt_shop_product_show', $rt_shop_product);
   }
 
   /**
