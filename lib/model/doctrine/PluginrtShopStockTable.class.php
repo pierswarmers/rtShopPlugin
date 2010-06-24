@@ -43,14 +43,33 @@ class PluginrtShopStockTable extends Doctrine_Table
   {
     $query = $this->getQuery($query);
 
+    $rt_shop_product_id = $rt_shop_product;
+
+    if($rt_shop_product instanceof rtShopProduct)
+    {
+      $rt_shop_product_id = $rt_shop_product->getId();
+    }
+
     $query->leftJoin('s.rtShopVariations v')
           ->andWhereIn('v.id', $variation_ids)
-          ->andWhere('s.product_id = ?', $rt_shop_product)
-          ->groupBy('s.id');
+          ->andWhere('s.product_id = ?', $rt_shop_product_id);
+    //      ->groupBy('s.id');
 
     $results = $query->execute();
 
-    return count($results[0]) > 0 ? $results[0] : false;
+    if(count($results[0]) !== 0)
+    {
+      $expected_attribute_count = count($rt_shop_product->rtShopAttributes);
+
+      foreach($results as $stock)
+      {
+        if(count($stock->rtShopVariations) == $expected_attribute_count)
+        {
+          return $stock;
+        }
+      }
+    }
+    return false;
   }
   
   public function getForProductIdAndVariationId($product_id, $variation_id, Doctrine_Query $query = null)
