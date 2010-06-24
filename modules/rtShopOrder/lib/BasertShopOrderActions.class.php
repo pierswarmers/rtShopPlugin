@@ -114,18 +114,8 @@ class BasertShopOrderActions extends sfActions
    */
   public function executeDeleteStock(sfWebRequest $request)
   {
-    $stock_id = (int)$request->getParameter('id');
-    $stock = Doctrine::getTable('rtShopStock')->find($stock_id);
-    
-    if($this->getCartManager()->removeFromCart($stock_id))
-    {
-      $this->getUser()->setFlash('notice', "Item was removed from cart.");
-    }
-    else
-    {
-      $this->getUser()->setFlash('error', "Item could not be removed from cart.");
-    }
-
+    $this->getCartManager()->removeFromCart((int)$request->getParameter('id'));
+    $this->getUser()->setFlash('notice', 'Product was removed from ' . sfConfig::get('rt_shop_cart_name', 'shopping bag') . '.');
     $this->redirect('@rt_shop_order_cart');
   }
 
