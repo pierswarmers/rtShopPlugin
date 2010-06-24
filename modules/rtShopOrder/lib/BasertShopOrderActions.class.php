@@ -93,15 +93,12 @@ class BasertShopOrderActions extends sfActions
       $stock_id = $rt_shop_stock->getId();
     }
 
-    $this->rt_shop_order = $this->getOrder();
-
-    if(!$this->_rt_shop_cart_manager->addToCart($stock_id,(int) $request->getParameter('rt-shop-quantity')))
+    if(!$this->getCartManager()->addToCart($stock_id,(int) $request->getParameter('rt-shop-quantity')))
     {
       $this->getUser()->setFlash('error', 'We don\'t seem to have enough stock available for that selection.');
     }
 
-    $this->getUser()->setAttribute('rt_shop_order_cart_items', count($this->rt_shop_order->getStockInfoArray()));
-    $this->getUser()->setAttribute('rt_shop_order_cart_total', $this->rt_shop_order->getGrandTotalPrice());
+    $this->updateUserSession();
 
     $this->getUser()->setFlash('notice', 'Product added to ' . sfConfig::get('rt_shop_cart_name', 'shopping bag') . '.');
     $this->redirect('rt_shop_product_show', $rt_shop_product);
@@ -116,7 +113,8 @@ class BasertShopOrderActions extends sfActions
   {
     $this->getCartManager()->removeFromCart((int)$request->getParameter('id'));
     $this->getUser()->setFlash('notice', 'Product was removed from ' . sfConfig::get('rt_shop_cart_name', 'shopping bag') . '.');
-    $this->redirect('@rt_shop_order_cart');
+    $this->updateUserSession();
+    $this->redirect('rt_shop_order_cart');
   }
 
   /**
@@ -126,8 +124,8 @@ class BasertShopOrderActions extends sfActions
    */
   public function executeUpdate(sfWebRequest $request)
   {
-    $this->rt_shop_order = $this->getOrder();
     $stock_exceeded = array();
+    $stock_error = false;
 
     // array_combine(stock_id, quantity)
     $comb_array = array_combine($request->getParameter('stock_id'), $request->getParameter('quantity'));
@@ -135,24 +133,23 @@ class BasertShopOrderActions extends sfActions
     foreach($comb_array as $key => $value)
     {
       $stock = Doctrine::getTable('rtShopStock')->find($key);
-
       if(!$stock)
       {
         return false;
       }
 
       if ($value == 0) {
-        $this->_rt_shop_cart_manager->removeFromCart($key);
+        $this->getCartManager()->removeFromCart($key);
       }
       else
       {
         // Check if quantity ordered is available when backorder is not allowed
         if ($stock->rtShopProduct->getBackorderAllowed() == false && $value > $stock->getQuantity()) {
-          $this->getUser()->setFlash('error', "Sorry, but we only have a few items left of that product. Please reduce the requested quantity.");
+          $stock_error = true;
           $stock_exceeded[$stock->getId()] = $stock->getQuantity();
         } else {
-          $this->_rt_shop_cart_manager->removeFromCart($key);
-          $this->_rt_shop_cart_manager->addToCart($key,(int)$value);
+          $this->getCartManager()->removeFromCart($key);
+          $this->getCartManager()->addToCart($key,(int)$value);
         }
       }
     }
@@ -164,7 +161,15 @@ class BasertShopOrderActions extends sfActions
 
     $this->getUser()->setAttribute('update_quantities', $comb_array);
     $this->getUser()->setFlash('rtShopStock',$stock_exceeded);
-    $this->getUser()->setFlash('notice', 'Cart was updated!');
+    
+    if($stock_error)
+    {
+      $this->getUser()->setFlash('error', ucfirst(sfConfig::get('rt_shop_cart_name', 'shopping bag')) . ' was updated, but some items didn\'t have enough stock');
+    }
+    else
+    {
+      $this->getUser()->setFlash('notice', ucfirst(sfConfig::get('rt_shop_cart_name', 'shopping bag')) . ' was updated.');
+    }
     $this->redirect('@rt_shop_order_cart');
   }
   
@@ -442,5 +447,14 @@ class BasertShopOrderActions extends sfActions
     }
     
     return $this->_rt_shop_cart_manager;
+  }
+
+  /**
+   * Updates user session details with latest cart info
+   */
+  private function updateUserSession()
+  {
+    $this->getUser()->setAttribute('rt_shop_order_cart_items', count($this->getOrder()->getStockInfoArray()));
+    $this->getUser()->setAttribute('rt_shop_order_cart_total', $this->getOrder()->getGrandTotalPrice());
   }
 }
