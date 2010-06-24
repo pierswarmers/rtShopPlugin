@@ -342,8 +342,6 @@ class BasertShopOrderActions extends sfActions
           $this->getOrder()->setPaymentResponse($payment->getLog());
           $this->getOrder()->save();
 
-          var_dump($this->getOrder()->getData());
-
           $this->getUser()->setFlash('notice', 'Payment approved. Order was saved.');
         }
         else
