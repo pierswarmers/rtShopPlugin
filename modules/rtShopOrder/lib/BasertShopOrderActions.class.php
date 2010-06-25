@@ -160,13 +160,14 @@ class BasertShopOrderActions extends sfActions
       }
     }
 
+    $this->updateUserSession();
+    
     // Only go to checkout when no quantity errors
-    if (count($stock_exceeded) == 0 && $request->hasParameter('_proceed_to_checkout')) {
-      $this->redirect('@rt_shop_order_checkout');
+    if (count($stock_exceeded) == 0 && $request->hasParameter('_proceed_to_checkout'))
+    {
+      $this->redirect('rt_shop_order_checkout');
     }
 
-
-    
     if($stock_error)
     {
       $this->getUser()->setFlash('error', ucfirst(sfConfig::get('rt_shop_cart_name', 'shopping bag')) . ' was updated, but some items didn\'t have enough stock');
@@ -175,8 +176,7 @@ class BasertShopOrderActions extends sfActions
     {
       $this->getUser()->setFlash('notice', ucfirst(sfConfig::get('rt_shop_cart_name', 'shopping bag')) . ' was updated.');
     }
-
-    $this->updateUserSession();
+    
     $this->rt_shop_order = $this->getOrder();
     $this->update_quantities = $comb_array;
     $this->stock_exceeded = $stock_exceeded;
@@ -222,19 +222,18 @@ class BasertShopOrderActions extends sfActions
    */
   public function executeAddress(sfWebRequest $request)
   {
-    $this->rt_shop_order = $this->getOrder();
 
-    $this->redirectUnless(count($this->rt_shop_order->Stocks) > 0, '@rt_shop_order_cart');
+    $this->redirectUnless(count($this->getOrder()->Stocks) > 0, '@rt_shop_order_cart');
 
     $this->billing_address_shown = $request->getParameter('billing_address_shown', false);
 
-    $this->order_form = new rtShopOrderEmailForm($this->rt_shop_order);
+    $this->order_form = new rtShopOrderEmailForm($this->getOrder());
 
     // Shipping address object
     $q = Doctrine_Query::create()
         ->from('rtAddress a')
         ->andWhere('a.model = ?', 'rtShopOrder')
-        ->andWhere('a.model_id = ?', $this->rt_shop_order->getId())
+        ->andWhere('a.model_id = ?', $this->getOrder()->getId())
         ->andWhere('a.type = ?', 'shipping');
     $address_shipping = $q->fetchOne();
 
@@ -245,15 +244,15 @@ class BasertShopOrderActions extends sfActions
 
     // Billing address object
     $address_shipping->setModel('rtShopOrder');
-    $address_shipping->setModelId($this->rt_shop_order->getId());
+    $address_shipping->setModelId($this->getOrder()->getId());
     $address_shipping->setType('shipping');
     $this->shipping_order_form = new rtShopShippingAddressForm($address_shipping);
 
     $q = Doctrine_Query::create()
         ->from('rtAddress a')
         ->andWhere('a.model = ?', 'rtShopOrder')
-        ->andWhere('a.model_id = ?', $this->rt_shop_order->getId())
-        ->andWhere('a.type = ?', (count($this->rt_shop_order->getBillingAddressArray()) == 0) ? 'shipping' : 'billing');
+        ->andWhere('a.model_id = ?', $this->getOrder()->getId())
+        ->andWhere('a.type = ?', (count($this->getOrder()->getBillingAddressArray()) == 0) ? 'shipping' : 'billing');
     $address_billing = $q->fetchOne();
 
     if(!$address_billing)
@@ -262,7 +261,7 @@ class BasertShopOrderActions extends sfActions
     }
 
     $address_billing->setModel('rtShopOrder');
-    $address_billing->setModelId($this->rt_shop_order->getId());
+    $address_billing->setModelId($this->getOrder()->getId());
     $address_billing->setType('billing');
     $this->billing_order_form = new rtShopBillingAddressForm($address_billing);
 
@@ -278,9 +277,11 @@ class BasertShopOrderActions extends sfActions
       // Save email address in order
       if($this->order_form->isValid())
       {
-        $this->rt_shop_order->setEmail($this->order_form->getValue('email'));
-        $this->rt_shop_order->save();
+        $this->getOrder()->setEmail($this->order_form->getValue('email'));
+        $this->getOrder()->save();
       }
+
+			$this->rt_shop_order = $this->getOrder();
 
       if(!$this->order_form->isValid() || !$this->shipping_order_form->isValid() || !$this->billing_order_form->isValid())
       {
