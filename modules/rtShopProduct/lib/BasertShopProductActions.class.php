@@ -28,13 +28,6 @@ class BasertShopProductActions extends sfActions
     rtTemplateToolkit::setFrontendTemplateDir();
   }
 
-  public function executeIndex(sfWebRequest $request)
-  {
-    $this->rt_shop_product = Doctrine::getTable('rtShopProduct')->findRoot();
-    $this->forward404Unless($this->rt_shop_product);
-    $this->setTemplate('show');
-  }
-
   public function executeShow(sfWebRequest $request)
   {
     $this->rt_shop_product = $this->getRoute()->getObject();
@@ -43,12 +36,11 @@ class BasertShopProductActions extends sfActions
 
     if(!$this->rt_shop_product->isPublished() && !$this->isAdmin())
     {
-      $this->forward404('Page isn\'t published.');
+      $this->forward404('Product isn\'t published.');
     }
 
-    //$this->options = new rtShopVariationToolkit(Doctrine_Manager::connection(), $this->rt_shop_product->getId());
+    rtSiteToolkit::checkSiteReference($this->rt_shop_product);
     
-
     $this->updateResponse($this->rt_shop_product);
   }
 
