@@ -71,17 +71,14 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
   $(function() {
     $(".rt-shop-option-set").buttonset().find(':radio');
     $(".rt-shop-option-set").find(':radio').click(function() {
-      // run image selection switch
-      var match = $(this).attr("title").toLowerCase().replace(/ /g, "").replace(/-/g, "");
+      var match = $(this).attr("title").toLowerCase().replace(/[^a-zA-Z0-9]/g, "");
       $(".rt-shop-product-primary-image a[class*=rt-image-ref-"+match+"]").css("display","inline").siblings('a').css("display","none");
       // de-focus all options
       $(".rt-shop-option-set input[type=radio]").each(function(){
-        
         $(this).button( "widget" ).fadeTo(1, 0.3).removeClass('available');
       });
       // focus available options based on stock id matrix
       $($(this).next('.ref').html()).each(function(){
-        
         $(this).button( "widget" ).fadeTo(1, 1).addClass('available')
       });
       
