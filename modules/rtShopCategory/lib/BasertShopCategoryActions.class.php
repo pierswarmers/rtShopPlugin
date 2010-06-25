@@ -55,8 +55,11 @@ class BasertShopCategoryActions extends sfActions
   {
     $this->rt_shop_category = $rt_shop_category;
     $this->forward404Unless($this->rt_shop_category);
+    
     $this->forward404If(!$this->rt_shop_category->isPublished() && !$this->isAdmin(),'Category isn\'t published.');
 
+    rtSiteToolkit::checkSiteReference($this->rt_shop_category);
+    
     $this->updateResponse($this->rt_shop_category);
 
     $query = Doctrine::getTable('rtShopProduct')->addPublishedQuery()
