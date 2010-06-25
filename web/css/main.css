@@ -35,16 +35,18 @@ Product display
 UI overide
 
 */
+.ui-buttonset {float:left;margin:0;width:400px;}
 .ui-buttonset label { border:0; -moz-border-radius:5px; -webkit-border-radius:5px; background-repeat: no-repeat; }
 .ui-buttonset label.available { border-color:#FFF; }
 .ui-buttonset label.unavailable { border-style: solid; }
 .ui-buttonset label.image-swatch { width:30px; height:30px; }
 .ui-buttonset label.image-swatch span { width:30px; height:30px;padding:0;margin:0;text-indent:-10000px; }
-.ui-buttonset .ui-button { margin: 0 5px 0 -20px; }
-.ui-buttonset .ui-button span {  -moz-border-radius:5px; -webkit-border-radius:5px; background:url(../images/radio-tick-alt.png) no-repeat 5px 50%; padding-left:25px; }
+.ui-buttonset .ui-button { margin:0;}
+.ui-buttonset .ui-button span {float:left;-moz-border-radius:5px; -webkit-border-radius:5px; background:url(../images/radio-tick-alt.png) no-repeat 5px 50%; padding-left:25px; }
 .ui-buttonset .ui-state-active { border-color: #FFF!important; background:#DADADA; }
 .ui-buttonset .ui-state-active span { background:url(../images/radio-tick.png) no-repeat 5px 50%; padding-left:25px; }
 .ui-buttonset .image-swatch span { background-position: 50% 50%; padding-left:0; }
 .ui-buttonset .ui-state-disabled span { background:url(../images/radio-cross-alt.png) no-repeat 5px 50% #CCC; color:#555; padding-left:20px; }
 .ui-buttonset .image-swatch.ui-state-disabled span { background:url(../images/radio-cross-alt.png) no-repeat 50% 50%; padding-left:0; }
 .ui-state-default { background-image: none;} 
+.ui-helper-hidden-accessible {position:absolute!important;} /*don't remove this important! blueprint overrides otherwise this UI style */
