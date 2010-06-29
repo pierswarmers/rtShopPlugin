@@ -46,8 +46,10 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
     }
 
     $class .= ' '. implode(' ', $ref);
+    $title = htmlentities($variation->getTitle());
+
     ?>
-      <input  name="rt-shop-variation-ids[<?php echo $i ?>]" title="<?php echo $variation->getTitle() ?>" id="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo $class ?>" type="radio" value="<?php echo $variation->getId() ?>" />
+      <input name="rt-shop-variation-ids[<?php echo $i ?>]" title="<?php echo $title ?>" id="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo $class ?>" type="radio" value="<?php echo $variation->getId() ?>" />
       <span class="ref" style="display:none">.<?php echo implode(', .', $ref) ?></span>
       <label for="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo $available ? '' : 'unavailable' ?> <?php echo $is_image ? 'image-swatch' : '' ?>" <?php echo $image ?>><?php echo $variation->getTitle() ?></label>
     <?php endforeach; ?>
