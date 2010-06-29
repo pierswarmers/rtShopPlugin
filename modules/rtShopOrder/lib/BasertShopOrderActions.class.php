@@ -222,77 +222,25 @@ class BasertShopOrderActions extends sfActions
    */
   public function executeAddress(sfWebRequest $request)
   {
-
     $this->redirectUnless(count($this->getOrder()->Stocks) > 0, '@rt_shop_order_cart');
 
-    $this->billing_address_shown = $request->getParameter('billing_address_shown', false);
+    $this->show_shipping = false;
+
+    if(Doctrine::getTable('rtAddress')->getAddressForObjectAndType($this->getOrder(), 'shipping'))
+    {
+      $this->show_shipping = true;
+    }
 
     $this->order_form = new rtShopOrderEmailForm($this->getOrder());
 
-    // Shipping address object
-    $q = Doctrine_Query::create()
-        ->from('rtAddress a')
-        ->andWhere('a.model = ?', 'rtShopOrder')
-        ->andWhere('a.model_id = ?', $this->getOrder()->getId())
-        ->andWhere('a.type = ?', 'shipping');
-    $address_shipping = $q->fetchOne();
-
-    if(!$address_shipping)
-    {
-      $address_shipping = new rtAddress;
-    }
-
-    // Billing address object
-    $address_shipping->setModel('rtShopOrder');
-    $address_shipping->setModelId($this->getOrder()->getId());
-    $address_shipping->setType('shipping');
-    $this->shipping_order_form = new rtShopShippingAddressForm($address_shipping);
-
-    $q = Doctrine_Query::create()
-        ->from('rtAddress a')
-        ->andWhere('a.model = ?', 'rtShopOrder')
-        ->andWhere('a.model_id = ?', $this->getOrder()->getId())
-        ->andWhere('a.type = ?', (count($this->getOrder()->getBillingAddressArray()) == 0) ? 'shipping' : 'billing');
-    $address_billing = $q->fetchOne();
-
-    if(!$address_billing)
-    {
-      $address_billing = new rtAddress;
-    }
-
-    $address_billing->setModel('rtShopOrder');
-    $address_billing->setModelId($this->getOrder()->getId());
-    $address_billing->setType('billing');
-    $this->billing_order_form = new rtShopBillingAddressForm($address_billing);
-
     if ($this->getRequest()->isMethod('PUT') || $this->getRequest()->isMethod('POST'))
     {
-      $this->processForm($request, $this->order_form);
-      $this->processForm($request, $this->shipping_order_form);
-
-      // The values of the billing address are sometimes the same as the shipping address
-      $billing_form_name = $this->billing_address_shown ? $this->shipping_order_form->getName() : $this->billing_order_form->getName();
-      $this->processForm($request, $this->billing_order_form, $billing_form_name);
-
-      // Save email address in order
+      $this->order_form->bind($request->getParameter($this->order_form->getName()), $request->getFiles($this->order_form->getName()));
       if($this->order_form->isValid())
       {
-        $this->getOrder()->setEmail($this->order_form->getValue('email'));
-        $this->getOrder()->save();
+        $this->order_form->save();
+        $this->redirect('@rt_shop_order_payment');
       }
-
-			$this->rt_shop_order = $this->getOrder();
-
-      if(!$this->order_form->isValid() || !$this->shipping_order_form->isValid() || !$this->billing_order_form->isValid())
-      {
-        $this->getUser()->setFlash('error', 'Some form data is missing or incorrect. Please check.',false);
-        return;
-      }
-
-      $this->shipping_order_form->save();
-      $this->billing_order_form->save();
-
-      $this->redirect('@rt_shop_order_payment');
     }
   }
 

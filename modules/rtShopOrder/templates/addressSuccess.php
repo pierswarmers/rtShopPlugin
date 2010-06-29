@@ -8,20 +8,20 @@
       <?php include_partial('breadcrumb', array()) ?>
 
       <h2><?php echo __('Email address for order') ?></h2>
-      <?php include_partial('form', array('form' => $order_form)) ?>
+      <?php  echo $order_form['email']->renderRow() ?>
+      <?php  echo $order_form->renderHiddenFields() ?>
 
-      <h2><?php echo __('Shipping address') ?></h2>
-      <?php include_partial('form', array('form' => $shipping_order_form)) ?>
 
       <h2><?php echo __('Billing address') ?></h2>
-      <p>
-        <label for="billing_address_shown"><?php echo __('Same As Shipping Address:') ?> <input id="billing_address_shown" type="checkbox" name="billing_address_shown" <?php echo ($billing_address_shown) ? 'checked' : '' ?> /></label>
-      </p>
 
-      <div id="steer_shop_billing_address" style="<?php echo ($billing_address_shown) ? 'display: none' : 'display: block'; ?>">
-        <?php include_partial('form', array('form' => $billing_order_form)) ?>
+        <?php include_partial('address_form', array('form' => $order_form['billing_address'])) ?>
+ 
+      <p><label for="shipping_toggle"><?php echo __('Same As Shipping Address:') ?> <input id="shipping_toggle" type="checkbox" name="shipping_toggle" <?php echo ($show_shipping) ? '' : 'checked' ?> /></label></p>
+
+      <div id="steer_shop_billing_address" style="<?php echo ($show_shipping) ? 'display: block' : 'display: none' ?>">
+      <h2><?php echo __('Shipping address') ?></h2>
+      <?php include_partial('address_form', array('form' => $order_form['shipping_address'])) ?>
       </div>
-
     </div>
 
     <div class="rt-container rt-shop-order-tools">
@@ -30,15 +30,9 @@
   </form>
 </div>
 <script type="text/javascript">
-  $(document).ready(function()
-  {
-    $("#billing_address_shown").click(function(){
-    if ($("#billing_address_shown").is(":checked"))
-    {
-      $("#steer_shop_billing_address").hide("fast");
-    } else {
-      $("#steer_shop_billing_address").show("fast");
-    }
+  $(function() {
+    $("#shipping_toggle").click(function(){
+      $("#steer_shop_billing_address").toggle("fast");
     });
-   });
+  });
 </script>
