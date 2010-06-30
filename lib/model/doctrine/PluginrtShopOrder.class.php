@@ -328,11 +328,10 @@ abstract class PluginrtShopOrder extends BasertShopOrder
        $i++;
      }
 
+     $this->setClosedProducts($products);
      $this->setClosedShippingRate($this->getShippingCharge());
      $this->setClosedTaxes($this->getTotalTax());
      $this->setClosedPromotions(0);
-     $this->setClosedProducts($products);
-     $this->setClosedTotal($this->getGrandTotalPrice());
    }
 
   /**

@@ -253,17 +253,18 @@ class BasertShopOrderActions extends sfActions
   {
     $this->rt_shop_cart_manager = $this->getCartManager();
     $this->rt_shop_order = $this->getOrder();
-    
-    $this->redirectUnless(count($this->getOrder()->Stocks) > 0, 'rt_shop_order_cart');
+    $order = $this->getOrder();
 
-    if(!Doctrine::getTable('rtAddress')->getAddressForObjectAndType($this->getOrder(), 'billing'))
+    $this->redirectUnless(count($order->Stocks) > 0, 'rt_shop_order_cart');
+
+    if(!Doctrine::getTable('rtAddress')->getAddressForObjectAndType($order, 'billing'))
     {
       $this->redirect('rt_shop_order_address');
     }
-    
-    $this->form = new rtShopPaymentForm($this->getOrder(), array('rt_shop_cart_manager' => $this->getCartManager()));
+
+    $this->form = new rtShopPaymentForm($order, array('rt_shop_cart_manager' => $this->getCartManager()));
     $this->form_cc = new rtShopCreditCardPaymentForm();
-    
+
     if ($this->getRequest()->isMethod('PUT') || $this->getRequest()->isMethod('POST'))
     {
       $errors = false;
@@ -285,30 +286,32 @@ class BasertShopOrderActions extends sfActions
           if($this->getCartManager()->getTotal() > 0)
           {
             $this->logMessage('Proceeding to charge credit card with: ' . $this->getCartManager()->getTotal());
-            
+
             $cc_array = $this->FormatCcInfoArray($this->form_cc->getValues());
-            $address = $this->getOrder()->getBillingAddressArray();
-            $customer_array = $this->FormatCustomerInfoArray($address[0], $this->getOrder()->getEmail());
+            $address = $order->getBillingAddressArray();
+            $customer_array = $this->FormatCustomerInfoArray($address[0], $order->getEmail());
 
             $payment = rtShopPaymentToolkit::getPaymentObject(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
 
             if($payment->doPayment((int) $this->getCartManager()->getTotal()*100, $cc_array, $customer_array))
             {
-              if($payment->isApproved()) {
-                $this->getOrder()->setStatus(rtShopOrder::STATUS_PAID);
-                $this->getOrder()->setPaymentType(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
-                $this->getOrder()->setPaymentApproved($payment->isApproved());
-                $this->getOrder()->setPaymentTransactionId($payment->getTransactionNumber());
-                $this->getOrder()->setPaymentCharge($this->getCartManager()->getTotal());
-                $this->getOrder()->setPaymentResponse($payment->getLog());
-                $this->getOrder()->save();
+              if($payment->isApproved())
+              {
+                $order->setStatus(rtShopOrder::STATUS_PAID);
+                $order->setClosedTotal($this->getCartManager()->getTotal());
+                $order->setPaymentType(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
+                $order->setPaymentApproved($payment->isApproved());
+                $order->setPaymentTransactionId($payment->getTransactionNumber());
+                $order->setPaymentCharge($this->getCartManager()->getTotal());
+                $order->setPaymentResponse($payment->getLog());
+                $order->save();
               }
               else
               {
-                $this->getOrder()->setPaymentType(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
-                $this->getOrder()->setPaymentCharge($this->getCartManager()->getTotal());
-                $this->getOrder()->setPaymentResponse($payment->getLog());
-                $this->getOrder()->save();
+                $order->setPaymentType(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
+                $order->setPaymentCharge($this->getCartManager()->getTotal());
+                $order->setPaymentResponse($payment->getLog());
+                $order->save();
 
                 $this->getUser()->setFlash('error', sprintf('%s',$payment->getResponseMessage()));
                 return;
@@ -402,7 +405,7 @@ class BasertShopOrderActions extends sfActions
   private function updateUserSession()
   {
     $this->getUser()->setAttribute('rt_shop_order_cart_items', count($this->getOrder()->getStockInfoArray()));
-    $this->getUser()->setAttribute('rt_shop_order_cart_total', $this->getOrder()->getGrandTotalPrice());
+    $this->getUser()->setAttribute('rt_shop_order_cart_total', $this->getCartManager()->getTotal());
   }
   
   /**
