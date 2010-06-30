@@ -288,7 +288,7 @@ class BasertShopOrderActions extends sfActions
             
             $cc_array = $this->FormatCcInfoArray($this->form_cc->getValues());
             $address = $this->getOrder()->getBillingAddressArray();
-            $customer_array = $this->FormatCustomerInfoArray($address, $this->getOrder()->getEmail());
+            $customer_array = $this->FormatCustomerInfoArray($address[0], $this->getOrder()->getEmail());
 
             $payment = rtShopPaymentToolkit::getPaymentObject(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
             
@@ -332,14 +332,12 @@ class BasertShopOrderActions extends sfActions
         $errors = true;
       }
 
-      if(!$error)
+      if(!$errors)
       {
         $this->getCartManager()->getVoucher();
       }
     }
   }
-
-
 
   /**
    * Show order receipt
@@ -417,7 +415,7 @@ class BasertShopOrderActions extends sfActions
   {
     $options = array('CardHoldersName'  => $cc_values['cc_name'],
                      'CardType'         => $cc_values['cc_type'],
-                     'CardNumber'       => $cc_values['cc_number'],
+                     'CardNumber'       => $cc_values['cc_number'],  //TODO: Clean number if not done by validator
                      'CardExpiryMonth'  => $cc_values['cc_expire']['month'],
                      'CardExpiryYear'   => $cc_values['cc_expire']['year'],
                      'CVN'              => $cc_values['cc_verification']);
