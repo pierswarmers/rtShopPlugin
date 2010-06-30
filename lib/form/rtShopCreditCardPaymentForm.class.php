@@ -8,17 +8,20 @@
  */
 
 /**
- * rtShopPlugin
+ * rtShopVoucherCodeForm
  *
  * @package    rtShopPlugin
  * @subpackage forms
  * @author     Piers Warmers <piers@wranglers.com.au>
  * @author     Konny Zurcher <konny@wranglers.com.au>
  */
-class rtShopCreditcardForm extends sfForm
+class rtShopCreditCardPaymentForm extends sfForm
 {
+  
   public function setup()
   {
+    parent::setup();
+    
     // Credit card input fields
     $this->widgetSchema['cc_type']    = new sfWidgetFormSelect(array('choices' => sfConfig::get('app_rt_shop_payment_methods',array('Mastercard' => 'Mastercard', 'Visa' => 'Visa'))));
     $this->widgetSchema['cc_number']  = new sfWidgetFormInput(array(), array('class'=>'text'));
@@ -37,17 +40,13 @@ class rtShopCreditcardForm extends sfForm
     $this->widgetSchema->setHelp('cc_verification', '<i style="font-size:10px;">The CCV is a three or four-digit number on the back or front of your cc</i>');
 
     // Validators
-    $this->setValidators(array(
-      'cc_type'   => new sfValidatorString(array('max_length' => 16, 'required' => true), array('required' => 'Please provide a credit card type')),
-      'cc_name'   => new sfValidatorString(array('max_length' => 50, 'required' => true), array('required' => 'Please enter the name as shown on the credit card')),
-      'cc_number' => new sfValidatorString(array('required' => true), array('required' => 'Please provide a credit card number')),
-      'cc_expire' => new sfValidatorPass(),
-      'cc_verification' => new sfValidatorNumber(array('min' => 0,'max' => 9999,'required' => true), array('required' => 'Please provide a verification number')),
-    ));
+    $this->setValidator('cc_type', new sfValidatorString(array('max_length' => 16, 'required' => true), array('required' => 'Please provide a credit card type')));
+    $this->setValidator('cc_name', new sfValidatorString(array('max_length' => 50, 'required' => true), array('required' => 'Please enter the name as shown on the credit card')));
+    $this->setValidator('cc_number', new sfValidatorString(array('required' => true), array('required' => 'Please provide a credit card number')));
+    $this->setValidator('cc_expire', new sfValidatorPass());
+    $this->setValidator('cc_verification', new sfValidatorNumber(array('min' => 0,'max' => 9999,'required' => true), array('required' => 'Please provide a verification number')));
 
     $this->widgetSchema->setNameFormat('rt_shop_order_creditcard[%s]');
     $this->errorSchema = new sfValidatorErrorSchema($this->validatorSchema);
-
-    parent::setup();
   }
 }

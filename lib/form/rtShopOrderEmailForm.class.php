@@ -26,27 +26,6 @@ class rtShopOrderEmailForm extends BasertShopOrderForm
     $this->widgetSchema->setFormFormatterName('table');
 
     $this->useFields(array('id','email'));
-//    unset(
-//      $this['is_wholesale'],
-//      $this['reference'],
-//      $this['status'],
-//      $this['notes_user'],
-//      $this['notes_admin'],
-//      $this['user_id'],
-//      $this['created_at'],
-//      $this['updated_at'],
-//      $this['stocks_list'],
-//      $this['closed_shipping_rate'],
-//      $this['closed_taxes'],
-//      $this['closed_promotions'],
-//      $this['closed_products'],
-//      $this['closed_total'],
-//      $this['payment_transaction_id'],
-//      $this['payment_type'],
-//      $this['payment_charge'],
-//      $this['payment_approved'],
-//      $this['payment_response']
-//    );
 
     $billing_address = new rtAddress;
     $billing_address->setType('billing');

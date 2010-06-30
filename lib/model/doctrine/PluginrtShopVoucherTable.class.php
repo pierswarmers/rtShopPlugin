@@ -85,14 +85,29 @@ class PluginrtShopVoucherTable extends rtShopPromotionTable
    * @param Doctrine_Query $q An optional query object
    * @return Array            Found vouchers
    */
-  public public function findValid($code, $total, $date = null, Doctrine_Query $q = null)
+  public function findValid($code, $total, $date = null, Doctrine_Query $q = null)
+  {
+    $q = $this->getValidityQuery($total, $date, $q);
+    $q = $this->getCodeRestrictionQuery($code, $q);
+    return $q->fetchArray();
+  }
+
+  /**
+   * Get validity query
+   *
+   * @param String $code      Voucher code
+   * @param Float $total      Order total
+   * @param DateTime $date    Timestamp
+   * @param Doctrine_Query $q An optional query object
+   * @return Doctrine_Query    
+   */
+  public function getValidityQuery($total, $date = null, Doctrine_Query $q = null)
   {
     $q = $this->getQuery($q);
     $q = $this->getDateRestrictionQuery($date, $q);
-    $q = $this->getCodeRestrictionQuery($code, $q);
     $q = $this->getTotalRestrictionQuery($total, $q);
     $q = $this->getCountRestrictionQuery($q);
-    return $q->fetchArray();
+    return $q;
   }
 
    /**
