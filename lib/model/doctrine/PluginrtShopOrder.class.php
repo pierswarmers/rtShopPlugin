@@ -268,6 +268,7 @@ abstract class PluginrtShopOrder extends BasertShopOrder
     }
 
     parent::_set('status', $status);
+    parent::save();
 
     if($status === rtShopOrder::STATUS_PAID)
     {

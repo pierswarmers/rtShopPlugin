@@ -239,7 +239,7 @@ class BasertShopOrderActions extends sfActions
       if($this->form->isValid())
       {
         $this->form->save();
-        $this->redirect('@rt_shop_order_payment');
+        $this->redirect('rt_shop_order_payment');
       }
     }
   }
@@ -291,24 +291,22 @@ class BasertShopOrderActions extends sfActions
             $customer_array = $this->FormatCustomerInfoArray($address[0], $this->getOrder()->getEmail());
 
             $payment = rtShopPaymentToolkit::getPaymentObject(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
-            
-            if($payment->doPayment((int) $this->total*100, $cc_array, $customer_array))
+
+            if($payment->doPayment((int) $this->getCartManager()->getTotal()*100, $cc_array, $customer_array))
             {
               if($payment->isApproved()) {
-                $this->getOrder()->setStatus(rtShopOrder::STATUS_PAID); // Set status to paid
+                $this->getOrder()->setStatus(rtShopOrder::STATUS_PAID);
                 $this->getOrder()->setPaymentType(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
                 $this->getOrder()->setPaymentApproved($payment->isApproved());
                 $this->getOrder()->setPaymentTransactionId($payment->getTransactionNumber());
-                $this->getOrder()->setPaymentCharge($this->total);
+                $this->getOrder()->setPaymentCharge($this->getCartManager()->getTotal());
                 $this->getOrder()->setPaymentResponse($payment->getLog());
                 $this->getOrder()->save();
-
-                $this->getUser()->setFlash('notice', 'Payment approved. Order was saved.');
               }
               else
               {
                 $this->getOrder()->setPaymentType(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
-                $this->getOrder()->setPaymentCharge($this->total);
+                $this->getOrder()->setPaymentCharge($this->getCartManager()->getTotal());
                 $this->getOrder()->setPaymentResponse($payment->getLog());
                 $this->getOrder()->save();
 
@@ -336,6 +334,8 @@ class BasertShopOrderActions extends sfActions
       {
         $this->getCartManager()->getVoucher();
       }
+
+      //$this->redirect('rt_shop_order_receipt');
     }
   }
 
@@ -346,7 +346,7 @@ class BasertShopOrderActions extends sfActions
    */
   public function executeReceipt(sfWebRequest $request)
   {
-    // Show receipt and send mail
+    //Show receipt and send mail
 
     //$this->cleanSession();
   }
