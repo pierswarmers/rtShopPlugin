@@ -59,6 +59,10 @@ abstract class PluginrtShopVariationForm extends BasertShopVariationForm
     array('mime_types' => 'Wrong type of file... should be a jpg, gif or png.')));
 
     $this->validatorSchema['position']->setOption('required', false);
+
+    $pattern = '/^[a-z A-Z 0-9 ( ) , . : \" \/ \' & # @ \- \| ! ? + = * _ ]{1,}$/';
+    $this->setValidator('title', new sfValidatorRegex(array('pattern' => $pattern, 'required' => false)));
+
     $this->validatorSchema['title']->setOption('required', false);
   }
 }
