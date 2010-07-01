@@ -36,6 +36,7 @@ class rtShopOrderAdminActions extends sfActions
   public function executeEdit(sfWebRequest $request)
   {
     $this->forward404Unless($rt_shop_order = Doctrine::getTable('rtShopOrder')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_order does not exist (%s).', $request->getParameter('id')));
+    $this->rt_shop_order = $rt_shop_order;
     $this->form = new rtShopOrderForm($rt_shop_order);
   }
 
@@ -43,6 +44,7 @@ class rtShopOrderAdminActions extends sfActions
   {
     $this->forward404Unless($request->isMethod(sfRequest::POST) || $request->isMethod(sfRequest::PUT));
     $this->forward404Unless($rt_shop_order = Doctrine::getTable('rtShopOrder')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_order does not exist (%s).', $request->getParameter('id')));
+    $this->rt_shop_order = $rt_shop_order;
     $this->form = new rtShopOrderForm($rt_shop_order);
 
     $this->processForm($request, $this->form);

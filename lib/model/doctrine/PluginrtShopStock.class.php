@@ -17,4 +17,21 @@ abstract class PluginrtShopStock extends BasertShopStock
     exit;
     return $this->rtShopVariations;
   }
+
+  /**
+   * Adjust stock quantity
+   *
+   * @param Integer $quantity Ordered stock quanity
+   * @return Object
+   */
+  public function adjustQuantityBy($quantity)
+  {
+    if($quantity > 0)
+    {
+      $adjusted_quantity = $this['quantity'] - $quantity;
+      $this->_set('quantity', $adjusted_quantity);
+    }
+
+    return $this;
+  }
 }

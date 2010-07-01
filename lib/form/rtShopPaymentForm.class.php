@@ -35,11 +35,10 @@ class rtShopPaymentForm extends BasertShopOrderForm
     $options = array('required' => false);
     $options['model'] = 'rtShopVoucher';
     $options['column'] = 'code';
-    $options['query'] = Doctrine::getTable('rtShopVoucher')->getValidityQuery($this->getRtShopOrder()->getGrandTotalPrice());
+    $options['query'] = Doctrine::getTable('rtShopVoucher')->getValidityQuery($this->getOption('rt_shop_cart_manager')->getTotalWithoutVoucher());
     $this->setValidator('voucher_code', new sfValidatorDoctrineChoice($options));
     $this->widgetSchema->setNameFormat('rt_shop_order_voucher[%s]');
     $this->errorSchema = new sfValidatorErrorSchema($this->validatorSchema);
-    //$this->embedForm('credit_card', new rtShopCreditCardPaymentForm);
   }
 
   public function getRtShopOrder()

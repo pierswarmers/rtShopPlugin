@@ -10,4 +10,26 @@
  */
 abstract class PluginrtShopOrderForm extends BasertShopOrderForm
 {
+  public function setup()
+  {
+    parent::setup();
+
+    $status = sfConfig::get('app_rt_shop_order_status_types',array('cancelled', 'complete', 'pending', 'processing', 'shipped', 'paid', 'backordered'));
+
+    $this->widgetSchema['status'] = new sfWidgetFormSelect(array('choices' => $status));
+
+    $this->validatorSchema['status'] = new sfValidatorChoice(array('choices' => array_keys($status), 'required' => true),array('required' =>'Please select a value'));
+    $this->validatorSchema['email'] = new sfValidatorEmail(array('required' => true), array(
+     'required'   => 'Please provide an email address',
+     'invalid'    => 'Please provide a valid email address (me@example.com)'
+    ));
+
+    // Help text for fields
+    $this->widgetSchema->setHelp('notes_user','Order notes (visible to customer)');
+    $this->widgetSchema->setHelp('notes_admin','Administrator order notes (not visible to customer)');
+
+    $this->widgetSchema->setNameFormat('rt_shop_order[%s]');
+
+    $this->errorSchema = new sfValidatorErrorSchema($this->validatorSchema);
+  }
 }

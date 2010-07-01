@@ -222,6 +222,21 @@ class rtShopCartManager
 	}
 
   /**
+   * Get order total without applied voucher
+   *
+   * @param Object $voucher Voucher object
+   * @return Float Order total
+   */
+	public function getTotalWithoutVoucher($voucher = null)
+	{
+		// inc. tax.... pre-shipping
+		$total = $this->getSubTotal();
+		$total = $this->applyPromotion($total);
+    $total = $this->applyShipping($total);
+		return $total;
+	}
+
+  /**
    * Get order total
    *
    * @param Object $voucher Voucher object
@@ -319,6 +334,51 @@ class rtShopCartManager
      $order->setClosedPromotions($this->getPromotion());
      $order->setClosedTotal($this->getTotal());
    }
+
+   /**
+    * Adjust stock quantities
+    * 
+    */
+  public function adjustStockQuantities()
+  {
+    if($this->getOrder()->getStatus() === rtShopOrder::STATUS_PAID)
+    {
+      foreach($this->getOrder()->getStockInfoArray() as $stock)
+      {
+        $stock_object = Doctrine::getTable('rtShopStock')->find($stock['rtShopOrderToStock'][0]['stock_id']);
+        if($stock_object)
+        {
+          $quantity_before = $stock_object->getQuantity();
+          $stock_object->setQuantity($stock_object->getQuantity() - $stock['rtShopOrderToStock'][0]['quantity']);
+          $stock_object->save();
+          sfContext::getInstance()->getLogger()->info(sprintf('{rtShopCartManager} Adjust stock Id = %s by quantity = %s. Quantity before = %s. Quantity after =  %s',$stock['rtShopOrderToStock'][0]['stock_id'],$stock['rtShopOrderToStock'][0]['quantity'],$quantity_before,$stock_object->getQuantity()));
+        }
+      }
+    }
+  }
+
+   /**
+    * Adjust voucher count
+    *
+    */
+  public function adjustVoucherCount()
+  {
+    if($this->getVoucher() != '')
+    {
+      $by_code = Doctrine::getTable('rtShopVoucher')->findByCode($this->getVoucher());
+      $array = $by_code->getData();
+      $voucher = $array[0];
+
+      $count_before = $voucher->getCount();
+      if($voucher && $voucher->getCount() > 0)
+      {
+        $voucher->adjustCountBy(1);
+        $voucher->save();
+        
+        sfContext::getInstance()->getLogger()->info(sprintf('{rtShopCartManager} Adjust voucher code = %s by count = 1. Count before = %s. Count after =  %s',$this->getVoucher(),$count_before,$voucher->getCount()));
+      }
+    }
+  }
 
   /**
    * Get order object

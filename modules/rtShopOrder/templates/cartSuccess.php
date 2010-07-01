@@ -4,7 +4,7 @@
   
   <h1><?php echo ucwords(__(sfConfig::get('rt_shop_cart_name', 'shopping bag'))) ?></h1>
 
-  <?php if(count($rt_shop_order->Stocks) > 0): ?>
+  <?php if(is_object($rt_shop_order) && count($rt_shop_order->Stocks) > 0): ?>
   
   <form action="<?php echo url_for('@rt_shop_order_update') ?>" method="post">
     <div class="rt-container">

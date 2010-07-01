@@ -38,7 +38,7 @@ class BasertShopOrderActions extends sfActions
    */
   public function executeIndex(sfWebRequest $request)
   {
-    $this->redirect('@rt_shop_order_cart');
+    $this->redirect('rt_shop_order_cart');
   }
 
   /**
@@ -194,7 +194,7 @@ class BasertShopOrderActions extends sfActions
     $this->rt_shop_order = $this->getOrder();
     $this->redirectUnless(count($this->getOrder()->Stocks) > 0, '@rt_shop_order_cart');
     
-    $this->redirect('@rt_shop_order_address');
+    $this->redirect('rt_shop_order_address');
   }
 
   /**
@@ -306,6 +306,10 @@ class BasertShopOrderActions extends sfActions
                 $this->getCartManager()->archive();
                 $order->save();
 
+                // Adjust stock quantities
+                $this->getCartManager()->adjustStockQuantities();
+                $this->getCartManager()->adjustVoucherCount();
+
                 $this->logMessage('{rtShopOrderPayment} Payment for order: '.$order->getReference().' approved.');
               }
               else
@@ -343,11 +347,11 @@ class BasertShopOrderActions extends sfActions
         $this->getCartManager()->getVoucher();
       }
 
-      // send mail
+      // Send mail
 
       $this->logMessage('{rtShopOrderPayment} Order: '.$order->getReference().' was completed.');
 
-      //$this->redirect('rt_shop_order_receipt');
+      $this->redirect('rt_shop_order_receipt');
     }
   }
 
@@ -360,7 +364,7 @@ class BasertShopOrderActions extends sfActions
   {
     //Show receipt and send mail
 
-    //$this->cleanSession();
+    $this->cleanSession();
   }
 
   /**
@@ -379,6 +383,16 @@ class BasertShopOrderActions extends sfActions
     // Reset unique user token
     if ($this->getUser()->hasAttribute($this->_user_id_token)) {
       $this->getUser()->setAttribute($this->_user_id_token, '');
+    }
+
+    // Mini cart - items
+    if ($this->getUser()->hasAttribute('rt_shop_order_cart_items')) {
+      $this->getUser()->setAttribute('rt_shop_order_cart_items', '');
+    }
+    
+    // Mini cart - total
+    if ($this->getUser()->hasAttribute('rt_shop_order_cart_total')) {
+      $this->getUser()->setAttribute('rt_shop_order_cart_total', '');
     }
   }
 
