@@ -384,6 +384,16 @@ class BasertShopOrderActions extends sfActions
     if ($this->getUser()->hasAttribute($this->_user_id_token)) {
       $this->getUser()->setAttribute($this->_user_id_token, '');
     }
+
+    // Mini cart - items
+    if ($this->getUser()->hasAttribute('rt_shop_order_cart_items')) {
+      $this->getUser()->setAttribute('rt_shop_order_cart_items', '');
+    }
+    
+    // Mini cart - total
+    if ($this->getUser()->hasAttribute('rt_shop_order_cart_total')) {
+      $this->getUser()->setAttribute('rt_shop_order_cart_total', '');
+    }
   }
 
   /**
