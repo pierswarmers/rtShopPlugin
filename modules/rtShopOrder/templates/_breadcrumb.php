@@ -1,5 +1,5 @@
 <?php $action = $sf_request->getParameter('action'); ?>
-<p>
+<p class="rt-container rt-shop-order-breadcrumb">
   <?php echo link_to_if($action !== 'cart', 'Cart','@rt_shop_order_cart') ?> >
   <?php echo link_to_if($action !== 'checkout', 'Checkout','@rt_shop_order_checkout') ?> >
   <?php echo link_to_if($action !== 'address', 'Address','@rt_shop_order_address') ?> >
