@@ -285,7 +285,7 @@ class BasertShopOrderActions extends sfActions
         {
           if($this->getCartManager()->getTotal() > 0)
           {
-            $this->logMessage('Proceeding to charge credit card with: ' . $this->getCartManager()->getTotal());
+            $this->logMessage('{rtShopOrderPayment} Order: '.$order->getReference().'. Proceeding to charge credit card with: ' . $this->getCartManager()->getTotal());
 
             $cc_array = $this->FormatCcInfoArray($this->form_cc->getValues());
             $address = $order->getBillingAddressArray();
@@ -298,13 +298,15 @@ class BasertShopOrderActions extends sfActions
               if($payment->isApproved())
               {
                 $order->setStatus(rtShopOrder::STATUS_PAID);
-                $order->setClosedTotal($this->getCartManager()->getTotal());
                 $order->setPaymentType(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
                 $order->setPaymentApproved($payment->isApproved());
                 $order->setPaymentTransactionId($payment->getTransactionNumber());
                 $order->setPaymentCharge($this->getCartManager()->getTotal());
                 $order->setPaymentResponse($payment->getLog());
+                $this->getCartManager()->archive();
                 $order->save();
+
+                $this->logMessage('{rtShopOrderPayment} Payment for order: '.$order->getReference().' approved.');
               }
               else
               {
@@ -313,12 +315,15 @@ class BasertShopOrderActions extends sfActions
                 $order->setPaymentResponse($payment->getLog());
                 $order->save();
 
+                $this->logMessage('{rtShopOrderPayment} Payment for order: '.$order->getReference().' was not approved. Response: '.$payment->getLog());
+
                 $this->getUser()->setFlash('error', sprintf('%s',$payment->getResponseMessage()));
                 return;
               }
             }
             else
             {
+              $this->logMessage('{rtShopOrderPayment} Payment for order: '.$order->getReference().' failed catastrophically with response: '.$payment->getLog());
               throw new sfException("Something went very wrong - our technicians are looking into it right now.");
             }
           }
@@ -337,6 +342,10 @@ class BasertShopOrderActions extends sfActions
       {
         $this->getCartManager()->getVoucher();
       }
+
+      // send mail
+
+      $this->logMessage('{rtShopOrderPayment} Order: '.$order->getReference().' was completed.');
 
       //$this->redirect('rt_shop_order_receipt');
     }

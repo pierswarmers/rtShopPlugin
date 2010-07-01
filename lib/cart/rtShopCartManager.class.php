@@ -208,27 +208,7 @@ class rtShopCartManager
    */
 	public function getVoucher()
 	{
-//		if(is_null($this->_voucher))
-//    {
-//      if ($this->_sf_user->hasAttribute('rt_shop_voucher_code'))
-//      {
-//        $voucher = $this->_sf_user->getAttribute('rt_shop_voucher_code');
-//
-//        $query = Doctrine_Query::create()
-//               ->from('rtShopVoucher v')
-//               ->addWhere('v.code = ?', $voucher);
-//        $voucher = $query->fetchOne();
-//
-//        if($voucher)
-//        {
-//          $this->_voucher = $voucher;
-//        }
-//      }
-//    }
-//    else
-//    {
-      return $this->_voucher;
-//    }
+    return $this->_voucher;
 	}
   
   /**
@@ -294,6 +274,51 @@ class rtShopCartManager
 		}
 		return rtShopVoucherToolkit::applyVoucher($this->getVoucher(), $total);
 	}
+
+   /**
+    * Archive closed order values (total, tax, products)
+    *
+    * @param $order Order object
+    */
+   public function archive()
+   {
+     $order = $this->getOrder();
+     
+     $products = array();
+     $i=0;
+     foreach ($order->getStockInfoArray() as $stock)
+     {
+       // String with all variations for that product
+       $variations = '';
+       if(count($stock['rtShopVariations']) > 0) {
+         $deliminator = '';
+         foreach ($stock['rtShopVariations'] as $variation) {
+           $variations .= $deliminator.$variation['title'];
+           $deliminator = ', ';
+         }
+       }
+
+       // Put together the small products array
+       $products[$i]['id'] = $stock['rtShopProduct']['id'];
+       $products[$i]['sku'] = $stock['rtShopProduct']['sku'];
+       $products[$i]['title'] = $stock['rtShopProduct']['title'];
+       $products[$i]['variations'] = $variations;
+       $products[$i]['summary'] = rtrim(ltrim(strip_tags($stock['rtShopProduct']['description'])));
+       $products[$i]['quantity'] = $stock['rtShopOrderToStock'][0]['quantity'];
+       $products[$i]['charge_price'] = $stock['price_promotion'] != 0 ? $stock['price_promotion'] : $stock['price_retail'];
+       $products[$i]['price_promotion'] = $stock['price_promotion'];
+       $products[$i]['price_retail'] = $stock['price_retail'];
+       $products[$i]['price_wholesale'] = $stock['price_wholesale'];
+       $products[$i]['currency'] = sfConfig::get('app_rt_shop_payment_currency','AU');
+       $i++;
+     }
+
+     $order->setClosedProducts($products);
+     $order->setClosedShippingRate($this->getShipping());
+     $order->setClosedTaxes($order->getTotalTax());
+     $order->setClosedPromotions($this->getPromotion());
+     $order->setClosedTotal($this->getTotal());
+   }
 
   /**
    * Get order object
