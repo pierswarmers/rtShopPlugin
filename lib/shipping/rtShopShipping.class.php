@@ -41,17 +41,26 @@ class rtShopShipping
   {
     $response = array();
 
-    $address = $this->_order->getShippingAddressArray();
-    $handling_charge = sfConfig::get('app_rt_shop_shipping_rate',array('domestic' => 0, 'international' => 0));
+    $address = $this->_order->getBillingAddressArray();
 
-    if (!isset($address['country']) || is_null($address['country']) || $address['country'] == '') {
-      return false;
+    if(isset($address[0]))
+    {
+      $address = $address[0];
+      $handling_charge = sfConfig::get('app_rt_shop_shipping_rate',array('domestic' => 0, 'international' => 0));
+
+      if (!isset($address['country']) || is_null($address['country']) || $address['country'] == '') {
+        return false;
+      }
+
+      if ($address['country'] == sfConfig::get('app_rt_shop_default_country', 'AU')) {
+        $response['charge'] = $handling_charge['domestic'];
+      } else {
+        $response['charge'] = $handling_charge['international'];
+      }
     }
-
-    if ($address['country'] == sfConfig::get('app_rt_shop_default_country', 'AU')) {
-      $response['charge'] = $handling_charge['domestic'];
-    } else {
-      $response['charge'] = $handling_charge['international'];
+    else
+    {
+      $response['charge'] = 0;
     }
 
     return $response;

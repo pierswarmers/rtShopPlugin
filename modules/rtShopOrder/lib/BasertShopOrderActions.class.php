@@ -49,6 +49,8 @@ class BasertShopOrderActions extends sfActions
   public function executeCart(sfWebRequest $request)
   {
     $this->rt_shop_order = $this->getOrder();
+
+    $this->updateUserSession();
   }
 
   /**
@@ -262,6 +264,8 @@ class BasertShopOrderActions extends sfActions
       $this->redirect('rt_shop_order_address');
     }
 
+    $this->updateUserSession();
+
     $this->form = new rtShopPaymentForm($order, array('rt_shop_cart_manager' => $this->getCartManager()));
     $this->form_cc = new rtShopCreditCardPaymentForm();
 
@@ -312,6 +316,7 @@ class BasertShopOrderActions extends sfActions
                 $this->getCartManager()->adjustVoucherCount();
 
                 $this->logMessage('{rtShopOrderPayment} Payment for order: '.$order->getReference().' approved.');
+                $this->logMessage('{rtShopOrderPayment} Order: '.$order->getReference().' was completed.');
               }
               else
               {
@@ -321,6 +326,7 @@ class BasertShopOrderActions extends sfActions
                 $order->save();
 
                 $this->logMessage('{rtShopOrderPayment} Payment for order: '.$order->getReference().' was not approved. Response: '.$payment->getLog());
+                $this->logMessage('{rtShopOrderPayment} Order: '.$order->getReference().' incomplete.');
 
                 $this->getUser()->setFlash('error', sprintf('%s',$payment->getResponseMessage()));
                 return;
@@ -349,8 +355,6 @@ class BasertShopOrderActions extends sfActions
       }
 
       // Send mail
-
-      $this->logMessage('{rtShopOrderPayment} Order: '.$order->getReference().' was completed.');
 
       $this->redirect('rt_shop_order_receipt');
     }

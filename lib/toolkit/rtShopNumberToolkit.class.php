@@ -38,6 +38,6 @@ class rtShopNumberToolkit
         }
       }
     }
-    return $newstring;
+    return strtoupper($newstring);
   }
 }

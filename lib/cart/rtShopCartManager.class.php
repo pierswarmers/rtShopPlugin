@@ -391,7 +391,7 @@ class rtShopCartManager
 		{
 			$order_id = $this->_sf_user->getAttribute('rt_shop_frontend_order_id');
 
-			if(!is_null($order_id) || $order_id != '')
+			if(!is_null($order_id) && $order_id != '')
 			{
 				$order = Doctrine::getTable('rtShopOrder')->find($order_id);
 
