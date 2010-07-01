@@ -303,6 +303,7 @@ class BasertShopOrderActions extends sfActions
                 $order->setPaymentTransactionId($payment->getTransactionNumber());
                 $order->setPaymentCharge($this->getCartManager()->getTotal());
                 $order->setPaymentResponse($payment->getLog());
+                $order->setVoucherCode($voucher_code);
                 $this->getCartManager()->archive();
                 $order->save();
 
