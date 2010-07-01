@@ -21,36 +21,32 @@ class rtShopVoucherValidator extends sfValidatorBase
   {
     parent::configure($options, $messages);
 
-    $this->addOption('total', null);
-    $this->addOption('code', null);
-
-    $this->addMessage('total', 'Unknown order total.');
+    $this->addOption('rt_shop_order', null);
     $this->addMessage('code', (isset($messages['code'])) ? $messages['code'] : 'Voucher code is invalid. Please check.');
   }
 
-  protected function doClean($value)
+  protected function doClean($values)
   {
-    if(!is_null($value) && $value !== '')
+    $rt_shop_order = $this->getOption('rt_shop_order');
+    $total = $rt_shop_order->getGrandTotalPrice();
+    if(!is_null($values) && $values !== '')
     {
-      if(is_numeric($this->getOption('total')) && $this->getOption('total') > 0)
+      if($total > 0)
       {
         $q = Doctrine_Query::create()
             ->from('rtShopPromotion p')
-            ->andWhere('p.code = ?', $value)
+            ->andWhere('p.code = ?', $values)
             ->andWhere('p.type = ?', 'rtShopVoucher');
+        
         $voucher = $q->fetchOne();
 
         if(!$voucher)
         {
-          throw new sfValidatorError($this, 'code', array('code' => $this->getOption('code')));
+          throw new sfValidatorError($this, 'code', array('code' => $values['code']));
         }
-      }
-      else
-      {
-        throw new sfValidatorError($this, 'total', array('total' => $this->getOption('total')));
       }
     }
     
-    return $value;
+    return $values;
   }
 }

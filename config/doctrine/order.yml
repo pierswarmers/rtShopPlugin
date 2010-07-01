@@ -26,21 +26,30 @@ rtShopOrder:
   columns:
     reference:                { type: string(255) }
     status:                   { type: string(255) }
+
+    voucher_code:             { type: string(100) }
+
     email:                    { type: string(255) }
+    
     notes_user:               { type: string }
     notes_admin:              { type: string }
+
     user_id:                  { type: integer }
+
     is_wholesale:             { type: boolean, default: false }
+    
     closed_shipping_rate:     { type: float, default: 0.00 }
     closed_taxes:             { type: float, default: 0.00 }
     closed_promotions:        { type: float, default: 0.00 }
     closed_products:          { type: array(10000) }
     closed_total:             { type: float, default: 0.00 }
+
     payment_transaction_id:   { type: string(255) }
     payment_type:             { type: string(255) }
     payment_charge:           { type: float, default: 0.00 }
     payment_approved:         { type: integer, default: 0 }
     payment_response:         { type: string }
+    
   relations:
     Stocks:
       class: rtShopStock

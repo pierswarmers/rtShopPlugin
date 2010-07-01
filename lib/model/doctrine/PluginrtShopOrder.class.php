@@ -260,79 +260,72 @@ abstract class PluginrtShopOrder extends BasertShopOrder
    * @param String $status Order status
    * @return $status Status
    */
-  public function setStatus($status)
-  {
-    if($status === $this->getStatus())
-    {
-      return $this;
-    }
-
-    parent::_set('status', $status);
-
-    if($status === rtShopOrder::STATUS_PAID)
-    {
-      foreach($this->getStockInfoArray() as $stock)
-      {
-        $stock_object = Doctrine::getTable('rtShopStock')->find($stock['rtShopOrderToStock'][0]['stock_id']);
-
-        if($stock_object)
-        {
-          $stock_object->setQuantity($stock_object->getQuantity() - $stock['rtShopOrderToStock'][0]['quantity']);
-          $stock_object->save();
-        }
-      }
-      try
-      {
-        $this->archive();
-      } catch (Exception $exc)
-      {
-        //sfContext::getInstance()->getLogger()->crit('{rtShopOrderArchive} Archive failed: ' . $exc->getTraceAsString());
-      }
-    }
-  }
+//  public function setStatus($status)
+//  {
+//    if($status === $this->getStatus())
+//    {
+//      return $this;
+//    }
+//
+//    parent::_set('status', $status);
+//    parent::save();
+//
+//    if($status === rtShopOrder::STATUS_PAID)
+//    {
+//      foreach($this->getStockInfoArray() as $stock)
+//      {
+//        $stock_object = Doctrine::getTable('rtShopStock')->find($stock['rtShopOrderToStock'][0]['stock_id']);
+//
+//        if($stock_object)
+//        {
+//          $stock_object->setQuantity($stock_object->getQuantity() - $stock['rtShopOrderToStock'][0]['quantity']);
+//          $stock_object->save();
+//        }
+//      }
+//    }
+//  }
 
    /**
     * Archive closed order values (total, tax, products)
     *
     * @param $order Order object
     */
-   public function archive()
-   {
-     $products = array();
-     $i=0;
-     foreach ($this->getStockInfoArray() as $stock)
-     {
-       // String with all variations for that product
-       $variations = '';
-       if(count($stock['rtShopVariations']) > 0) {
-         $deliminator = '';
-         foreach ($stock['rtShopVariations'] as $variation) {
-           $variations .= $deliminator.$variation['title'];
-           $deliminator = ', ';
-         }
-       }
-
-       // Put together the small products array
-       $products[$i]['id'] = $stock['rtShopProduct']['id'];
-       $products[$i]['sku'] = $stock['rtShopProduct']['sku'];
-       $products[$i]['title'] = $stock['rtShopProduct']['title'];
-       $products[$i]['variations'] = $variations;
-       $products[$i]['summary'] = rtrim(ltrim(strip_tags($stock['rtShopProduct']['description'])));
-       $products[$i]['quantity'] = $stock['rtShopOrderToStock'][0]['quantity'];
-       $products[$i]['charge_price'] = $stock['price_promotion'] != 0 ? $stock['price_promotion'] : $stock['price_retail'];
-       $products[$i]['price_promotion'] = $stock['price_promotion'];
-       $products[$i]['price_retail'] = $stock['price_retail'];
-       $products[$i]['price_wholesale'] = $stock['price_wholesale'];
-       $products[$i]['currency'] = sfConfig::get('app_rt_shop_payment_currency','AU');
-       $i++;
-     }
-
-     $this->setClosedShippingRate($this->getShippingCharge());
-     $this->setClosedTaxes($this->getTotalTax());
-     $this->setClosedPromotions(0);
-     $this->setClosedProducts($products);
-     $this->setClosedTotal($this->getGrandTotalPrice());
-   }
+//   public function archive()
+//   {
+//     $products = array();
+//     $i=0;
+//     foreach ($this->getStockInfoArray() as $stock)
+//     {
+//       // String with all variations for that product
+//       $variations = '';
+//       if(count($stock['rtShopVariations']) > 0) {
+//         $deliminator = '';
+//         foreach ($stock['rtShopVariations'] as $variation) {
+//           $variations .= $deliminator.$variation['title'];
+//           $deliminator = ', ';
+//         }
+//       }
+//
+//       // Put together the small products array
+//       $products[$i]['id'] = $stock['rtShopProduct']['id'];
+//       $products[$i]['sku'] = $stock['rtShopProduct']['sku'];
+//       $products[$i]['title'] = $stock['rtShopProduct']['title'];
+//       $products[$i]['variations'] = $variations;
+//       $products[$i]['summary'] = rtrim(ltrim(strip_tags($stock['rtShopProduct']['description'])));
+//       $products[$i]['quantity'] = $stock['rtShopOrderToStock'][0]['quantity'];
+//       $products[$i]['charge_price'] = $stock['price_promotion'] != 0 ? $stock['price_promotion'] : $stock['price_retail'];
+//       $products[$i]['price_promotion'] = $stock['price_promotion'];
+//       $products[$i]['price_retail'] = $stock['price_retail'];
+//       $products[$i]['price_wholesale'] = $stock['price_wholesale'];
+//       $products[$i]['currency'] = sfConfig::get('app_rt_shop_payment_currency','AU');
+//       $i++;
+//     }
+//
+//     $this->setClosedProducts($products);
+//     $this->setClosedShippingRate($this->getShippingCharge());
+//     $this->setClosedTaxes($this->getTotalTax());
+//     $this->setClosedPromotions(0);
+//   }
 
   /**
    * Get shipping charge for order. Shipping charges are calculated by using
@@ -375,8 +368,11 @@ abstract class PluginrtShopOrder extends BasertShopOrder
    */
   public function getGrandTotalPrice()
   {
-    $cm = new rtShopCartManager(sfContext::getInstance()->getUser());
-    $grand_total = $cm->getTotal();
+    $grand_total = $this->getTotalPriceWithTax();
+
+    if ($this->getShippingCharge() != false) {
+      $grand_total += $this->getShippingCharge();
+    }
 
     return (float) round($grand_total, 2);
   }

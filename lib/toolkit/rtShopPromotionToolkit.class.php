@@ -27,11 +27,11 @@ class rtShopPromotionToolkit
    */
   public static function getBest($total, $date = NULL)
   {
-    $promotions = Doctrine::getTable('rtShopPromotion')->findAvailable($total, $date);
+    $promotions = Doctrine::getTable('rtShopPromotionCart')->findAvailable($total, $date);
 
     if (count($promotions) > 0) {
       $orders_by_saving = self::orderPromotionsBySaving($promotions, $total);
-      return Doctrine::getTable('rtShopPromotion')->find($orders_by_saving[0]['id']);
+      return Doctrine::getTable('rtShopPromotionCart')->find($orders_by_saving[0]['id']);
     }
     
     return false;
@@ -46,11 +46,11 @@ class rtShopPromotionToolkit
    */
   public static function getNextBest($total, $date = NULL)
   {
-    $promotions = Doctrine::getTable('rtShopPromotion')->findNearlyAvailable($total, $date);
+    $promotions = Doctrine::getTable('rtShopPromotionCart')->findNearlyAvailable($total, $date);
 
     if (count($promotions) > 0) {
       $orders_by_total_from = self::orderPromotionsByTotalFrom($promotions,$total);
-      return Doctrine::getTable('rtShopPromotion')->find($orders_by_total_from[0]['id']);
+      return Doctrine::getTable('rtShopPromotionCart')->find($orders_by_total_from[0]['id']);
     }
 
     return false;
@@ -65,7 +65,7 @@ class rtShopPromotionToolkit
    */
   public static function getDistanceToNextBest($total, $date = NULL)
   {
-    $promotions = Doctrine::getTable('rtShopPromotion')->findNearlyAvailable($total, $date);
+    $promotions = Doctrine::getTable('rtShopPromotionCart')->findNearlyAvailable($total, $date);
 
     if (count($promotions) > 0) {
       $dist_to_next_promo = self::orderPromotionsByTotalFrom($promotions,$total);

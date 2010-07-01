@@ -8,12 +8,12 @@
       <?php include_partial('breadcrumb', array()) ?>
 
       <h2><?php echo __('Voucher Details') ?></h2>
-      <?php include_partial('form', array('form' => $voucher_form)) ?>
-
+      <?php include_partial('form', array('form' => $form)) ?>
+      
       <h2><?php echo __('Creditcard Details') ?></h2>
-      <?php include_partial('form', array('form' => $creditcard_form)) ?>
+      <?php include_partial('form', array('form' => $form_cc)) ?>
 
-      <h3><?php echo __('Total to be charged to your credit card: '); ?> <?php echo format_currency((isset($total)) ? $total :$rt_shop_order->getGrandTotalPrice(), sfConfig::get('app_rt_shop_payment_currency','AU')); ?></h3>
+      <h3><?php echo __('Total to be charged to your credit card: '); ?> <?php echo format_currency($rt_shop_cart_manager->getTotal(), sfConfig::get('app_rt_shop_payment_currency','AUD')); ?></h3>
     </div>
 
     <div class="rt-container rt-shop-order-tools">
