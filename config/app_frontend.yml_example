@@ -2,8 +2,8 @@
 all:
   rt_shop:
     default_country:              AU                      # Country where shipping is handled in
-    #payment_currency:             AU                      # Currency acronym (e.g AU = Australian Dollar)
-    payment_class:                "rtShopEwayPayment"         # Name of payment class
+    #payment_currency:             AUD                      # Currency acronym (e.g AU = Australian Dollar)
+    #payment_class:                "rtShopEwayPayment"         # Name of payment class
     #shipping_class:               "rtShopShipping"        # Name of shipping class
     #shipping_rate:
       #domestic:                   8                       # Domestic shipping rate applicable to order (i.e 8 = $8)
@@ -14,6 +14,14 @@ all:
       #Visa:                 Visa
       #Discover:             Discover
       #American Express:     American Express
+    #order_status_types:
+      #cancelled:             cancelled
+      #complete:              complete
+      #pending:               pending
+      #shipped:               shipped
+      #processing:            processing
+      #backordered:           backordered
+      #paid:                  paid
 
   eway:
     customer_id:            87654321                       # eWay customer ID [required] (e.g 87654321 default for testing)
