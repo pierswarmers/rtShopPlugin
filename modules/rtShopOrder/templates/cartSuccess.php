@@ -20,7 +20,7 @@
             <th><?php echo __('Actions') ?></th>
           </tr>
         </thead>
-        <?php include_partial('cart', array('rt_shop_order' => $rt_shop_order, 'stock_exceeded' => isset($stock_exceeded) ? $stock_exceeded : array(), 'update_quantities' => isset($update_quantities) ? $update_quantities : array())) ?>
+        <?php include_partial('cart', array('rt_shop_cart_manager' => $rt_shop_cart_manager, 'stock_exceeded' => isset($stock_exceeded) ? $stock_exceeded : array(), 'update_quantities' => isset($update_quantities) ? $update_quantities : array())) ?>
       </table>
     </div>
 
