@@ -364,7 +364,7 @@ class BasertShopOrderActions extends sfActions
   {
     //Show receipt and send mail
 
-    //$this->cleanSession();
+    $this->cleanSession();
   }
 
   /**
