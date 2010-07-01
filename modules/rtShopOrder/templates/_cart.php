@@ -3,7 +3,7 @@
   $stock_exceeded = isset($stock_exceeded) ? $stock_exceeded : array(); // needed for output escaping
 ?>
 <tbody>
-<?php $i = 0; foreach($rt_shop_order->getStockInfoArray() as $stock): ?>
+<?php $i = 0; foreach($rt_shop_cart_manager->getOrder()->getStockInfoArray() as $stock): ?>
   <?php
     $item_price = $stock['price_promotion'] != 0 ? $stock['price_promotion'] : $stock['price_retail'];
     $product = Doctrine::getTable('rtShopProduct')->find($stock['product_id']);
@@ -48,18 +48,18 @@
 <tfoot>
   <tr class="rt-shop-cart-sub-total">
     <th colspan="5"><?php echo __('Sub-Total'); ?>:</th>
-    <td colspan="2"><?php echo format_currency($rt_shop_order->getTotalPriceWithoutTax(), sfConfig::get('app_rt_currency', 'USD')); ?></td>
+    <td colspan="2"><?php echo format_currency($rt_shop_cart_manager->getOrder()->getTotalPriceWithoutTax(), sfConfig::get('app_rt_currency', 'USD')); ?></td>
   </tr>
   <tr class="rt-shop-cart-tax">
     <th colspan="5"><?php echo __('Taxes'); ?>:</th>
-    <td colspan="2"><?php echo format_currency($rt_shop_order->getTotalTax(), sfConfig::get('app_rt_currency', 'USD')); ?></td>
+    <td colspan="2"><?php echo format_currency($rt_shop_cart_manager->getOrder()->getTotalTax(), sfConfig::get('app_rt_currency', 'USD')); ?></td>
   </tr>
   <tr class="rt-shop-cart-sub-total">
     <th colspan="5"><?php echo __('Sub-Total (including rates)'); ?>:</th>
-    <td colspan="2"><?php echo format_currency($rt_shop_order->getTotalPriceWithTax(), sfConfig::get('app_rt_currency', 'USD')); ?></td>
+    <td colspan="2"><?php echo format_currency($rt_shop_cart_manager->getOrder()->getTotalPriceWithTax(), sfConfig::get('app_rt_currency', 'USD')); ?></td>
   </tr>
   <tr class="rt-shop-cart-total">
     <th colspan="5"><?php echo __('Grand-Total (including promotions)'); ?>:</th>
-    <td colspan="2"><?php echo format_currency($rt_shop_order->getGrandTotalPrice(), sfConfig::get('app_rt_currency', 'USD')); ?></td>
+    <td colspan="2"><?php echo format_currency($rt_shop_cart_manager->getTotal(), sfConfig::get('app_rt_currency', 'USD')); ?></td>
   </tr>
 </tfoot>

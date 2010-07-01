@@ -48,6 +48,7 @@ class BasertShopOrderActions extends sfActions
    */
   public function executeCart(sfWebRequest $request)
   {
+    $this->rt_shop_cart_manager = $this->getCartManager();
     $this->rt_shop_order = $this->getOrder();
 
     $this->updateUserSession();
@@ -127,6 +128,8 @@ class BasertShopOrderActions extends sfActions
    */
   public function executeUpdate(sfWebRequest $request)
   {
+    $this->rt_shop_cart_manager = $this->getCartManager();
+    
     if($request->getMethod() !== 'POST')
     {
       $this->redirect('rt_shop_order_cart');
@@ -331,6 +334,8 @@ class BasertShopOrderActions extends sfActions
                 $this->getUser()->setFlash('error', sprintf('%s',$payment->getResponseMessage()));
                 return;
               }
+
+              $this->redirect('rt_shop_order_receipt');
             }
             else
             {
@@ -355,8 +360,6 @@ class BasertShopOrderActions extends sfActions
       }
 
       // Send mail
-
-      $this->redirect('rt_shop_order_receipt');
     }
   }
 
