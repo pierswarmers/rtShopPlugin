@@ -60,7 +60,7 @@ abstract class PluginrtShopVariationForm extends BasertShopVariationForm
 
     $this->validatorSchema['position']->setOption('required', false);
 
-    $pattern = '/^[a-z A-Z 0-9 ( ) , . : \" \/ \' & # @ \- \| ! ? + = * _ ]{1,}$/';
+    $pattern = '/^[a-zA-Z0-9 (),.:\"\/\'&#@\-\|!?+=*_]{1,}$/';
     $this->setValidator('title', new sfValidatorRegex(array('pattern' => $pattern, 'required' => false)));
 
     $this->validatorSchema['title']->setOption('required', false);
