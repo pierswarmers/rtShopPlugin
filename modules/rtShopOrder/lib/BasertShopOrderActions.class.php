@@ -191,16 +191,20 @@ class BasertShopOrderActions extends sfActions
   }
   
   /**
-   * Executes the checkout page
+   * This action primarily prompts the user to either create an account or login.
    *
    * @param sfWebRequest $request
    */
   public function executeCheckout(sfWebRequest $request)
   {
-    $this->rt_shop_order = $this->getOrder();
-    $this->redirectUnless(count($this->getOrder()->Stocks) > 0, '@rt_shop_order_cart');
-    
-    $this->redirect('rt_shop_order_address');
+    // Are there items in the cart? If no, redirect backwards...
+    $this->redirectIf($this->getCartManager()->isEmpty(), 'rt_shop_order_cart');
+
+    // Is this user already logged in? If yes, redirect forwards...
+    $this->redirectIf($this->getUser()->isAuthenticated(), 'rt_shop_order_address');
+
+    $class = sfConfig::get('app_sf_guard_plugin_signin_form', 'sfGuardFormSignin');
+    $this->form_user = new $class();
   }
 
   /**
