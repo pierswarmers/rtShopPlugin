@@ -55,7 +55,7 @@ UI overide
 Breadcrumb
 
 */
-.rt-shop-order-breadcrumb {font-style:italic;margin-top:17px;list-style-type:none;}
+.rt-shop-order-breadcrumb {list-style-type:none;background:#E9E9E9;}
 .rt-shop-order-breadcrumb li a {text-decoration:none;color:#8E8E8E;}
 .rt-shop-order-breadcrumb li.past a, .rt-shop-order-breadcrumb li.past-present a {color:#FFF;}
  .rt-shop-order-breadcrumb li span {color:#000;}
