@@ -36,8 +36,8 @@ class rtShopCreditCardPaymentForm extends sfForm
     $this->widgetSchema->setLabel('cc_expire',"Expiry Date:");
     $this->widgetSchema->setLabel('cc_verification',"Verification Number:");
 
-    $this->widgetSchema->setHelp('cc_number', '<i style="font-size:10px;">Example: 4100 0000 0000 0000.</i>');
-    $this->widgetSchema->setHelp('cc_verification', '<i style="font-size:10px;">The verification Number is a three or four-digit number on the back or front of your credit card.</i>');
+    $this->widgetSchema->setHelp('cc_number', 'Example: 4100 0000 0000 0000.');
+    $this->widgetSchema->setHelp('cc_verification', 'The verification Number is a three or four-digit number on the back or front of your credit card.');
 
     // Validators
     $this->setValidators(array(

@@ -337,7 +337,7 @@ class rtShopCartManager
 
    /**
     * Adjust stock quantities
-    * 
+    *
     */
   public function adjustStockQuantities()
   {
@@ -353,6 +353,28 @@ class rtShopCartManager
           $stock_object->save();
           sfContext::getInstance()->getLogger()->info(sprintf('{rtShopCartManager} Adjust stock Id = %s by quantity = %s. Quantity before = %s. Quantity after =  %s',$stock['rtShopOrderToStock'][0]['stock_id'],$stock['rtShopOrderToStock'][0]['quantity'],$quantity_before,$stock_object->getQuantity()));
         }
+      }
+    }
+  }
+
+   /**
+    * Remove Cache for products.
+    *
+    */
+  public function clearCache($product_ids = array())
+  {
+    foreach($this->getOrder()->getStockInfoArray() as $stock)
+    {
+      $product_ids[$stock['product_id']] = $stock['product_id'];
+    }
+
+    foreach($product_ids as $id)
+    {
+      $product = Doctrine::getTable('rtShopProduct')->find($id);
+
+      if($product)
+      {
+        rtShopProductCacheToolkit::clearCache($product);
       }
     }
   }
@@ -383,7 +405,7 @@ class rtShopCartManager
   /**
    * Get order object
    *
-   * @return Object Order object
+   * @return rtShopOrder object
    */
 	public function getOrder()
 	{

@@ -65,7 +65,7 @@ class rtShopEwayPayment implements rtShopPaymentInterface
     // Check if total in cents
     if (!is_int($total))
     {
-      sfContext::getInstance()->getLogger()->err('{rtShopEwayPayment} Total value has to be an integer (e.g. cents).');
+      sfContext::getInstance()->getLogger()->err('{rtShopPaymentEway} Total value has to be an integer (e.g. cents).');
       return false;
     }
 
@@ -75,7 +75,7 @@ class rtShopEwayPayment implements rtShopPaymentInterface
     {
       if (!array_key_exists($value, $credit_card))
       {
-        sfContext::getInstance()->getLogger()->err('{rtShopEwayPayment} Missing mandatory field for payment: '.$value);
+        sfContext::getInstance()->getLogger()->err('{rtShopPayment} Missing mandatory field for payment: '.$value);
         return false;
       }
     }
@@ -131,7 +131,7 @@ class rtShopEwayPayment implements rtShopPaymentInterface
 
       // API errors
       if($this->isApiError($this->getResponseCode())) {
-        sfContext::getInstance()->getLogger()->err('{rtShopEwayPayment} $this->isApiError() flagged an error : '.serialize($response));
+        sfContext::getInstance()->getLogger()->err('{rtShopPaymentEway} $this->isApiError() flagged an error : '.serialize($response));
         return false;
       }
 
@@ -148,7 +148,7 @@ class rtShopEwayPayment implements rtShopPaymentInterface
 
       return true;
     } catch (Exception $e) {
-      sfContext::getInstance()->getLogger()->err('{rtShopEwayPayment} Fatal exception caught while trying to process rtShopEwayPayment::doPayment() : '.serialize($response));
+      sfContext::getInstance()->getLogger()->err('{rtShopPaymentEway} Fatal exception caught while trying to process rtShopEwayPayment::doPayment() : '.serialize($response));
       return false;
     }
   }

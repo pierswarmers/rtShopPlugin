@@ -28,41 +28,41 @@ class rtShopCreditCardValidator extends sfValidatorBase
   {
     $errorSchema = new sfValidatorErrorSchema($this);
 
-    $cleaned_number = preg_replace('/\D/', '', $values['cc_number']);
-    $number_length = strlen($cleaned_number);
-
-    // Check credit card number
-    if (!is_null($values['cc_number']) && (!is_numeric($cleaned_number) || !($number_length >= 13 && $number_length <= 16) || !($this->checkLuhn($cleaned_number))))
-    {
-      $errorSchema->addError(new sfValidatorError($this, $this->getMessage('invalid')), 'cc_number');
-    }
-
-    //Card validation code => MasterCard, Visa, Diners Club, Discover, JCB = 3
-    //                        American Express  = 4
-    if (!is_null($values['cc_verification']) && !is_numeric($values['cc_verification']))
-    {
-      $errorSchema->addError(new sfValidatorError($this, $this->getMessage('invalid_ccv')), 'cc_verification');
-    }
-
-    // Expiry date
-    if($values['cc_expire']['month'] !== '' && $values['cc_expire']['year'] !== '')
-    {
-      $date_now = date("Y-m-d H:i:s", mktime(0,0,0,date("m"),date("d"),date("Y")));
-      $date_expire = date("Y-m-d H:i:s", mktime(0, 0, 0, $values['cc_expire']['month'], cal_days_in_month(CAL_GREGORIAN, $values['cc_expire']['month'], $values['cc_expire']['year']), $values['cc_expire']['year']));
-      if ($date_expire <= $date_now)
-      {
-        $errorSchema->addError(new sfValidatorError($this, $this->getMessage('expired')), 'cc_expire');
-      }
-    }
-    else
-    {
-      $errorSchema->addError(new sfValidatorError($this, 'required'), 'cc_expire');
-    }
-
-    if (count($errorSchema))
-    {
-      throw new sfValidatorErrorSchema($this, $errorSchema);
-    }
+//    $cleaned_number = preg_replace('/\D/', '', $values['cc_number']);
+//    $number_length = strlen($cleaned_number);
+//
+//    // Check credit card number
+//    if (!is_null($values['cc_number']) && (!is_numeric($cleaned_number) || !($number_length >= 13 && $number_length <= 16) || !($this->checkLuhn($cleaned_number))))
+//    {
+//      $errorSchema->addError(new sfValidatorError($this, $this->getMessage('invalid')), 'cc_number');
+//    }
+//
+//    //Card validation code => MasterCard, Visa, Diners Club, Discover, JCB = 3
+//    //                        American Express  = 4
+//    if (!is_null($values['cc_verification']) && !is_numeric($values['cc_verification']))
+//    {
+//      $errorSchema->addError(new sfValidatorError($this, $this->getMessage('invalid_ccv')), 'cc_verification');
+//    }
+//
+//    // Expiry date
+//    if($values['cc_expire']['month'] !== '' && $values['cc_expire']['year'] !== '')
+//    {
+//      $date_now = date("Y-m-d H:i:s", mktime(0,0,0,date("m"),date("d"),date("Y")));
+//      $date_expire = date("Y-m-d H:i:s", mktime(0, 0, 0, $values['cc_expire']['month'], cal_days_in_month(CAL_GREGORIAN, $values['cc_expire']['month'], $values['cc_expire']['year']), $values['cc_expire']['year']));
+//      if ($date_expire <= $date_now)
+//      {
+//        $errorSchema->addError(new sfValidatorError($this, $this->getMessage('expired')), 'cc_expire');
+//      }
+//    }
+//    else
+//    {
+//      $errorSchema->addError(new sfValidatorError($this, 'required'), 'cc_expire');
+//    }
+//
+//    if (count($errorSchema))
+//    {
+//      throw new sfValidatorErrorSchema($this, $errorSchema);
+//    }
 
     return $values;
   }

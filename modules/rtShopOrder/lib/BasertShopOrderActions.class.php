@@ -100,6 +100,7 @@ class BasertShopOrderActions extends sfActions
     if(!$this->getCartManager()->addToCart($stock_id,(int) $request->getParameter('rt-shop-quantity')))
     {
       $this->getUser()->setFlash('error', 'We don\'t seem to have enough stock available for that selection.');
+      $this->redirect('rt_shop_product_show', $rt_shop_product);
     }
 
     $this->updateUserSession();
@@ -256,111 +257,88 @@ class BasertShopOrderActions extends sfActions
    */
   public function executePayment(sfWebRequest $request)
   {
-    $this->rt_shop_cart_manager = $this->getCartManager();
-    $this->rt_shop_order = $this->getOrder();
-    $order = $this->getOrder();
+    // Get the cart manager... all access to order will be through the cart manager.
 
-    $this->redirectUnless(count($order->Stocks) > 0, 'rt_shop_order_cart');
+    $cm = $this->getCartManager();
 
-    if(!Doctrine::getTable('rtAddress')->getAddressForObjectAndType($order, 'billing'))
+    $this->redirectUnless(count($cm->getOrder()->Stocks) > 0, 'rt_shop_order_cart');
+
+    if(!Doctrine::getTable('rtAddress')->getAddressForObjectAndType($cm->getOrder(), 'billing'))
     {
       $this->redirect('rt_shop_order_address');
     }
 
     $this->updateUserSession();
 
-    $this->form = new rtShopPaymentForm($order, array('rt_shop_cart_manager' => $this->getCartManager()));
+    $this->form = new rtShopPaymentForm($cm->getOrder(), array('rt_shop_cart_manager' => $cm));
     $this->form_cc = new rtShopCreditCardPaymentForm();
 
     if ($this->getRequest()->isMethod('PUT') || $this->getRequest()->isMethod('POST'))
     {
-      $errors = false;
-      $this->form->bind($request->getParameter($this->form->getName()), $request->getFiles($this->form->getName()));
-      $this->form_cc->bind($request->getParameter($this->form_cc->getName()), $request->getFiles($this->form_cc->getName()));
+      $this->form    ->bind($request->getParameter($this->form->getName()), $request->getFiles($this->form->getName()));
+      $this->form_cc ->bind($request->getParameter($this->form_cc->getName()), $request->getFiles($this->form_cc->getName()));
 
-      if($this->form->isValid())
+      // Has local validation passed?
+
+      if(!$this->form->isValid() || !$this->form_cc->isValid())
       {
-        $voucher_code = $this->form->getValue('voucher_code');
+        // Validation failed... stop script here
+        $this->getUser()->setFlash('default_error', '', false);
+        $this->rt_shop_cart_manager = $cm;
+        return sfView::SUCCESS;
+      }
 
-        if($voucher_code != '')
-        {
-          $this->getCartManager()->setVoucher($voucher_code);
-          $this->form->save();
-        }
+      // Validation passed... continue with script
 
-        if(!$errors && $this->form_cc->isValid())
+      $voucher_code = $this->form->getValue('voucher_code');
+
+      if($voucher_code != '')
+      {
+        $cm->setVoucher($voucher_code);
+        $cm->getOrder()->setVoucherCode($voucher_code);
+        $cm->getOrder()->save();
+      }
+      
+      if($cm->getTotal() > 0)
+      {
+        $this->logMessage('{rtShopPayment} Order: '.$cm->getOrder()->getReference().'. Proceeding to charge credit card with: ' . $cm->getTotal());
+
+        $cc_array = $this->FormatCcInfoArray($this->form_cc->getValues());
+        $address = $cm->getOrder()->getBillingAddressArray();
+        $customer_array = $this->FormatCustomerInfoArray($address[0], $cm->getOrder()->getEmail());
+
+        $payment = rtShopPaymentToolkit::getPaymentObject(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
+
+        if($payment->doPayment((int) $cm->getTotal()*100, $cc_array, $customer_array))
         {
-          if($this->getCartManager()->getTotal() > 0)
+          if($payment->isApproved())
           {
-            $this->logMessage('{rtShopOrderPayment} Order: '.$order->getReference().'. Proceeding to charge credit card with: ' . $this->getCartManager()->getTotal());
+            $cm->getOrder()->setStatus(rtShopOrder::STATUS_PAID);
+            $cm->getOrder()->setPaymentType(get_class($payment));
+            $cm->getOrder()->setPaymentApproved($payment->isApproved());
+            $cm->getOrder()->setPaymentTransactionId($payment->getTransactionNumber());
+            $cm->getOrder()->setPaymentCharge($cm->getTotal());
+            $cm->getOrder()->setPaymentResponse($payment->getLog());
+            $cm->archive();
+            $cm->getOrder()->save();
 
-            $cc_array = $this->FormatCcInfoArray($this->form_cc->getValues());
-            $address = $order->getBillingAddressArray();
-            $customer_array = $this->FormatCustomerInfoArray($address[0], $order->getEmail());
+            // Adjust stock quantities
+            $cm->adjustStockQuantities();
+            $cm->adjustVoucherCount();
 
-            $payment = rtShopPaymentToolkit::getPaymentObject(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
+            // Reset the products page cache
+            $cm->clearCache();
 
-            if($payment->doPayment((int) $this->getCartManager()->getTotal()*100, $cc_array, $customer_array))
-            {
-              if($payment->isApproved())
-              {
-                $order->setStatus(rtShopOrder::STATUS_PAID);
-                $order->setPaymentType(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
-                $order->setPaymentApproved($payment->isApproved());
-                $order->setPaymentTransactionId($payment->getTransactionNumber());
-                $order->setPaymentCharge($this->getCartManager()->getTotal());
-                $order->setPaymentResponse($payment->getLog());
-                $order->setVoucherCode($voucher_code);
-                $this->getCartManager()->archive();
-                $order->save();
-
-                // Adjust stock quantities
-                $this->getCartManager()->adjustStockQuantities();
-                $this->getCartManager()->adjustVoucherCount();
-
-                $this->logMessage('{rtShopOrderPayment} Payment for order: '.$order->getReference().' approved.');
-                $this->logMessage('{rtShopOrderPayment} Order: '.$order->getReference().' was completed.');
-              }
-              else
-              {
-                $order->setPaymentType(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
-                $order->setPaymentCharge($this->getCartManager()->getTotal());
-                $order->setPaymentResponse($payment->getLog());
-                $order->save();
-
-                $this->logMessage('{rtShopOrderPayment} Payment for order: '.$order->getReference().' was not approved. Response: '.$payment->getLog());
-                $this->logMessage('{rtShopOrderPayment} Order: '.$order->getReference().' incomplete.');
-
-                $this->getUser()->setFlash('error', sprintf('%s',$payment->getResponseMessage()));
-                return;
-              }
-
-              $this->redirect('rt_shop_order_receipt');
-            }
-            else
-            {
-              $this->logMessage('{rtShopOrderPayment} Payment for order: '.$order->getReference().' failed catastrophically with response: '.$payment->getLog());
-              throw new sfException("Something went very wrong - our technicians are looking into it right now.");
-            }
+            $this->logMessage('{rtShopPayment} Payment success for order ('.$cm->getOrder()->getReference().'): ' . $payment->getLog());
+            $this->redirect('rt_shop_order_receipt');
           }
         }
-        else
-        {
-          $errors = true;
-        }
+        
+        $this->logMessage('{rtShopPayment} Payment failure for order ('.$cm->getOrder()->getReference().'): '.$payment->getLog());
+        $this->getUser()->setFlash('error', $payment->getResponseMessage(), false);
       }
-      else
-      {
-        $errors = true;
-      }
-
-      if(!$errors)
-      {
-        $this->getCartManager()->getVoucher();
-      }
-
-      // Send mail
     }
+    $this->rt_shop_cart_manager = $cm;
   }
 
   /**

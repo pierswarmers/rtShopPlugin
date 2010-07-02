@@ -32,7 +32,7 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
       $ref[] = 'rt-shop-stock-id-'. $rt_shop_stock->id;
     }
 
-    $available = $stock_level > 0  || $rt_shop_product->backorder_allowed;
+    $available = $stock_level > 0 ;
     $class = $available ? 'available ' : 'unavailable';
 
     $image = '';
