@@ -55,13 +55,10 @@ UI overide
 Breadcrumb
 
 */
-.rt-shop-order-breadcrumb {list-style-type:none;background:#E9E9E9;}
+.rt-shop-order-breadcrumb {list-style-type:none;background:#E9E9E9;margin-right:0;}
 .rt-shop-order-breadcrumb li a {text-decoration:none;color:#8E8E8E;}
-.rt-shop-order-breadcrumb li.past a, .rt-shop-order-breadcrumb li.past-present a {color:#FFF;}
+.rt-shop-order-breadcrumb li.past a {color:#FFF;}
  .rt-shop-order-breadcrumb li span {color:#000;}
-.rt-shop-order-breadcrumb li {background:#E9E9E9 url(../images/arrow-future-future.png) no-repeat scroll 100% 50%;float:left;font-size:0.9em;font-weight:bold;line-height:1.8em;padding:0 18px 0 10px;}
-.rt-shop-order-breadcrumb li.here {background-color:#8E8E8E;background-image: url(../images/arrow-present-future.png);}
-.rt-shop-order-breadcrumb li.past {background-color:#6C6C6C;background-image: url(../images/arrow-past-past.png);}
-.rt-shop-order-breadcrumb li.past-present {background-color:#6C6C6C;background-image: url(../images/arrow-past-present.png);}
-.rt-shop-order-breadcrumb li.present {background-color:#8E8E8E;background-image: url(../images/arrow-present.png);}
-.rt-shop-order-breadcrumb li.future {background-image: url(../images/arrow-future.png);}
+.rt-shop-order-breadcrumb li {background:#E9E9E9 url(../images/arrow-default.png) no-repeat scroll 100% 50%;float:left;font-size:0.9em;font-weight:bold;line-height:1.8em;padding:0 18px 0 10px;}
+.rt-shop-order-breadcrumb li.here {background-color:#6C6C6C;background-image: url(../images/arrow-here.png);}
+.rt-shop-order-breadcrumb li.past {background-color:#6C6C6C;background-image: url(../images/arrow-past.png);}

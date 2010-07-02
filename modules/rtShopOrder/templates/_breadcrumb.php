@@ -6,7 +6,7 @@ $links = array(
     'checkout' => array('position' => 2,       'title' => 'Checkout','route' => 'rt_shop_order_checkout'),
     'address'  => array('position' => 3,       'title' => 'Address', 'route' => 'rt_shop_order_address'),
     'payment'  => array('position' => 4,       'title' => 'Payment', 'route' => 'rt_shop_order_payment'),
-    'reciept'  => array('position' => 5,       'title' => 'Cart',    'route' => 'rt_shop_order_cart')
+    'reciept'  => array('position' => 5,       'title' => 'Reciept', 'route' => 'rt_shop_order_cart')
 );
 ?>
 <ul class="rt-container rt-shop-order-breadcrumb">
