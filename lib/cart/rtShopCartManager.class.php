@@ -403,6 +403,16 @@ class rtShopCartManager
   }
 
   /**
+   * Does the cart contain any stock selections.
+   *
+   * @return boolean
+   */
+  public function isEmpty()
+  {
+    return $this->getOrder()->Stocks->count() == 0 ? true : false;
+  }
+
+  /**
    * Get order object
    *
    * @return rtShopOrder object
