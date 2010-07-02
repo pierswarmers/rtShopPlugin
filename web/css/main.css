@@ -50,3 +50,18 @@ UI overide
 .ui-buttonset .image-swatch.ui-state-disabled span { background:url(../images/radio-cross-alt.png) no-repeat 50% 50%; padding-left:0; }
 .ui-state-default { background-image: none;} 
 .ui-helper-hidden-accessible {position:absolute!important;} /*don't remove this important! blueprint overrides otherwise this UI style */
+/*
+
+Breadcrumb
+
+*/
+.rt-shop-order-breadcrumb {font-style:italic;margin-top:17px;list-style-type:none;}
+.rt-shop-order-breadcrumb li a {text-decoration:none;color:#8E8E8E;}
+.rt-shop-order-breadcrumb li.past a, .rt-shop-order-breadcrumb li.past-present a {color:#FFF;}
+ .rt-shop-order-breadcrumb li span {color:#000;}
+.rt-shop-order-breadcrumb li {background:#E9E9E9 url(../images/arrow-future-future.png) no-repeat scroll 100% 50%;float:left;font-size:0.9em;font-weight:bold;line-height:1.8em;padding:0 18px 0 10px;}
+.rt-shop-order-breadcrumb li.here {background-color:#8E8E8E;background-image: url(../images/arrow-present-future.png);}
+.rt-shop-order-breadcrumb li.past {background-color:#6C6C6C;background-image: url(../images/arrow-past-past.png);}
+.rt-shop-order-breadcrumb li.past-present {background-color:#6C6C6C;background-image: url(../images/arrow-past-present.png);}
+.rt-shop-order-breadcrumb li.present {background-color:#8E8E8E;background-image: url(../images/arrow-present.png);}
+.rt-shop-order-breadcrumb li.future {background-image: url(../images/arrow-future.png);}
