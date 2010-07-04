@@ -194,11 +194,16 @@ class rtShopCartManager
 
   /**
    * Get promotion details
-   * 
+   *
+   * @return rtShopPromotion Object
    */
 	public function getPromotion()
 	{
-		$this->_promotion = rtShopPromotionToolkit::getBest($this->getSubTotal());
+    if(is_null($this->_promotion))
+    {
+      $this->_promotion = rtShopPromotionToolkit::getBest($this->getSubTotal());
+    }
+		return $this->_promotion;
 	}
 
   /**
