@@ -1,5 +1,4 @@
 <?php use_helper('I18N', 'Date', 'rtText', 'rtForm', 'rtDate', 'rtSite', 'Number') ?>
-
 <div class="rt-shop-order rt-cart rt-primary-container">
   
   <h1><?php echo ucwords(__(sfConfig::get('rt_shop_cart_name', 'shopping bag'))) ?></h1>
@@ -23,7 +22,7 @@
         <?php include_partial('cart', array('rt_shop_cart_manager' => $rt_shop_cart_manager, 'stock_exceeded' => isset($stock_exceeded) ? $stock_exceeded : array(), 'update_quantities' => isset($update_quantities) ? $update_quantities : array())) ?>
         <tfoot>
           <tr class="rt-shop-cart-total">
-            <th colspan="5"><?php echo __('Total'); ?>:</th>
+            <th colspan="5"><?php echo __('Total'); ?> <?php echo $rt_shop_cart_manager->getPromotion() ? sprintf('(Includes %s)',$rt_shop_cart_manager->getPromotion()->getTitle()) : '' ?>:</th>
             <td colspan="2"><?php echo format_currency($rt_shop_cart_manager->getTotal(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
           </tr>
         </tfoot>
