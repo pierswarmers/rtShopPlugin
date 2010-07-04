@@ -14,13 +14,19 @@
           <tr>
             <th><?php echo __('Preview'); ?></th>
             <th><?php echo __('Description'); ?></th>
+            <th><?php echo __('Actions') ?></th>
             <th><?php echo __('Each'); ?></th>
             <th><?php echo __('Quantity'); ?></th>
             <th><?php echo __('Total'); ?></th>
-            <th><?php echo __('Actions') ?></th>
           </tr>
         </thead>
         <?php include_partial('cart', array('rt_shop_cart_manager' => $rt_shop_cart_manager, 'stock_exceeded' => isset($stock_exceeded) ? $stock_exceeded : array(), 'update_quantities' => isset($update_quantities) ? $update_quantities : array())) ?>
+        <tfoot>
+          <tr class="rt-shop-cart-total">
+            <th colspan="5"><?php echo __('Total'); ?>:</th>
+            <td colspan="2"><?php echo format_currency($rt_shop_cart_manager->getTotal(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
+          </tr>
+        </tfoot>
       </table>
     </div>
 

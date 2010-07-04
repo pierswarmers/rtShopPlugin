@@ -9,7 +9,7 @@
     $product = Doctrine::getTable('rtShopProduct')->find($stock['product_id']);
   ?>
   <tr class="<?php echo (isset($stock_exceeded[$stock['id']])) ? 'error' : '' ?>">
-    <td class="rt-shop-cart-primary-image-thumb"><?php echo ($product->getPrimaryImage()) ? image_tag(rtAssetToolkit::getThumbnailPath($product->getPrimaryImage()->getSystemPath(), array('maxHeight' => 70, 'maxWidth' => 50))) : '' ?></td>
+    <td class="rt-shop-cart-primary-image-thumb"><?php echo link_to(($product->getPrimaryImage()) ? image_tag(rtAssetToolkit::getThumbnailPath($product->getPrimaryImage()->getSystemPath(), array('maxHeight' => 70, 'maxWidth' => 50))) : '', '@rt_shop_product_show?id='.$stock['rtShopProduct']['id'].'&slug='.$stock['rtShopProduct']['slug']) ?></td>
     <td class="rt-shop-cart-details">
       <input type="hidden" name="product_id[]" value="<?php echo $stock['rtShopProduct']['id']; ?>" />
       <?php echo link_to($stock['rtShopProduct']['title'], '@rt_shop_product_show?id='.$stock['rtShopProduct']['id'].'&slug='.$stock['rtShopProduct']['slug']) ?>
@@ -27,9 +27,13 @@
         }
 
         ?></span>
+        <?php if(rtSiteToolkit::isMultiSiteEnabled()): ?>
+        <?php include_partial('rtAdmin/site_reference_key', array('id' => $product->getSiteId()))?>
+        <?php endif; ?>
     </td>
+    <td class="rt-shop-cart-actions"><?php echo link_to(__('Delete'), '@rt_shop_order_stock_delete?id='.$stock['id']) ?></td>
     <td class="rt-shop-cart-price-unit">
-        <?php echo format_currency($item_price, sfConfig::get('app_rt_currency', 'USD')); ?>
+        <?php echo format_currency($item_price, sfConfig::get('app_rt_currency', 'AUD')); ?>
     </td>
     <td class="rt-shop-cart-quantity">
       <input type="text" name="quantity[]" class="minitext" value="<?php echo isset($update_quantities[$stock['id']]) ? $update_quantities[$stock['id']] :$stock['rtShopOrderToStock'][0]['quantity']; ?>" />
@@ -39,27 +43,8 @@
       <input type="hidden" name="stock_id[]" value="<?php echo $stock['id']; ?>" />
     </td>
     <td class="rt-shop-cart-price-total">
-      <?php echo format_currency($stock['rtShopOrderToStock'][0]['quantity'] * $item_price, sfConfig::get('app_rt_currency', 'USD')) ?>
+      <?php echo format_currency($stock['rtShopOrderToStock'][0]['quantity'] * $item_price, sfConfig::get('app_rt_currency', 'AUD')) ?>
     </td>
-    <td class="rt-shop-cart-actions"><?php echo link_to(__('Delete'), '@rt_shop_order_stock_delete?id='.$stock['id']) ?></td>
   </tr>
 <?php $i++; endforeach; ?>
 </tbody>
-<tfoot>
-  <tr class="rt-shop-cart-sub-total">
-    <th colspan="5"><?php echo __('Sub-Total'); ?>:</th>
-    <td colspan="2"><?php echo format_currency($rt_shop_cart_manager->getOrder()->getTotalPriceWithoutTax(), sfConfig::get('app_rt_currency', 'USD')); ?></td>
-  </tr>
-  <tr class="rt-shop-cart-tax">
-    <th colspan="5"><?php echo __('Taxes'); ?>:</th>
-    <td colspan="2"><?php echo format_currency($rt_shop_cart_manager->getOrder()->getTotalTax(), sfConfig::get('app_rt_currency', 'USD')); ?></td>
-  </tr>
-  <tr class="rt-shop-cart-sub-total">
-    <th colspan="5"><?php echo __('Sub-Total (including rates)'); ?>:</th>
-    <td colspan="2"><?php echo format_currency($rt_shop_cart_manager->getOrder()->getTotalPriceWithTax(), sfConfig::get('app_rt_currency', 'USD')); ?></td>
-  </tr>
-  <tr class="rt-shop-cart-total">
-    <th colspan="5"><?php echo __('Grand-Total (including promotions)'); ?>:</th>
-    <td colspan="2"><?php echo format_currency($rt_shop_cart_manager->getTotal(), sfConfig::get('app_rt_currency', 'USD')); ?></td>
-  </tr>
-</tfoot>
