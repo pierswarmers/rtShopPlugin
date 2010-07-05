@@ -187,7 +187,7 @@ class BasertShopOrderActions extends sfActions
     $this->update_quantities = $comb_array;
     $this->stock_exceeded = $stock_exceeded;
 
-    $this->setTemplate('cart');
+    $this->redirect('rt_shop_order_cart');
   }
   
   /**
