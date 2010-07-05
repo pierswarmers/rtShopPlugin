@@ -58,7 +58,7 @@ Breadcrumb
 .rt-shop-order-breadcrumb {list-style-type:none;background:#E9E9E9;margin-right:0;}
 .rt-shop-order-breadcrumb li a {text-decoration:none;color:#8E8E8E;}
 .rt-shop-order-breadcrumb li.past a {color:#FFF;}
- .rt-shop-order-breadcrumb li span {color:#000;}
+ .rt-shop-order-breadcrumb li {color:#999;}
 .rt-shop-order-breadcrumb li {background-color: #E9E9E9;background-repeat: no-repeat; background-position: 100% 50%; background-image: url(../images/arrow-default.png);float:left;font-size:0.9em;font-weight:bold;line-height:1.8em;padding:0 18px 0 10px;}
-.rt-shop-order-breadcrumb li.here {background-color:#6C6C6C;background-image: url(../images/arrow-here.png);}
+.rt-shop-order-breadcrumb li.here {color:#CCC;background-color:#6C6C6C;background-image: url(../images/arrow-here.png);}
 .rt-shop-order-breadcrumb li.past {background-color:#6C6C6C;background-image: url(../images/arrow-past.png);}
