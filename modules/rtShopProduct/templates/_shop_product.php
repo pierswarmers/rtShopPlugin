@@ -12,8 +12,6 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
   </div>
   <div class="rt-shop-product-details">
     <?php include_partial('details_preffix', array('rt_shop_product' => $rt_shop_product)) ?>
-    <p class="rt-shop-product-price"><?php echo price_for($rt_shop_product) ?></p>
-    <?php echo markdown_to_html($rt_shop_product->getContent(), $rt_shop_product); ?>
     <?php include_partial('rtShopProduct/order_panel', array('rt_shop_product' => $rt_shop_product)) ?>
     <?php include_partial('details_suffix', array('rt_shop_product' => $rt_shop_product)) ?>
   </div>
