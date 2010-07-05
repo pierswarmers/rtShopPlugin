@@ -1,4 +1,5 @@
 <?php use_helper('I18N', 'rtForm') ?>
+<?php  echo $form->renderHiddenFields() ?>
 <table class="rt-admin-toggle-panel-content">
   <tbody>
     <?php echo render_form_row($form['first_name']); ?>

@@ -26,36 +26,36 @@ class rtShopOrderEmailForm extends BasertShopOrderForm
     $this->widgetSchema->setFormFormatterName('table');
 
     $this->useFields(array('id','email'));
-
-    $billing_address = new rtAddress;
-    $billing_address->setType('billing');
-    $billing_address->setModel('rtShopOrder');
-
-    $shipping_address = new rtAddress;
-    $shipping_address->setType('shipping');
-    $shipping_address->setModel('rtShopOrder');
-
-    if(!$this->isNew())
-    {
-      $tmp_address_1 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($this->getObject(), 'shipping');
-      if($tmp_address_1)
-      {
-        $shipping_address = $tmp_address_1;
-      }
-      $tmp_address_2 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($this->getObject(), 'billing');
-      if($tmp_address_2)
-      {
-        $billing_address = $tmp_address_2;
-      }
-      $billing_address->setModelId($this->object->getId());
-      $shipping_address->setModelId($this->object->getId());
-    }
-
-    $this->embedForm('billing_address', new rtAddressForm($billing_address, array('object' => $this->object, 'is_optional' => false, 'use_names' => true)));
-    $this->embedForm('shipping_address', new rtAddressForm($shipping_address, array('object' => $this->object, 'is_optional' => true, 'use_names' => true)));
-    
-    $order_id = sfContext::getInstance()->getUser()->getAttribute('rt_shop_frontend_order_id');
-    $order = Doctrine::getTable('rtShopOrder')->find($order_id);
+//
+//    $billing_address = new rtAddress;
+//    $billing_address->setType('billing');
+//    $billing_address->setModel('rtShopOrder');
+//
+//    $shipping_address = new rtAddress;
+//    $shipping_address->setType('shipping');
+//    $shipping_address->setModel('rtShopOrder');
+//
+//    if(!$this->isNew())
+//    {
+//      $tmp_address_1 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($this->getObject(), 'shipping');
+//      if($tmp_address_1)
+//      {
+//        $shipping_address = $tmp_address_1;
+//      }
+//      $tmp_address_2 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($this->getObject(), 'billing');
+//      if($tmp_address_2)
+//      {
+//        $billing_address = $tmp_address_2;
+//      }
+//      $billing_address->setModelId($this->object->getId());
+//      $shipping_address->setModelId($this->object->getId());
+//    }
+//
+//    $this->embedForm('billing_address', new rtAddressForm($billing_address, array('object' => $this->object, 'is_optional' => false, 'use_names' => true)));
+//    $this->embedForm('shipping_address', new rtAddressForm($shipping_address, array('object' => $this->object, 'is_optional' => true, 'use_names' => true)));
+//
+//    $order_id = sfContext::getInstance()->getUser()->getAttribute('rt_shop_frontend_order_id');
+//    $order = Doctrine::getTable('rtShopOrder')->find($order_id);
 
     $this->widgetSchema->setLabel('email',"Email Address");
     $this->widgetSchema['email'] = new sfWidgetFormInput(array(), array('class'=>'text'));
@@ -68,26 +68,26 @@ class rtShopOrderEmailForm extends BasertShopOrderForm
 
   public function saveEmbeddedForms($con = null, $forms = null)
   {
-    if (null === $forms)
-    {
-      $forms = $this->embeddedForms;
-
-      foreach(array('shipping_address') as $name)
-      {
-        $address = $this->getValue($name);
-
-        if (!isset($address['address_1']))
-        {
-          unset($forms[$name]);
-        }
-      }
-    }
+//    if (null === $forms)
+//    {
+//      $forms = $this->embeddedForms;
+//
+//      foreach(array('shipping_address') as $name)
+//      {
+//        $address = $this->getValue($name);
+//
+//        if (!isset($address['address_1']))
+//        {
+//          unset($forms[$name]);
+//        }
+//      }
+//    }
 
     return parent::saveEmbeddedForms($con, $forms);
   }
-
-  public function getModelName()
-  {
-    return 'rtShopOrder';
-  }
+//
+//  public function getModelName()
+//  {
+//    return 'rtShopOrder';
+//  }
 }

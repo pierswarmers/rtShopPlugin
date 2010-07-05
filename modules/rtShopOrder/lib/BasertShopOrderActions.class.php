@@ -241,15 +241,119 @@ class BasertShopOrderActions extends sfActions
       $this->show_shipping = true;
     }
 
+    if($this->getUser()->isAuthenticated())
+    {
+      $user = $this->getUser()->getGuardUser();
+
+      if(is_null($this->getOrder()->getEmail()))
+      {
+        $this->getOrder()->setEmail($user->getEmailAddress());
+      }
+    }
+
     $this->form = new rtShopOrderEmailForm($this->getOrder());
 
-    if ($this->getRequest()->isMethod('PUT') || $this->getRequest()->isMethod('POST'))
+    $billing_address = new rtAddress;
+
+    $shipping_address = new rtAddress;
+
+    if($this->getUser()->isAuthenticated())
+    {
+      $user = $this->getUser()->getGuardUser();
+      
+      //$this->form->setDefault('email',$user->getEmailAddress());
+
+      $tmp_address_1 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($this->getOrder(), 'shipping');
+      if($tmp_address_1)
+      {
+        $shipping_address = $tmp_address_1;
+      }
+      else
+      {
+        $rt_user = Doctrine::getTable('rtGuardUser')->find($user->getId());
+        $tmp_address_1 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($rt_user, 'shipping');
+        if($tmp_address_1)
+        {
+          $shipping_address = $tmp_address_1->copy(false);
+          $shipping_address->setFirstName($rt_user->getFirstName());
+          $shipping_address->setLastName($rt_user->getLastName());
+        }
+      }
+      $tmp_address_2 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($this->getOrder(), 'billing');
+      if($tmp_address_2)
+      {
+        $billing_address = $tmp_address_2;
+      }
+      else
+      {
+        $rt_user = Doctrine::getTable('rtGuardUser')->find($user->getId());
+        $tmp_address_2 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($rt_user, 'billing');
+        if($tmp_address_2)
+        {
+          $billing_address = $tmp_address_2->copy(false);
+          $billing_address->setFirstName($rt_user->getFirstName());
+          $billing_address->setLastName($rt_user->getLastName());
+        }
+      }
+    }
+    
+    $shipping_address->setType('shipping');
+    $shipping_address->setModel('rtShopOrder');
+    $shipping_address->setModelId($this->getOrder()->getId());
+    $billing_address->setType('billing');
+    $billing_address->setModel('rtShopOrder');
+    $billing_address->setModelId($this->getOrder()->getId());
+
+    $this->form_billing = new rtAddressForm($billing_address, array('object' => $this->getOrder(),'is_optional' => false, 'use_names' => true));
+    $this->form_billing->getWidgetSchema()->setNameFormat('rt_address_billing[%s]');
+    $this->form_shipping = new rtAddressForm($shipping_address, array('object' => $this->getOrder(),'is_optional' => true, 'use_names' => true));
+    $this->form_shipping->getWidgetSchema()->setNameFormat('rt_address_shipping[%s]');
+
+    // Run save logic...
+
+    if ($this->getRequest()->isMethod('POST'))
     {
       $this->form->bind($request->getParameter($this->form->getName()), $request->getFiles($this->form->getName()));
-      if($this->form->isValid())
+      $this->form_billing->bind($request->getParameter($this->form_billing->getName()), $request->getFiles($this->form_billing->getName()));
+      $this->form_shipping->bind($request->getParameter($this->form_shipping->getName()), $request->getFiles($this->form_shipping->getName()));
+      
+      if($this->form->isValid() && $this->form_billing->isValid())
       {
-        $this->form->save();
-        $this->redirect('rt_shop_order_payment');
+        // At this point we have the two primary forms vaild...
+        $valid = true;
+
+        if(!$request->hasParameter('shipping_toggle'))
+        {
+          // We need to verify the shipping...
+          if($this->form_shipping->isValid())
+          {
+            $this->form_shipping->save();
+            if(isset($rt_user))
+            {
+              $this->updateUserAddressInfo($rt_user, 'shipping', $this->form_shipping->getObject());
+            }
+          }
+          else
+          {
+            $valid = false;
+          }
+        }
+        else
+        {
+          // try to clean any existing shipping addresses...
+          $this->form_shipping->getObject()->delete();
+        }
+
+        if($valid)
+        {
+          $this->form->save();
+          $this->form_billing->save();
+          if(isset($rt_user))
+          {
+            $this->updateUserAddressInfo($rt_user, 'billing', $this->form_billing->getObject());
+          }
+          $this->redirect('rt_shop_order_payment');
+        }
       }
     }
   }
@@ -465,5 +569,24 @@ class BasertShopOrderActions extends sfActions
                      'CustomerInvoiceRef' => $invoice_ref);
 
     return $options;
+  }
+
+  /**
+   * Run a test, and update if nescessary on the user address data.
+   *
+   * @param rtGuardUser $user
+   * @param string      $type
+   * @param rtAddress   $address
+   */
+  private function updateUserAddressInfo(rtGuardUser $user, $type, rtAddress $new_address)
+  {
+    $address = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($user, 'shipping');
+    if(!$address)
+    {
+      $address = $new_address->copy(false);
+      $address->setModel('rtGuardUser');
+      $address->setModelId($user->getId());
+      $address->save();
+    }
   }
 }
