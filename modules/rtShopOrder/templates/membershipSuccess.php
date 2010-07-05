@@ -1,7 +1,7 @@
 <?php use_helper('I18N', 'Number', 'rtForm') ?>
 <?php $routes = $sf_context->getRouting()->getRoutes() ?>
 <div class="rt-shop-order rt-checkout rt-primary-container">
-  <h1><?php echo __('Checkout') ?></h1>
+  <h1><?php echo __('Membership') ?></h1>
   <div class="rt-container">
     <?php include_partial('breadcrumb', array('sf_request' => $sf_request)) ?>
     <div class="rt-shop-order-checkout-panel rt-shop-checkout-member-login">

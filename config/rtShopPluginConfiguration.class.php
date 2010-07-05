@@ -67,7 +67,7 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
 
     $routing->prependRoute('rt_shop_order_add_to_bag', new sfRoute('/order/add-to-bag', array('module' => 'rtShopOrder', 'action' => 'addToBag')));
     $routing->prependRoute('rt_shop_order_cart', new sfRoute('/order/cart', array('module' => 'rtShopOrder', 'action' => 'cart')));
-    $routing->prependRoute('rt_shop_order_checkout', new sfRoute('/order/checkout', array('module' => 'rtShopOrder', 'action' => 'checkout')));
+    $routing->prependRoute('rt_shop_order_membership', new sfRoute('/order/membership', array('module' => 'rtShopOrder', 'action' => 'membership')));
     $routing->prependRoute('rt_shop_order_address', new sfRoute('/order/address', array('module' => 'rtShopOrder', 'action' => 'address')));
     $routing->prependRoute('rt_shop_order_payment', new sfRoute('/order/payment', array('module' => 'rtShopOrder', 'action' => 'payment')));
     $routing->prependRoute('rt_shop_order_update', new sfRoute('/order/update', array('module' => 'rtShopOrder', 'action' => 'update')));

@@ -171,7 +171,7 @@ class BasertShopOrderActions extends sfActions
     // Only go to checkout when no quantity errors
     if (count($stock_exceeded) == 0 && $request->hasParameter('_proceed_to_checkout'))
     {
-      $this->redirect('rt_shop_order_checkout');
+      $this->redirect('rt_shop_order_membership');
     }
 
     if($stock_error)
@@ -195,7 +195,7 @@ class BasertShopOrderActions extends sfActions
    *
    * @param sfWebRequest $request
    */
-  public function executeCheckout(sfWebRequest $request)
+  public function executeMembership(sfWebRequest $request)
   {
     // Are there items in the cart? If no, redirect backwards...
     $this->redirectIf($this->getCartManager()->isEmpty(), 'rt_shop_order_cart');
