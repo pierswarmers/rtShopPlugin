@@ -1,4 +1,7 @@
 <?php use_helper('I18N', 'rtForm') ?>
+<?php use_stylesheets_for_form($form) ?>
+<?php use_javascripts_for_form($form) ?>
+
 <?php  echo $form->renderHiddenFields() ?>
 <table class="rt-admin-toggle-panel-content">
   <tbody>
