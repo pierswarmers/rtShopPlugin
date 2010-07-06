@@ -385,6 +385,9 @@ class BasertShopOrderActions extends sfActions
     $this->updateUserSession();
 
     $this->form = new rtShopPaymentForm($cm->getOrder(), array('rt_shop_cart_manager' => $cm));
+
+    $this->form->setDefault('voucher_code', $this->getUser()->getAttribute('rt_shop_vouchure_code', ''));
+
     $this->form_cc = new rtShopCreditCardPaymentForm();
 
     if ($this->getRequest()->isMethod('PUT') || $this->getRequest()->isMethod('POST'))
