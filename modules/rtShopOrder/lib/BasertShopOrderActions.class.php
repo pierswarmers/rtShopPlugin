@@ -456,7 +456,31 @@ class BasertShopOrderActions extends sfActions
    */
   public function executeReceipt(sfWebRequest $request)
   {
-    //Show receipt and send mail
+    $cm = $this->getCartManager();
+    $this->redirectUnless(count($cm->getOrder()->Stocks) > 0, '@rt_shop_order_cart');
+
+    $this->rt_shop_order = $cm->getOrder();
+
+    if(sfConfig::get('app_rt_shop_order_admin_email'))
+    {
+      $order_reference = $cm->getOrder()->getReference();
+      $from = sfConfig::get('app_rt_shop_order_admin_email');
+      $to = $cm->getOrder()->getEmail();
+      $subject = sprintf('Order confirmation: #%s', $order_reference);
+      $body  = 'Hi,'."\n\n";
+      $body  = 'Thank you for your order.'."\n\n";
+      $body .= 'Your order with reference #'.$order_reference.' has been received.'."\n\n";
+      $body .= 'Sincerely yours,'."\n\n";
+      $body .= sfConfig::get('app_rt_email_signature','');
+      if (!$this->getMailer()->composeAndSend($from, $to, $subject, $body))
+      {
+        $this->logMessage('{rtShopReceipt} Email for order #'.$cm->getOrder()->getReference().' could not be sent.');
+      }
+    }
+    else
+    {
+      $this->logMessage('{rtShopReceipt} Order #'.$cm->getOrder()->getReference().' was successful but confirmation email could not be sent due to missing admin email in configuration.');
+    }
 
     $this->cleanSession();
   }

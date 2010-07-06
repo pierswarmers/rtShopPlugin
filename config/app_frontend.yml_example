@@ -1,7 +1,7 @@
 # default values
 all:
   rt_shop:
-    #order_admin_email:       'Your admin email address'   # Shop administrator email address
+    #order_admin_email:       'Admin email address'   # Shop administrator email address
     default_country:              AU                      # Country where shipping is handled in
     #payment_currency:             AUD                      # Currency acronym (e.g AU = Australian Dollar)
     #payment_class:                "rtShopEwayPayment"         # Name of payment class
