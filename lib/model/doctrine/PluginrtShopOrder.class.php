@@ -53,6 +53,24 @@ abstract class PluginrtShopOrder extends BasertShopOrder
     return $this->getReference();
   }
 
+  public function getTypeNice()
+  {
+    return 'Order';
+  }
+
+  public function getExtendedSearchData()
+  {
+    $string = '';
+    $addresses = $this->getAddressInfoArray();
+
+    foreach($addresses as $address)
+    {
+      $string .= implode(' ', $address);
+    }
+    
+    return $string;
+  }
+
   /**
    * Get total order price without tax
    *
