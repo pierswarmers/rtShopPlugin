@@ -200,6 +200,12 @@ class BasertShopOrderActions extends sfActions
     // Are there items in the cart? If no, redirect backwards...
     $this->redirectIf($this->getCartManager()->isEmpty(), 'rt_shop_order_cart');
 
+    if($this->getUser()->getFlash('registration_success'))
+    {
+      $this->getUser()->setFlash('notice', 'You are registered and signed in!');
+      $this->generateVouchure();
+    }
+
     // Is this user already logged in? If yes, redirect forwards...
     $this->redirectIf($this->getUser()->isAuthenticated(), 'rt_shop_order_address');
 
@@ -587,6 +593,20 @@ class BasertShopOrderActions extends sfActions
       $address->setModel('rtGuardUser');
       $address->setModelId($user->getId());
       $address->save();
+    }
+  }
+
+  private function generateVouchure()
+  {
+    if(sfConfig::has('app_rt_shop_registration_voucher'))
+    {
+      $voucher = new rtShopVoucher;
+      $voucher->setCount(1);
+      $voucher->setTitle(sfConfig::get('app_rt_shop_registration_voucher_title', 'New Membership Gift Voucher'));
+      $voucher->setReductionType(sfConfig::get('app_rt_shop_registration_voucher_reduction_type', 'dollarOff'));
+      $voucher->setReductionValue(sfConfig::get('app_rt_shop_registration_voucher_reduction_value'));
+      $voucher->save();
+      $this->getUser()->setAttribute('rt_shop_vouchure_code', $voucher->getCode());
     }
   }
 }
