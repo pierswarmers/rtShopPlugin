@@ -24,7 +24,7 @@
         <td><code><?php echo $rt_shop_order->getReference() ?> (<?php echo truncate_text($rt_shop_order->getEmail(),14,'...',true) ?>)</code></td>
         <td><?php echo format_currency($rt_shop_order->getClosedTotal(), sfConfig::get('app_rt_currency', 'USD')); ?></td>
         <td><?php echo strtoupper($rt_shop_order->getStatus()) ?></td>
-        <td><?php echo $rt_shop_order->getCreatedAt() ?></td>
+        <td><?php echo date("M d Y H:i", strtotime($rt_shop_order->getCreatedAt())) ?></td>
         <td>
         <ul class="rt-admin-tools">
           <li><?php echo rt_button_show(url_for('rtShopOrderAdmin/show?id='.$rt_shop_order->getId())) ?></li>
