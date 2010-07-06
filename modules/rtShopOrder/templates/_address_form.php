@@ -18,19 +18,19 @@
 </table>
 <script type="text/javascript">
   $(function() {
-    $('#rt_shop_order_<?php echo $form->getName()?>_country').change(function() {
+    $('#<?php echo $form->getName()?>_country').change(function() {
 
-      var holder =  $('#rt_shop_order_<?php echo $form->getName()?>_state').parent();
+      var holder =  $('#<?php echo $form->getName()?>_state').parent();
 
       holder.html('<span class="loading">Loading states...</span>');
-      $('#rt_shop_order_<?php echo $form->getName()?>_state').remove();
+      $('#<?php echo $form->getName()?>_state').remove();
       $.ajax({
         type: "POST",
         url: '<?php echo url_for('rtAdmin/stateInput') ?>',
         data: ({
           country : $(this).find('option:selected').attr('value'),
-          id      : 'rt_shop_order_<?php echo $form->getName()?>_state',
-          name    : 'rt_shop_order_[<?php echo $form->getName()?>][state]'
+          id      : '<?php echo $form->getName()?>_state',
+          name    : '<?php echo $form->getName()?>[state]'
         }),
         dataType: "html",
         success: function(data) {
