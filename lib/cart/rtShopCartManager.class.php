@@ -193,6 +193,16 @@ class rtShopCartManager
 	}
 
   /**
+   * Get order subTotal without tax
+   *
+   * @return Float subTotal
+   */
+	public function getSubTotalWithoutTax()
+	{
+		return $this->getOrder()->getTotalPriceWithoutTax();
+	}
+
+  /**
    * Get promotion details
    *
    * @return rtShopPromotion Object
@@ -335,7 +345,7 @@ class rtShopCartManager
        $products[$i]['price_promotion'] = $stock['price_promotion'];
        $products[$i]['price_retail'] = $stock['price_retail'];
        $products[$i]['price_wholesale'] = $stock['price_wholesale'];
-       $products[$i]['currency'] = sfConfig::get('app_rt_shop_payment_currency','AU');
+       $products[$i]['currency'] = sfConfig::get('app_rt_shop_payment_currency','AUD');
        $i++;
      }
 
@@ -455,4 +465,44 @@ class rtShopCartManager
 		}
 		return $this->_order;
 	}
+
+  /**
+   * Return total tax for order
+   *
+   * @return float
+   */
+  public function getTaxationRate()
+  {
+    return $this->getOrder()->getTotalTax();
+  }
+
+  /**
+   * For logging pricing data.
+   *
+   * @return string
+   */
+  public function getPricingInfo()
+  {
+    $string = '{rtShopCartManager} ';
+
+    $string .= sprintf('->getSubTotalWithoutTax() = %s, ',    $this->getSubTotalWithoutTax());
+    $string .= sprintf('->getTaxationRate() = %s, ',          $this->getTaxationRate());
+    $string .= sprintf('->getSubTotal() = %s, ',              $this->getSubTotal());
+    if($this->getPromotion())
+    {
+      $string .= sprintf('->getPromotionType() = %s, ',       $this->getPromotion()->getReductionType());
+      $string .= sprintf('->getPromotionValue() = %s, ',      $this->getPromotion()->getReductionValue());
+    }
+    $string .= sprintf('->getShippingRate() = %s, ',          $this->getShipping());
+    if($this->getVoucher())
+    {
+      $string .= sprintf('->getTotal() with voucher = %s, ',  $this->getTotal());
+    }
+    else
+    {
+      $string .= sprintf('->getTotal() = %s, ',               $this->getTotal());
+    }
+
+    return $string;
+  }
 }

@@ -406,7 +406,6 @@ class BasertShopOrderActions extends sfActions
       }
 
       // Validation passed... continue with script
-
       $voucher_code = $this->form->getValue('voucher_code');
 
       if($voucher_code != '')
@@ -425,6 +424,8 @@ class BasertShopOrderActions extends sfActions
         $customer_array = $this->FormatCustomerInfoArray($address[0], $cm->getOrder()->getEmail());
 
         $payment = rtShopPaymentToolkit::getPaymentObject(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
+
+        $this->logMessage($this->getCartManager()->getPricingInfo());
 
         if($payment->doPayment((int) $cm->getTotal()*100, $cc_array, $customer_array))
         {
@@ -560,7 +561,7 @@ class BasertShopOrderActions extends sfActions
     {
       $items += $stock['rtShopOrderToStock'][0]['quantity'];
     }
-
+    $this->logMessage($this->getCartManager()->getPricingInfo());
     $this->getUser()->setAttribute('rt_shop_order_cart_items', $items);
     $this->getUser()->setAttribute('rt_shop_order_cart_total', $this->getCartManager()->getTotal());
   }
