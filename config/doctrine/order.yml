@@ -24,7 +24,7 @@ rtShopOrder:
         type:                timestamp
         format:              Y-m-d H:i:s
     rtSearchTemplate:
-      fields:                [voucher_code, email, notes_admin, notes_user, reference]
+      fields:                [voucher_code, email, notes_admin, notes_user, reference, payment_transaction_id, extended_search_data]
   columns:
     reference:                { type: string(255) }
     status:                   { type: string(255) }
