@@ -40,6 +40,12 @@ class BasertShopOrderAdminActions extends sfActions
     $this->setTemplate('new');
   }
 
+  public function executeShow(sfWebRequest $request)
+  {
+    $this->forward404Unless($rt_shop_order = Doctrine::getTable('rtShopOrder')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_order does not exist (%s).', $request->getParameter('id')));
+    $this->rt_shop_order = $rt_shop_order;
+  }
+
   public function executeEdit(sfWebRequest $request)
   {
     $this->forward404Unless($rt_shop_order = Doctrine::getTable('rtShopOrder')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_order does not exist (%s).', $request->getParameter('id')));
