@@ -154,7 +154,11 @@
       $(this).button({ label: "<?php echo __('Show metrics options') ?>", icons: { primary: 'ui-icon-arrowstop-1-e'} });
     } else {
       $(this).addClass('hide-options');
-      $('#rtStockTable .advanced-panel').css('display', 'table-cell');
+       if($.support.opacity == true) {
+         $('#rtStockTable .advanced-panel').css('display', 'table-cell');
+       } else {
+         $('#rtStockTable .advanced-panel').css('display', 'block'); // IE
+       }
       $(this).button({ label: "<?php echo __('Hide metrics options') ?>", icons: { primary: 'ui-icon-arrowstop-1-w'} });
     }
 
