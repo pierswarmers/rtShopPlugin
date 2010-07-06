@@ -9,7 +9,8 @@ all:
     #shipping_rate:
       #domestic:                   8                       # Domestic shipping rate applicable to order (i.e 8 = $8)
       #international:              15                      # International shipping rate applicable to order (i.e 15 = $15)
-    #tax_rate:                     5                       # Tax rate in % (e.g 5 = 5%)
+    #shop_tax_rate: 10                      # Tax rate in % (e.g 5 = 5%)
+    #shop_tax_mode: inclusive               # either 'inclusive' or 'exclusive'
     #payment_methods:
       #Mastercard:           Mastercard
       #Visa:                 Visa

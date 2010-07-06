@@ -189,6 +189,10 @@ class rtShopCartManager
    */
 	public function getSubTotal()
 	{
+    if(sfConfig::get('app_rt_shop_tax_mode', 'inclusive') == 'inclusive')
+    {
+      return $this->getSubTotalWithoutTax();
+    }
 		return $this->getOrder()->getTotalPriceWithTax();
 	}
 
@@ -272,6 +276,11 @@ class rtShopCartManager
     }
 		return $total;
 	}
+
+  public function getTotalWithoutShipping()
+  {
+    return $this->getTotal() - $this->getShipping();
+  }
 
   /**
    * Apply shipping charges to order total
@@ -471,9 +480,16 @@ class rtShopCartManager
    *
    * @return float
    */
-  public function getTaxationRate()
+  public function getTaxValue()
   {
-    return $this->getOrder()->getTotalTax();
+    $tax_value = 0;
+    $this->getTotalWithoutShipping();
+
+    $total_ex_tax = $this->getTotalWithoutShipping() * 100 / (sfConfig::get('app_rt_shop_tax_rate', 0) + 100);
+
+    $tax_value = $this->getTotalWithoutShipping() - $total_ex_tax;
+
+    return $tax_value;
   }
 
   /**
@@ -486,7 +502,7 @@ class rtShopCartManager
     $string = '{rtShopCartManager} ';
 
     $string .= sprintf('->getSubTotalWithoutTax() = %s, ',    $this->getSubTotalWithoutTax());
-    $string .= sprintf('->getTaxationRate() = %s, ',          $this->getTaxationRate());
+    $string .= sprintf('->getTaxValue() = %s, ',          $this->getTaxValue());
     $string .= sprintf('->getSubTotal() = %s, ',              $this->getSubTotal());
     if($this->getPromotion())
     {
