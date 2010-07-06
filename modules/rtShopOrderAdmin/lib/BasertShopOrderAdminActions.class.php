@@ -48,6 +48,9 @@ class BasertShopOrderAdminActions extends sfActions
 
   public function executeEdit(sfWebRequest $request)
   {
+    // temporary redirect
+    $this->redirect('rtShopOrderAdmin/show?id='.$request->getParameter('id'));
+
     $this->forward404Unless($rt_shop_order = Doctrine::getTable('rtShopOrder')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_order does not exist (%s).', $request->getParameter('id')));
     $this->rt_shop_order = $rt_shop_order;
     $this->form = new rtShopOrderForm($rt_shop_order);
