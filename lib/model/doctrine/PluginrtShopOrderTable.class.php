@@ -7,13 +7,41 @@
  */
 class PluginrtShopOrderTable extends Doctrine_Table
 {
-    /**
-     * Returns an instance of this class.
-     *
-     * @return object PluginrtShopOrderTable
-     */
-    public static function getInstance()
+  /**
+   * Returns an instance of this class.
+   *
+   * @return object PluginrtShopOrderTable
+   */
+  public static function getInstance()
+  {
+    return Doctrine_Core::getTable('PluginrtShopOrder');
+  }
+
+  /**
+   * Return a query that checks that status is set to paid
+   *
+   * @return Doctrine_Query
+   */
+  public function getPaidRestrictionQuery(Doctrine_Query $q = null)
+  {
+    $q = $this->getQuery($q);
+    $q->andWhere('o.status = ?', rtShopOrder::STATUS_PAID);
+    return $q;
+  }
+
+  /**
+   * Returns a Doctrine_Query object.
+   *
+   * @param Doctrine_Query $q
+   * @return Doctrine_Query
+   */
+  public function getQuery(Doctrine_Query $q = null)
+  {
+    if (is_null($q))
     {
-        return Doctrine_Core::getTable('PluginrtShopOrder');
+      $q = $this->getQueryObject()->from($this->getComponentName() .' o');
     }
+
+    return $q;
+  }
 }
