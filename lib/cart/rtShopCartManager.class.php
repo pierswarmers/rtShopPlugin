@@ -345,7 +345,7 @@ class rtShopCartManager
        $products[$i]['price_promotion'] = $stock['price_promotion'];
        $products[$i]['price_retail'] = $stock['price_retail'];
        $products[$i]['price_wholesale'] = $stock['price_wholesale'];
-       $products[$i]['currency'] = sfConfig::get('app_rt_shop_payment_currency','AU');
+       $products[$i]['currency'] = sfConfig::get('app_rt_shop_payment_currency','AUD');
        $i++;
      }
 
