@@ -23,6 +23,8 @@ rtShopOrder:
         name:                updated_at
         type:                timestamp
         format:              Y-m-d H:i:s
+    rtSearchTemplate:
+      fields:                [voucher_code, email, notes_admin, notes_user, reference]
   columns:
     reference:                { type: string(255) }
     status:                   { type: string(255) }
