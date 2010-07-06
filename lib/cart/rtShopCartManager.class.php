@@ -236,9 +236,12 @@ class rtShopCartManager
 	{
 		// inc. tax.... pre-shipping
 		$total = $this->getSubTotal();
-		$total = $this->applyPromotion($total);
-    $total = $this->applyShipping($total);
-		return $total;
+    if($total > 0)
+    {
+      $total = $this->applyPromotion($total);
+      $total = $this->applyShipping($total);
+    }
+    return $total;
 	}
 
   /**
@@ -251,9 +254,12 @@ class rtShopCartManager
 	{
 		// inc. tax.... pre-shipping
 		$total = $this->getSubTotal();
-		$total = $this->applyPromotion($total);
-		$total = $this->applyVoucher($total);
-    $total = $this->applyShipping($total);
+    if($total > 0)
+    {
+      $total = $this->applyPromotion($total);
+      $total = $this->applyVoucher($total);
+      $total = $this->applyShipping($total);
+    }
 		return $total;
 	}
 
