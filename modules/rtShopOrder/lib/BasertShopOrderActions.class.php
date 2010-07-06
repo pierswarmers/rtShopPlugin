@@ -622,13 +622,15 @@ class BasertShopOrderActions extends sfActions
 
   private function generateVouchure()
   {
-    if(sfConfig::has('app_rt_shop_registration_voucher'))
+    if(sfConfig::get('app_rt_shop_registration_voucher_reduction_value', false))
     {
       $voucher = new rtShopVoucher;
       $voucher->setCount(1);
-      $voucher->setTitle(sfConfig::get('app_rt_shop_registration_voucher_title', 'New Membership Gift Voucher'));
+      $voucher->setTitle(sfConfig::get('app_rt_shop_registration_voucher_title', 'Welcome Gift Voucher'));
       $voucher->setReductionType(sfConfig::get('app_rt_shop_registration_voucher_reduction_type', 'dollarOff'));
       $voucher->setReductionValue(sfConfig::get('app_rt_shop_registration_voucher_reduction_value'));
+      $user = $this->getUser()->getGuardUser();
+      $voucher->setComment(sprintf('Created for: %s %s (%s)', $user->getFirstName(), $user->getLastName(), $user->getEmailAddress()));
       $voucher->save();
       $this->getUser()->setAttribute('rt_shop_vouchure_code', $voucher->getCode());
     }
