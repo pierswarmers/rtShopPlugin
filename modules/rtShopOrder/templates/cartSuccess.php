@@ -54,7 +54,7 @@
     <div class="rt-container rt-shop-order-suffix">
       <?php
 
-      $shop_cart_empty_prompt .= '<p>'  . sprintf('%s %s',__('You have nothing in your '.sfConfig::get('rt_shop_cart_name', 'shopping bag').' yet, '),link_to(__('time to start shopping!'),'rt_shop_category_index')) . '</p>';
+      $shop_cart_empty_prompt = '<p>'  . sprintf('%s %s',__('You have nothing in your '.sfConfig::get('rt_shop_cart_name', 'shopping bag').' yet, '),link_to(__('time to start shopping!'),'rt_shop_category_index')) . '</p>';
 
       ?>
       <?php include_component('rtSnippet','snippetPanel', array('collection' => 'shop-cart-empty-prompt','sf_cache_key' => 'shop-cart-empty-prompt', 'default' => $shop_cart_empty_prompt)); ?>
