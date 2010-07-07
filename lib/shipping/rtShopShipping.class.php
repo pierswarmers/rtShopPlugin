@@ -41,7 +41,12 @@ class rtShopShipping
   {
     $response = array();
 
-    $address = $this->_order->getBillingAddressArray();
+    $address = $this->_order->getShippingAddressArray();
+    
+    if(count($address) == 0)
+    {
+      $address = $this->_order->getBillingAddressArray();
+    }
 
     if(isset($address[0]))
     {

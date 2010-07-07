@@ -43,6 +43,13 @@
           </tr>
           <?php endif; ?>
 
+          <?php if($rt_shop_cart_manager->getShipping() > 0): ?>
+          <tr class="rt-shop-cart-shipping">
+            <th colspan="5"><?php echo __('Shipping') ?>:</th>
+            <td colspan="2">-<?php echo format_currency($rt_shop_cart_manager->getShipping(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
+          </tr>
+          <?php endif; ?>
+
  
 
           <?php
