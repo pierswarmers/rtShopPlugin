@@ -340,9 +340,10 @@ class rtShopCartManager
       {
         $tax_inclusion += ( $tax_rate / 100 ) * $line_price;
       }
+      //sfContext::getInstance()->getLogger()->info(sprintf('{rtShopCartManager} Total: %s, Line price:  %s, Tax inclusion: %s',$total_price,$line_price,$tax_inclusion));
       $total_price = $total_price + $line_price + $tax_inclusion;
     }
-    return (float)  $total_price;
+    return (float) $total_price;
 	}
 
   /**
@@ -527,20 +528,35 @@ class rtShopCartManager
     $tax = 0;
     if(sfConfig::get('app_rt_shop_tax_mode') == 'exclusive')
     {
-      $tax = $this->getSubTotal() - $this ->getPromotionReduction() - $this->getTotal();
-      $tax = -$tax;
+      $tax = $this->applyTaxation($this->getSubTotal()) - $this->getSubTotal();
     }
     else
     {
-      $total_ex_tax = $this->getTotalWithoutShipping() * 100 / (sfConfig::get('app_rt_shop_tax_rate', 0) + 100);
-      $tax = $this->getTotalWithoutShipping() - $total_ex_tax;
+      //$total_ex_tax = $this->getTotalWithoutShipping() * 100 / (sfConfig::get('app_rt_shop_tax_rate', 0) + 100);
+      //echo $this->getTotalWithoutShipping()." / ".$total_ex_tax;
+      //$tax = $this->getTotalWithoutShipping() - $total_ex_tax;
+      $stocks = $this->getStockInfoArray();
+      $total_taxable_price = 0;
+      foreach ($stocks as $stock)
+      {
+        $item_price = $stock['price_promotion'] > 0 ? $stock['price_promotion'] : $stock[$this->getOrder()->getPriceColumn()];
+        $line_price = $stock['rtShopOrderToStock'][0]['quantity'] * $item_price;
+
+        if($stock['rtShopProduct']['is_taxable'])
+        {
+          $total_taxable_price += $line_price;
+        }
+      }
+      $taxable = $total_taxable_price;
+      $total_ex_tax = $taxable * 100 / (sfConfig::get('app_rt_shop_tax_rate', 0) + 100);
+      $tax = $taxable - $total_ex_tax;
     }
 
     return $tax;
   }
 
   /**
-   * For logging pricing data.
+   * For logging pricing data
    *
    * @return string
    */
@@ -548,22 +564,22 @@ class rtShopCartManager
   {
     $string = '{rtShopCartManager} ';
 
-    $string .= sprintf('->getSubTotalWithoutTax() = %s, ',    $this->getSubTotalWithoutTax());
-    $string .= sprintf('->getTaxValue() = %s, ',          $this->getTaxValue());
-    $string .= sprintf('->getSubTotal() = %s, ',              $this->getSubTotal());
+    $string .= sprintf('->getSubTotal() = %s, ',                 $this->getSubTotal());
     if($this->getPromotion())
     {
-      $string .= sprintf('->getPromotionType() = %s, ',       $this->getPromotion()->getReductionType());
-      $string .= sprintf('->getPromotionValue() = %s, ',      $this->getPromotion()->getReductionValue());
+      $string .= sprintf('->getPromotionReduction() = %s, ',  $this->getPromotionReduction());
+      $string .= sprintf('->getPromotionType() = %s, ',          $this->getPromotion()->getReductionType());
+      $string .= sprintf('->getPromotionValue() = %s, ',         $this->getPromotion()->getReductionValue());
     }
-    $string .= sprintf('->getShippingRate() = %s, ',          $this->getShipping());
+    $string .= sprintf('->getTaxValue() = %s, ',                 $this->getTaxValue());
+    $string .= sprintf('->getShippingRate() = %s, ',             $this->getShipping());
     if($this->getVoucher())
     {
-      $string .= sprintf('->getTotal() with voucher = %s, ',  $this->getTotal());
+      $string .= sprintf('->getTotal() with voucher = %s, ',     $this->getTotal());
     }
     else
     {
-      $string .= sprintf('->getTotal() = %s, ',               $this->getTotal());
+      $string .= sprintf('->getTotal() = %s, ',                  $this->getTotal());
     }
 
     return $string;
