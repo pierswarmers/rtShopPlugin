@@ -11,8 +11,8 @@
     <div class="rt-container">
       <?php include_partial('breadcrumb', array()) ?>
     </div>
-    <div class="rt-container rt-shop-order-preffix">
-      <?php include_component('rtSnippet','snippetPanel', array('collection' => 'shop-cart-preffix','sf_cache_key' => 'shop-cart-preffix')); ?>
+    <div class="rt-container rt-shop-order-prefix">
+      <?php include_component('rtSnippet','snippetPanel', array('collection' => 'shop-cart-prefix','sf_cache_key' => 'shop-cart-prefix')); ?>
     </div>
     <div class="rt-container">
       <table class="rt-shop-order-summary">
