@@ -263,43 +263,40 @@ class BasertShopOrderActions extends sfActions
 
     $shipping_address = new rtAddress;
 
-    if($this->getUser()->isAuthenticated())
-    {
-      $user = $this->getUser()->getGuardUser();
-      
-      //$this->form->setDefault('email',$user->getEmailAddress());
+    $user = $this->getUser()->getGuardUser();
 
-      $tmp_address_1 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($this->getOrder(), 'shipping');
+    //$this->form->setDefault('email',$user->getEmailAddress());
+
+    $tmp_address_1 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($this->getOrder(), 'shipping');
+    if($tmp_address_1)
+    {
+      $shipping_address = $tmp_address_1;
+    }
+    elseif($this->getUser()->isAuthenticated())
+    {
+      $rt_user = Doctrine::getTable('rtGuardUser')->find($user->getId());
+      $tmp_address_1 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($rt_user, 'shipping');
       if($tmp_address_1)
       {
-        $shipping_address = $tmp_address_1;
+        $shipping_address = $tmp_address_1->copy(false);
+        $shipping_address->setFirstName($rt_user->getFirstName());
+        $shipping_address->setLastName($rt_user->getLastName());
       }
-      else
-      {
-        $rt_user = Doctrine::getTable('rtGuardUser')->find($user->getId());
-        $tmp_address_1 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($rt_user, 'shipping');
-        if($tmp_address_1)
-        {
-          $shipping_address = $tmp_address_1->copy(false);
-          $shipping_address->setFirstName($rt_user->getFirstName());
-          $shipping_address->setLastName($rt_user->getLastName());
-        }
-      }
-      $tmp_address_2 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($this->getOrder(), 'billing');
+    }
+    $tmp_address_2 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($this->getOrder(), 'billing');
+    if($tmp_address_2)
+    {
+      $billing_address = $tmp_address_2;
+    }
+    elseif($this->getUser()->isAuthenticated())
+    {
+      $rt_user = Doctrine::getTable('rtGuardUser')->find($user->getId());
+      $tmp_address_2 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($rt_user, 'billing');
       if($tmp_address_2)
       {
-        $billing_address = $tmp_address_2;
-      }
-      else
-      {
-        $rt_user = Doctrine::getTable('rtGuardUser')->find($user->getId());
-        $tmp_address_2 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($rt_user, 'billing');
-        if($tmp_address_2)
-        {
-          $billing_address = $tmp_address_2->copy(false);
-          $billing_address->setFirstName($rt_user->getFirstName());
-          $billing_address->setLastName($rt_user->getLastName());
-        }
+        $billing_address = $tmp_address_2->copy(false);
+        $billing_address->setFirstName($rt_user->getFirstName());
+        $billing_address->setLastName($rt_user->getLastName());
       }
     }
     
