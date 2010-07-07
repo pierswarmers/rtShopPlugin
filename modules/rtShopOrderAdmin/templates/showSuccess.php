@@ -25,30 +25,36 @@
 <table>
   <tbody>
     <tr>
-      <th style="width:25%"><?php echo __('Order') ?></th>
-      <td style="width:25%"><?php echo "#".$rt_shop_order->getReference() ?></td>
-      <td style="width:50%" rowspan="4"><?php echo nl2br(sfConfig::get('app_rt_address','')) ?></td>
+      <th style="width:25%"><?php echo __('Order reference') ?>:</th>
+      <td style="width:25%"><code><?php echo "#".$rt_shop_order->getReference() ?></code></td>
+      <td style="width:50%" rowspan="7"><?php echo nl2br(sfConfig::get('app_rt_address','')) ?></td>
     </tr>
     <tr>
-      <th><?php echo __('Date') ?></th>
+      <th><?php echo __('Payment transaction ID') ?>:</th>
+      <td><code><?php echo $rt_shop_order->getPaymentTransactionId() ?></code></td>
+    </tr>
+    <tr>
+      <th><?php echo __('Payment charge') ?>:</th>
+      <td><?php echo format_currency($rt_shop_order->getPaymentCharge(), 'AUD') ?></td>
+    </tr>
+    <tr>
+      <th><?php echo __('Status') ?>:</th>
+      <td><?php echo strtoupper($rt_shop_order->getStatus()) ?></td>
+    </tr>
+    <?php if($rt_shop_order->getVoucherCode()): ?>
+      <tr>
+        <th><?php echo __('Voucher code') ?>:</th>
+        <td><code><?php echo $rt_shop_order->getVoucherCode() ?></code></td>
+      </tr>
+    <?php endif; ?>
+    <tr>
+      <th><?php echo __('Date') ?>:</th>
       <td><?php echo date("d F Y", strtotime($rt_shop_order->getCreatedAt())) ?></td>
     </tr>
     <tr>
-      <th><?php echo __('Status') ?></th>
-      <td><?php echo strtoupper($rt_shop_order->getStatus()) ?></td>
-    </tr>
-    <tr>
-      <th><?php echo __('Email') ?></th>
+      <th><?php echo __('Email') ?>:</th>
       <td><?php echo mail_to($rt_shop_order->getEmail()) ?></td>
     </tr>
-    <!--- <tr>
-      <th><?php echo __('Payment Method') ?></th>
-      <td><?php //echo sfConfig::get('app_rt_shop_payment_class','rtShopPayment') ?></td>
-    </tr>
-    <tr>
-      <th><?php echo __('Shipping Method') ?></th>
-      <td><?php //echo sfConfig::get('app_rt_shop_shipping_class','rtShopShipping') ?></td>
-    </tr> --->
   </tbody>
 </table>
 
@@ -85,7 +91,7 @@
 <table>
   <thead>
     <tr>
-      <th colspan="5"><?php echo sprintf(__('Products [%s]'), count($rt_shop_order->getClosedProducts())); ?></th>
+      <th colspan="5"><?php echo sprintf(__('Products ordered [%s]'), count($rt_shop_order->getClosedProducts())); ?></th>
     </tr>
   </thead>
   <?php include_partial('rtShopOrderAdmin/archive', array('rt_shop_order' => $rt_shop_order)) ?>
