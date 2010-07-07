@@ -10,8 +10,8 @@
     <?php $sub_total = 0; ?>
     <?php foreach($rt_shop_order->getClosedProducts() as $product): ?>
       <tr>
-        <td><?php echo $product['sku']; ?></td>
-        <td><?php echo (sfConfig::get('sf_app') == 'backend') ? link_to($product['title'],'@rt_shop_product_edit?id='.$product['id']) : $product['title']; ?> <?php echo ($product['variations'] != '' && !empty ($product['variations'])) ? sprintf('[%s]',$product['variations']) : ''; ?></td>
+        <td><?php echo link_to_if($product['sku'] != '',$product['sku'],'/rtShopProductAdmin/stock?id='.$product['id_product']); ?></td>
+        <td><?php echo link_to($product['title'],'/rtShopProductAdmin/edit?id='.$product['id_product']); ?> <?php echo ($product['variations'] != '' && !empty ($product['variations'])) ? sprintf('[%s]',$product['variations']) : ''; ?></td>
         <td><?php echo format_currency($product['charge_price'], $product['currency']); ?></td>
         <td><?php echo $product['quantity']; ?></td>
         <td><?php echo format_currency($product['quantity']*$product['charge_price'], $product['currency']); ?></td>

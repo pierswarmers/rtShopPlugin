@@ -61,18 +61,18 @@
   </thead>
   <tbody>
     <tr>
-      <td style="width:50%"><?php echo $billing_address[0]['first_name'] . " " . $billing_address[0]['last_name'] ?><br/>
+      <td style="width:50%"><?php if(count($billing_address) > 0): ?><?php echo $billing_address[0]['first_name'] . " " . $billing_address[0]['last_name'] ?><br/>
           <?php echo $billing_address[0]['address_1'] ?><br/>
           <?php echo ($billing_address[0]['address_2'] != '') ? $billing_address[0]['address_2'].'<br/>' : '' ?>
           <?php echo $billing_address[0]['town'] . " " . $billing_address[0]['postcode'] . " " . $billing_address[0]['state'] ?>  <br/>
-          <?php echo $billing_address[0]['country'] ?></td>
+          <?php echo $billing_address[0]['country'] ?><?php endif; ?></td>
       <td style="width:50%"><?php if(count($shipping_address) > 0): ?>
         <?php echo $shipping_address[0]['first_name'] . " " . $shipping_address[0]['last_name'] ?><br/>
         <?php echo $shipping_address[0]['address_1'] ?><br/>
         <?php echo ($shipping_address[0]['address_2'] != '') ? $shipping_address[0]['address_2'].'<br/>' : '' ?>
         <?php echo $shipping_address[0]['town'] . " " . $shipping_address[0]['postcode'] . " " . $shipping_address[0]['state'] ?>  <br/>
         <?php echo $shipping_address[0]['country'] ?>
-      <?php else: ?>
+      <?php elseif(count($billing_address) > 0): ?>
         <?php echo $billing_address[0]['first_name'] . " " . $billing_address[0]['last_name'] ?><br/>
         <?php echo $billing_address[0]['address_1'] ?><br/>
         <?php echo ($billing_address[0]['address_2'] != '') ? $billing_address[0]['address_2'].'<br/>' : '' ?>
@@ -85,7 +85,7 @@
 <table>
   <thead>
     <tr>
-      <th colspan="5"><?php echo sprintf(__('Products [%s]'), count($rt_shop_order->Stocks)); ?></th>
+      <th colspan="5"><?php echo sprintf(__('Products [%s]'), count($rt_shop_order->getClosedProducts())); ?></th>
     </tr>
   </thead>
   <?php include_partial('rtShopOrderAdmin/archive', array('rt_shop_order' => $rt_shop_order)) ?>
