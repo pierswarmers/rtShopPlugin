@@ -25,10 +25,12 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
   {
     $routing = $event->getSubject();
 
+    $shop_route_token = sfConfig::get('app_rt_shop_route_prefix', 'shop');
+
     $routing->prependRoute(
       'rt_shop_product_show',
       new sfDoctrineRoute(
-        '/shop/product/:id/:slug',
+        sprintf('/%s/product/:id/:slug',$shop_route_token),
           array('module' => 'rtShopProduct', 'action' => 'show'),
           array('id' => '\d+', 'sf_method' => array('get')),
           array('model' => 'rtShopProduct', 'type' => 'object')
@@ -38,7 +40,7 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
     $routing->prependRoute(
       'rt_shop_category_show',
       new sfDoctrineRoute(
-        '/shop/category/:id/:slug',
+        sprintf('/%s/category/:id/:slug',$shop_route_token),
           array('module' => 'rtShopCategory', 'action' => 'show'),
           array('id' => '\d+', 'sf_method' => array('get')),
           array('model' => 'rtShopCategory', 'type' => 'object')
@@ -47,7 +49,7 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
 
     $routing->prependRoute(
       'rt_shop_category_index',
-      new sfRoute('/shop/category',array('module' => 'rtShopCategory', 'action' => 'index'))
+      new sfRoute(sprintf('/%s/category',$shop_route_token),array('module' => 'rtShopCategory', 'action' => 'index'))
     );
 
     $routing->prependRoute(
