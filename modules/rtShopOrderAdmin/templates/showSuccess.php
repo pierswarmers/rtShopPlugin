@@ -31,7 +31,7 @@
     </tr>
     <tr>
       <th><?php echo __('Date') ?></th>
-      <td><?php echo date("M d Y H:i", strtotime($rt_shop_order->getCreatedAt())) ?></td>
+      <td><?php echo date("d F Y", strtotime($rt_shop_order->getCreatedAt())) ?></td>
     </tr>
     <tr>
       <th><?php echo __('Status') ?></th>
