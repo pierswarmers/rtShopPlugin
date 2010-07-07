@@ -1,22 +1,30 @@
 # default values
 all:
-  rt_shop:
-    #order_admin_email:       'Admin email address'   # Shop administrator email address
-    default_country:              AU                      # Country where shipping is handled in
-    #payment_currency:             AUD                      # Currency acronym (e.g AU = Australian Dollar)
-    #payment_class:                "rtShopEwayPayment"         # Name of payment class
-    #shipping_class:               "rtShopShipping"        # Name of shipping class
-    #shipping_rate:
-      #domestic:                   8                       # Domestic shipping rate applicable to order (i.e 8 = $8)
-      #international:              15                      # International shipping rate applicable to order (i.e 15 = $15)
-    #shop_tax_rate: 10                      # Tax rate in % (e.g 5 = 5%)
-    #shop_tax_mode: inclusive               # either 'inclusive' or 'exclusive'
-    #payment_methods:
+  #rt:
+    #address: |
+      #Company name
+      #Number Streetname, Town
+      #City, Country
+      #Phonenumber
+      #Faxnumber
+      #Email address
+    #email_signature:                  'Shop name'               # Signature for order confirmation mail
+    #shop_order_admin_email:           'konny@wranglers.com.au'  # Shop administrator email address
+    #shop_default_country:              AU                       # Country where shipping is handled in
+    #shop_payment_currency:             AUD                      # Currency acronym (e.g AU = Australian Dollar)
+    #shop_payment_class:                "rtShopEwayPayment"      # Name of payment class
+    #shop_shipping_class:               "rtShopShipping"         # Name of shipping class
+    #shop_shipping_rate:
+      #domestic:                        10                       # Domestic shipping rate applicable to order (i.e 8 = $8)
+      #international:                   20                       # International shipping rate applicable to order (i.e 15 = $15)
+    #shop_tax_rate:                     10                       # Tax rate in % (e.g 5 = 5%)
+    #shop_tax_mode:                     exclusive                # Either 'inclusive' or 'exclusive'
+    #shop_payment_methods:
       #Mastercard:           Mastercard
       #Visa:                 Visa
       #Discover:             Discover
       #American Express:     American Express
-    #order_status_types:
+    #shop_order_status_types:
       #cancelled:             cancelled
       #complete:              complete
       #pending:               pending
