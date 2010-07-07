@@ -344,8 +344,10 @@ class rtShopCartManager
        }
 
        // Put together the small products array
-       $products[$i]['id'] = $stock['rtShopProduct']['id'];
-       $products[$i]['sku'] = $stock['rtShopProduct']['sku'];
+       $products[$i]['id'] = $stock['id'];
+       $products[$i]['id_product'] = $stock['rtShopProduct']['id'];
+       $products[$i]['sku'] = $stock['sku'];
+       $products[$i]['sku_product'] = $stock['rtShopProduct']['sku'];
        $products[$i]['title'] = $stock['rtShopProduct']['title'];
        $products[$i]['variations'] = $variations;
        $products[$i]['summary'] = rtrim(ltrim(strip_tags($stock['rtShopProduct']['description'])));
@@ -360,7 +362,7 @@ class rtShopCartManager
 
      $order->setClosedProducts($products);
      $order->setClosedShippingRate($this->getShipping());
-     $order->setClosedTaxes($order->getTotalTax());
+     $order->setClosedTaxes($this->getTaxValue());
      $order->setClosedPromotions($this->getPromotion());
      $order->setClosedTotal($this->getTotal());
    }
