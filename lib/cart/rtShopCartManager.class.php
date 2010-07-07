@@ -189,11 +189,11 @@ class rtShopCartManager
    */
 	public function getSubTotal()
 	{
-    if(sfConfig::get('app_rt_shop_tax_mode', 'inclusive') == 'inclusive')
-    {
+//    if(sfConfig::get('app_rt_shop_tax_mode', 'inclusive') == 'inclusive')
+//    {
       return $this->getSubTotalWithoutTax();
-    }
-		return $this->getOrder()->getTotalPriceWithTax();
+//    }
+//		return $this->getOrder()->getTotalPriceWithTax();
 	}
 
   /**
@@ -270,6 +270,7 @@ class rtShopCartManager
 		$total = $this->getSubTotal();
     if($total > 0)
     {
+      $total = $this->applyTaxation($total);
       $total = $this->applyPromotion($total);
       $total = $this->applyVoucher($total);
       $total = $this->applyShipping($total);
@@ -280,6 +281,11 @@ class rtShopCartManager
   public function getTotalWithoutShipping()
   {
     return $this->getTotal() - $this->getShipping();
+  }
+
+  public function getPromotionReduction()
+  {
+    return $this->getSubTotal() - $this->applyPromotion($this->getSubTotal());
   }
 
   /**
@@ -303,6 +309,40 @@ class rtShopCartManager
 	private function applyPromotion($total)
 	{
 		return rtShopPromotionToolkit::applyPromotion($total);
+	}
+
+  /**
+   * Apply taxation to order
+   *
+   * @param Float $total Order total
+   * @return Float Adjusted order total
+   */
+	private function applyTaxation($total)
+	{
+    if(sfConfig::get('app_rt_shop_tax_mode', 'inclusive') == 'inclusive')
+    {
+      return $total;
+    }
+
+    $stocks = $this->getStockInfoArray();
+    
+    $total_price = 0;
+
+    foreach ($stocks as $stock)
+    {
+      $item_price = $stock['price_promotion'] > 0 ? $stock['price_promotion'] : $stock[$this->getOrder()->getPriceColumn()];
+      $line_price = $stock['rtShopOrderToStock'][0]['quantity'] * $item_price;
+
+      $tax_inclusion = 0;
+      $tax_rate = sfConfig::get('app_rt_shop_tax_rate' , '0');
+      // Check if product is taxable
+      if($stock['rtShopProduct']['is_taxable'])
+      {
+        $tax_inclusion += ( $tax_rate / 100 ) * $line_price;
+      }
+      $total_price = $total_price + $line_price + $tax_inclusion;
+    }
+    return (float)  $total_price;
 	}
 
   /**
@@ -484,14 +524,19 @@ class rtShopCartManager
    */
   public function getTaxValue()
   {
-    $tax_value = 0;
-    $this->getTotalWithoutShipping();
+    $tax = 0;
+    if(sfConfig::get('app_rt_shop_tax_mode') == 'exclusive')
+    {
+      $tax = $this->getSubTotal() - $this ->getPromotionReduction() - $this->getTotal();
+      $tax = -$tax;
+    }
+    else
+    {
+      $total_ex_tax = $this->getTotalWithoutShipping() * 100 / (sfConfig::get('app_rt_shop_tax_rate', 0) + 100);
+      $tax = $this->getTotalWithoutShipping() - $total_ex_tax;
+    }
 
-    $total_ex_tax = $this->getTotalWithoutShipping() * 100 / (sfConfig::get('app_rt_shop_tax_rate', 0) + 100);
-
-    $tax_value = $this->getTotalWithoutShipping() - $total_ex_tax;
-
-    return $tax_value;
+    return $tax;
   }
 
   /**
