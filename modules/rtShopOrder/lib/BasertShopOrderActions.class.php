@@ -464,23 +464,38 @@ class BasertShopOrderActions extends sfActions
   {
     $cm = $this->getCartManager();
     $this->redirectUnless(count($cm->getOrder()->Stocks) > 0, '@rt_shop_order_cart');
-
     $this->rt_shop_order = $cm->getOrder();
 
+    //Send mail to admin and user
     if(sfConfig::get('app_rt_shop_order_admin_email'))
     {
       $order_reference = $cm->getOrder()->getReference();
-      $from = sfConfig::get('app_rt_shop_order_admin_email');
-      $to = $cm->getOrder()->getEmail();
-      $subject = sprintf('Order confirmation: #%s', $order_reference);
-      $body  = 'Hi,'."\n\n";
-      $body  = 'Thank you for your order.'."\n\n";
-      $body .= 'Your order with reference #'.$order_reference.' has been received.'."\n\n";
-      $body .= 'Sincerely yours,'."\n\n";
-      $body .= sfConfig::get('app_rt_email_signature','');
-      if (!$this->getMailer()->composeAndSend($from, $to, $subject, $body))
+
+      //Send confirmation mail to customer
+      $message = Swift_Message::newInstance()
+              ->setContentType('text/html')
+              ->setFrom(sfConfig::get('app_rt_shop_order_admin_email', 'from@noreply.com'))
+              ->setTo($cm->getOrder()->getEmail())
+              ->setSubject(sprintf('Order confirmation: #%s', $order_reference))
+              ->setBody($this->getPartial('rtShopOrderAdmin/invoice', array('rt_shop_order' => $cm->getOrder())));
+      if(!$this->getMailer()->send($message))
       {
-        $this->logMessage('{rtShopReceipt} Email for order #'.$cm->getOrder()->getReference().' could not be sent.');
+        $this->logMessage('{rtShopReceipt} User email for order #'.$cm->getOrder()->getReference().' could not be sent.');
+      }
+
+      //Send confirmation mail to shop admin
+      $routing = $this->getContext()->getRouting();
+      $url = $routing->generate('rt_shop_order_show', array('id' => $cm->getOrder()->getId()), true);
+      $body = "<p>A new order with reference <a href='$url' target=\'_blank\'>#$order_reference</a> has been added.</p>";
+      $message = Swift_Message::newInstance()
+              ->setContentType('text/html')
+              ->setFrom(sfConfig::get('app_rt_shop_order_admin_email'))
+              ->setTo(sfConfig::get('app_rt_shop_order_admin_email'))
+              ->setSubject(sprintf('Order confirmation: #%s', $order_reference))
+              ->setBody($body.$this->getPartial('rtShopOrderAdmin/invoice', array('rt_shop_order' => $cm->getOrder())));
+      if(!$this->getMailer()->send($message))
+      {
+        $this->logMessage('{rtShopReceipt} Admin email for order #'.$cm->getOrder()->getReference().' could not be sent.');
       }
     }
     else
@@ -488,7 +503,9 @@ class BasertShopOrderActions extends sfActions
       $this->logMessage('{rtShopReceipt} Order #'.$cm->getOrder()->getReference().' was successful but confirmation email could not be sent due to missing admin email in configuration.');
     }
 
-    $this->cleanSession();
+    $this->logMessage('{rtShopReceipt} Confimation emails for order #'.$cm->getOrder()->getReference().' were sent successfully.');
+
+    //$this->cleanSession();
   }
 
   /**

@@ -67,6 +67,7 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
        new sfRoute('/rtShopPromotionCartAdmin/:action/id/:id', array('module' => 'rtShopPromotionAdmin'))
     );
 
+    $routing->prependRoute('rt_shop_order_show', new sfRoute('/rtShopOrderAdmin/show', array('module' => 'rtShopOrderAdmin', 'action' => 'show')));
     $routing->prependRoute('rt_shop_order_add_to_bag', new sfRoute('/order/add-to-bag', array('module' => 'rtShopOrder', 'action' => 'addToBag')));
     $routing->prependRoute('rt_shop_order_cart', new sfRoute('/order/cart', array('module' => 'rtShopOrder', 'action' => 'cart')));
     $routing->prependRoute('rt_shop_order_membership', new sfRoute('/order/membership', array('module' => 'rtShopOrder', 'action' => 'membership')));
