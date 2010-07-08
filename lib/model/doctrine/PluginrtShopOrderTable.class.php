@@ -53,21 +53,6 @@ class PluginrtShopOrderTable extends Doctrine_Table
     return $q;
   }
 
-   /**
-   * Return a query with paid orders which do not have archive data
-   *
-   * @param  Doctrine_Query  $query  an optional query object
-   * @return Doctrine_Query
-   */
-  public function getNotArchivedQuery(Doctrine_Query $q = null)
-  {
-    $q = $this->getQuery($q);
-    $q->andWhere('(o.status = ?)', rtShopOrder::STATUS_PAID);
-    $q->andWhere("(o.closed_products IS ? OR o.closed_products = '')",NULL);
-    $q->andWhere("(o.closed_total like ?)",0);
-    return $q;
-  }
-
   /**
    * Returns a Doctrine_Query object.
    *
