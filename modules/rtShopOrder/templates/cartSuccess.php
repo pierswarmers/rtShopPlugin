@@ -57,7 +57,7 @@
           
           if(sfConfig::get('app_rt_shop_tax_rate', 0) > 0 && sfConfig::get('app_rt_shop_tax_mode') == 'inclusive')
           {
-            $includes_message = sprintf('(includes %s tax)',format_currency($rt_shop_cart_manager->getTaxCharge(), sfConfig::get('app_rt_currency', 'AUD')));
+            $includes_message = sprintf('(includes %s tax)',format_currency($rt_shop_cart_manager->getTaxComponent(), sfConfig::get('app_rt_currency', 'AUD')));
           }
 
           if($rt_shop_cart_manager->getPromotion())
