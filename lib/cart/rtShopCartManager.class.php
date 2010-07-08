@@ -101,7 +101,7 @@ class rtShopCartManager
   {
     if($this->isTaxModeInclusive())
     {
-      return (float) $this->getTotalCharge() * 100 / (sfConfig::get('app_rt_shop_tax_rate', 0) + 100);
+      return (float) ($this->getTotalCharge() * 10) / ($this->getTaxRate() + 100);
     }
 
     return 0.00;
