@@ -407,14 +407,13 @@ class BasertShopOrderActions extends sfActions
 
       if($voucher_code != '')
       {
-        $cm->setVoucher($voucher_code);
-        $cm->getOrder()->setVoucherCode($voucher_code);
+        $cm->setVoucherCode($voucher_code);
         $cm->getOrder()->save();
       }
       
-      if($cm->getTotal() > 0)
+      if($cm->getTotalCharge() > 0)
       {
-        $this->logMessage('{rtShopPayment} Order: '.$cm->getOrder()->getReference().'. Proceeding to charge credit card with: ' . $cm->getTotal());
+        $this->logMessage('{rtShopPayment} Order: '.$cm->getOrder()->getReference().'. Proceeding to charge credit card with: ' . $cm->getTotalCharge());
 
         $cc_array = $this->FormatCcInfoArray($this->form_cc->getValues());
         $address = $cm->getOrder()->getBillingAddressArray();
@@ -424,7 +423,7 @@ class BasertShopOrderActions extends sfActions
 
         $this->logMessage($this->getCartManager()->getPricingInfo());
 
-        if($payment->doPayment((int) $cm->getTotal()*100, $cc_array, $customer_array))
+        if($payment->doPayment((int) $cm->getTotalCharge()*100, $cc_array, $customer_array))
         {
           if($payment->isApproved())
           {
@@ -432,7 +431,7 @@ class BasertShopOrderActions extends sfActions
             $cm->getOrder()->setPaymentType(get_class($payment));
             $cm->getOrder()->setPaymentApproved($payment->isApproved());
             $cm->getOrder()->setPaymentTransactionId($payment->getTransactionNumber());
-            $cm->getOrder()->setPaymentCharge($cm->getTotal());
+            $cm->getOrder()->setPaymentCharge($cm->getTotalCharge());
             $cm->getOrder()->setPaymentResponse($payment->getLog());
             $cm->archive();
             $cm->getOrder()->save();
@@ -489,7 +488,7 @@ class BasertShopOrderActions extends sfActions
       $this->logMessage('{rtShopReceipt} Order #'.$cm->getOrder()->getReference().' was successful but confirmation email could not be sent due to missing admin email in configuration.');
     }
 
-    //$this->cleanSession();
+    $this->cleanSession();
   }
 
   /**
@@ -560,7 +559,7 @@ class BasertShopOrderActions extends sfActions
     }
     $this->logMessage($this->getCartManager()->getPricingInfo());
     $this->getUser()->setAttribute('rt_shop_order_cart_items', $items);
-    $this->getUser()->setAttribute('rt_shop_order_cart_total', $this->getCartManager()->getTotal());
+    $this->getUser()->setAttribute('rt_shop_order_cart_total', $this->getCartManager()->getTotalCharge());
   }
   
   /**
