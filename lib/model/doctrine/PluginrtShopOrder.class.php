@@ -72,93 +72,6 @@ abstract class PluginrtShopOrder extends BasertShopOrder
   }
 
   /**
-   * Get total order price without tax
-   *
-   * @return float
-   */
-  public function getTotalPriceWithoutTax()
-  {
-    if(is_null($this->_price_without_tax))
-    {
-      $stocks = $this->getStockInfoArray();
-
-      $price = 0;
-      $global_discount_value = 0;
-
-      foreach ($stocks as $stock)
-      {
-        $item_price = $stock['price_promotion'] > 0 ? $stock['price_promotion'] : $stock[$this->getPriceColumn()];
-
-        $group_price = $stock['rtShopOrderToStock'][0]['quantity'] * $item_price;
-
-        $price += $group_price;
-      }
-      $this->_global_discount_value = $global_discount_value;
-      $this->_price_without_tax = $price;
-    }
-
-    return (float) $this->_price_without_tax;
-  }
-
-  /**
-   * Get total order discount value which was used in totals.
-   *
-   * @return float
-   */
-  public function getTotalDiscount()
-  {
-    if(is_null($this->_global_discount_value))
-    {
-      $this->getTotalPriceWithoutTax();
-    }
-
-    return (float) $this->_global_discount_value;
-  }
-
-  /**
-   * Get total order price with tax. Promotional items will have the corrosponding promotional
-   * price used in this calculation.
-   *
-   * @return float
-   */
-  public function getTotalPriceWithTax ()
-  {
-    if(is_null($this->_price_with_tax))
-    {
-      $stocks = $this->getStockInfoArray();
-      $total_price = 0;
-
-      foreach ($stocks as $stock)
-      {
-        $item_price = $stock['price_promotion'] > 0 ? $stock['price_promotion'] : $stock[$this->getPriceColumn()];
-        $line_price = $stock['rtShopOrderToStock'][0]['quantity'] * $item_price;
-
-        $tax_inclusion = 0;
-        $tax_rate = sfConfig::get('app_rt_shop_tax_rate' , '0');
-        // Check if product is taxable
-        if($stock['rtShopProduct']['is_taxable'])
-        {
-          $tax_inclusion += ( $tax_rate / 100 ) * $line_price;
-        }
-        $total_price = $total_price + $line_price + $tax_inclusion;
-      }
-      $this->_price_with_tax = $total_price;
-    }
-
-    return (float) $this->_price_with_tax;
-  }
-
-  /**
-   * Get total tax of order
-   *
-   * @return float
-   */
-  public function getTotalTax()
-  {
-     return (float) $this->getTotalPriceWithTax() - $this->getTotalPriceWithoutTax();
-  }
-
-  /**
    * Get total weight of order
    *
    * @return float
@@ -273,6 +186,102 @@ abstract class PluginrtShopOrder extends BasertShopOrder
   }
 
   /**
+   * Get total order price without tax
+   *
+   * @return float
+   */
+  public function getTotalPriceWithoutTax()
+  {
+    throw new sfException('rtShopOrder::getTotalPriceWithoutTax() is set to be removed.');
+    
+//    if(is_null($this->_price_without_tax))
+//    {
+//      $stocks = $this->getStockInfoArray();
+//
+//      $price = 0;
+//      $global_discount_value = 0;
+//
+//      foreach ($stocks as $stock)
+//      {
+//        $item_price = $stock['price_promotion'] > 0 ? $stock['price_promotion'] : $stock[$this->getPriceColumn()];
+//
+//        $group_price = $stock['rtShopOrderToStock'][0]['quantity'] * $item_price;
+//
+//        $price += $group_price;
+//      }
+//      $this->_global_discount_value = $global_discount_value;
+//      $this->_price_without_tax = $price;
+//    }
+//
+//    return (float) $this->_price_without_tax;
+  }
+
+  /**
+   * Get total order discount value which was used in totals.
+   *
+   * @return float
+   */
+  public function getTotalDiscount()
+  {
+    throw new sfException('rtShopOrder::getTotalDiscount() is set to be removed.');
+//
+//    if(is_null($this->_global_discount_value))
+//    {
+//      $this->getTotalPriceWithoutTax();
+//    }
+//
+//    return (float) $this->_global_discount_value;
+  }
+
+  /**
+   * Get total order price with tax. Promotional items will have the corrosponding promotional
+   * price used in this calculation.
+   *
+   * @return float
+   */
+  public function getTotalPriceWithTax ()
+  {
+
+    throw new sfException('rtShopOrder::getTotalPriceWithTax() is set to be removed.');
+    
+//    if(is_null($this->_price_with_tax))
+//    {
+//      $stocks = $this->getStockInfoArray();
+//      $total_price = 0;
+//
+//      foreach ($stocks as $stock)
+//      {
+//        $item_price = $stock['price_promotion'] > 0 ? $stock['price_promotion'] : $stock[$this->getPriceColumn()];
+//        $line_price = $stock['rtShopOrderToStock'][0]['quantity'] * $item_price;
+//
+//        $tax_inclusion = 0;
+//        $tax_rate = sfConfig::get('app_rt_shop_tax_rate' , '0');
+//        // Check if product is taxable
+//        if($stock['rtShopProduct']['is_taxable'])
+//        {
+//          $tax_inclusion += ( $tax_rate / 100 ) * $line_price;
+//        }
+//        $total_price = $total_price + $line_price + $tax_inclusion;
+//      }
+//      $this->_price_with_tax = $total_price;
+//    }
+//
+//    return (float) $this->_price_with_tax;
+  }
+
+  /**
+   * Get total tax of order
+   *
+   * @return float
+   */
+  public function getTotalTax()
+  {
+    throw new sfException('rtShopOrder::getTotalTax() is set to be removed.');
+
+//     return (float) $this->getTotalPriceWithTax() - $this->getTotalPriceWithoutTax();
+  }
+
+  /**
    * Set order status to PAID after archiving data
    *
    * @param String $status Order status
@@ -353,8 +362,10 @@ abstract class PluginrtShopOrder extends BasertShopOrder
    */
   public function getShippingCharge()
   {
-    $info = $this->getShippingInfo();
-    return $info['charge'];
+    throw new sfException('rtShopOrder::getShippingCharge() is set to be removed.');
+    
+//    $info = $this->getShippingInfo();
+//    return $info['charge'];
   }
 
   /**
@@ -365,18 +376,20 @@ abstract class PluginrtShopOrder extends BasertShopOrder
    */
   public function getShippingInfo()
   {
-    if(!is_null($this->_shipping_info))
-    {
-      return $this->_shipping_info;
-    }
-
-    $class = sfConfig::get('app_rt_shop_shipping_class','rtShopShipping');
-
-    $shipping = new $class($this);
-
-    $this->_shipping_info = $shipping->getShippingInfo();
-
-    return $this->_shipping_info;
+    throw new sfException('rtShopOrder::getShippingInfo() is set to be removed.');
+    
+//    if(!is_null($this->_shipping_info))
+//    {
+//      return $this->_shipping_info;
+//    }
+//
+//    $class = sfConfig::get('app_rt_shop_shipping_class','rtShopShipping');
+//
+//    $shipping = new $class($this);
+//
+//    $this->_shipping_info = $shipping->getShippingInfo();
+//
+//    return $this->_shipping_info;
   }
 
   /**
@@ -386,13 +399,15 @@ abstract class PluginrtShopOrder extends BasertShopOrder
    */
   public function getGrandTotalPrice()
   {
-    $grand_total = $this->getTotalPriceWithTax();
+    throw new sfException('rtShopOrder::getGrandTotalPrice() is set to be removed.');
 
-    if ($this->getShippingCharge() != false) {
-      $grand_total += $this->getShippingCharge();
-    }
-
-    return (float) round($grand_total, 2);
+//    $grand_total = $this->getTotalPriceWithTax();
+//
+//    if ($this->getShippingCharge() != false) {
+//      $grand_total += $this->getShippingCharge();
+//    }
+//
+//    return (float) round($grand_total, 2);
   }
 
   /**
@@ -402,6 +417,8 @@ abstract class PluginrtShopOrder extends BasertShopOrder
    */
   public function getPriceColumn()
   {
-    return $this->getIsWholesale() ? 'price_wholesale' : 'price_retail';
+    throw new sfException('rtShopOrder::getPriceColumn() is set to be removed.');
+
+//    return $this->getIsWholesale() ? 'price_wholesale' : 'price_retail';
   }
 }

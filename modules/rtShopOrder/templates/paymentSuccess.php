@@ -13,7 +13,7 @@
       <h2><?php echo __('Creditcard Details') ?></h2>
       <?php include_partial('form', array('form' => $form_cc)) ?>
 
-      <h3><?php echo __('Total to be charged to your credit card: '); ?> <?php echo format_currency($rt_shop_cart_manager->getTotal(), sfConfig::get('app_rt_shop_payment_currency','AUD')); ?></h3>
+      <h3><?php echo __('Total to be charged to your credit card: '); ?> <?php echo format_currency($rt_shop_cart_manager->getTotalCharge(), sfConfig::get('app_rt_shop_payment_currency','AUD')); ?></h3>
     </div>
 
     <div class="rt-container rt-shop-order-tools">

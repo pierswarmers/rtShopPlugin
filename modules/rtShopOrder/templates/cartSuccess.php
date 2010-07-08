@@ -29,10 +29,10 @@
         <?php include_partial('cart', array('rt_shop_cart_manager' => $rt_shop_cart_manager, 'stock_exceeded' => isset($stock_exceeded) ? $stock_exceeded : array(), 'update_quantities' => isset($update_quantities) ? $update_quantities : array())) ?>
         <tfoot>
 
-         <?php if(sfConfig::get('app_rt_shop_tax_rate', 0) > 0 && sfConfig::get('app_rt_shop_tax_mode') == 'exclusive'): ?>
+         <?php if(!$rt_shop_cart_manager->isTaxModeInclusive()): ?>
           <tr class="rt-shop-cart-tax">
             <th colspan="5"><?php echo __('Tax'); ?>:</th>
-            <td colspan="2"><?php echo format_currency($rt_shop_cart_manager->getTaxValue(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
+            <td colspan="2"><?php echo format_currency($rt_shop_cart_manager->getTaxCharge(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
           </tr>
           <?php endif; ?>
           
@@ -43,10 +43,10 @@
           </tr>
           <?php endif; ?>
 
-          <?php if($rt_shop_cart_manager->getShipping() > 0): ?>
+          <?php if($rt_shop_cart_manager->getShippingCharge() > 0): ?>
           <tr class="rt-shop-cart-shipping">
             <th colspan="5"><?php echo __('Shipping') ?>:</th>
-            <td colspan="2"><?php echo format_currency($rt_shop_cart_manager->getShipping(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
+            <td colspan="2"><?php echo format_currency($rt_shop_cart_manager->getShippingCharge(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
           </tr>
           <?php endif; ?>
 
@@ -57,7 +57,7 @@
           
           if(sfConfig::get('app_rt_shop_tax_rate', 0) > 0 && sfConfig::get('app_rt_shop_tax_mode') == 'inclusive')
           {
-            $includes_message = sprintf('(includes %s tax)',format_currency($rt_shop_cart_manager->getTaxValue(), sfConfig::get('app_rt_currency', 'AUD')));
+            $includes_message = sprintf('(includes %s tax)',format_currency($rt_shop_cart_manager->getTaxCharge(), sfConfig::get('app_rt_currency', 'AUD')));
           }
 
           if($rt_shop_cart_manager->getPromotion())
@@ -68,7 +68,7 @@
           ?>
           <tr class="rt-shop-cart-total">
             <th colspan="5"><?php echo __('Total'); ?> <?php echo $includes_message  ?>:</th>
-            <td colspan="2"><?php echo format_currency($rt_shop_cart_manager->getTotal(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
+            <td colspan="2"><?php echo format_currency($rt_shop_cart_manager->getTotalCharge(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
           </tr>
         </tfoot>
       </table>

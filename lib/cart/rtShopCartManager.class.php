@@ -18,23 +18,265 @@
 class rtShopCartManager
 {
 	private $_order,
-					$_sf_user,
-					$_voucher,
-					$_promotion;
+					$_user,
+					$_promotion,
+          $_is_wholesale;
 
   /**
-   * Constructor
+   * Construct the cart manager - initialising the user and order objects.
    *
-   * @param sfUser $sf_user User object
+   * @param array $options
    */
-	public function __construct($sf_user = null)
+	public function __construct($options = array())
 	{
-    if (get_class($sf_user) != 'myUser') {
-      throw new Exception('No myUser object supplied.');
+    // is this a wholesale cart
+    $this->_is_wholesale = isset($options['is_wholesale']) ? $options['is_wholesale'] : false;
+
+    // set the user
+    $this->_user = sfContext::getInstance()->getUser();
+
+    // get and set the order
+    $this->_order = Doctrine::getTable('rtShopOrder')->find($this->_user->getAttribute('rt_shop_frontend_order_id'));
+
+    if(!$this->_order)
+    {
+      $this->_order = new rtShopOrder();
+      $this->_order->save();
+      $this->_user->setAttribute('rt_shop_frontend_order_id', $this->_order->getId());
     }
-		$this->_sf_user = $sf_user;
-    $this->getOrder();
 	}
+
+  /**
+   * Return the item charges, with tax if running in exclusive tax mode.
+   *
+   * @return float
+   */
+  public function getItemsCharge()
+  {
+    $charge = 0.0;
+    $column = $this->isWholesale() ? 'price_wholesale' : 'price_retail';
+    
+    foreach ($this->getStockInfoArray() as $stock)
+    {
+      $price = $stock['price_promotion'] > 0 ? $stock['price_promotion'] : $stock[$column];
+      $charge += $stock['rtShopOrderToStock'][0]['quantity'] * $price;
+    }
+
+    return (float) $charge;
+  }
+
+  /**
+   * Return tax component of the items charge.
+   *
+   * @return float
+   */
+  public function getTaxCharge()
+  {
+    if($this->isTaxModeInclusive())
+    {
+      return 0.00;
+    }
+
+    $taxable_items_charge = 0.0;
+    $column = $this->isWholesale() ? 'price_wholesale' : 'price_retail';
+    
+    foreach ($this->getStockInfoArray() as $stock)
+    {
+      if($stock['rtShopProduct']['is_taxable'])
+      {
+        $item_charge = $stock['price_promotion'] > 0 ? $stock['price_promotion'] : $stock[$column];
+        $taxable_items_charge += $stock['rtShopOrderToStock'][0]['quantity'] * $item_charge;
+      }
+    }
+    
+    return (float) $this->getTaxRate() / 100 * $taxable_items_charge;
+  }
+
+  /**
+   * Returns the tax component of the total. Only applicatable for inclusive tax mode.
+   *
+   * @return float
+   */
+  public function getTaxComponent()
+  {
+    if($this->isTaxModeInclusive())
+    {
+      return (float) $this->getTotalCharge() * 100 / (sfConfig::get('app_rt_shop_tax_rate', 0) + 100);
+    }
+
+    return 0.00;
+  }
+
+  public function getTotalCharge()
+  {
+    $charge = $this->getPreTotalCharge();
+
+    // voucher reduction
+    $charge -= $this->getVoucherReduction();
+
+    return $charge;
+  }
+
+  /**
+   * Gets the total charge value, before vouchers are applied.
+   * 
+   * @return float
+   */
+  public function getPreTotalCharge()
+  {
+    $charge = $this->getItemsCharge();
+
+    if($charge == 0.0)
+    {
+      return 0.0;
+    }
+
+    // promotion reductions
+    $charge -= $this->getPromotionReduction();
+
+    // sales tax for exclusive mode
+    if(!$this->isTaxModeInclusive())
+    {
+      $charge += $this->getTaxCharge();
+    }
+
+    // shipping
+    $charge += $this->getShippingCharge();
+
+    return $charge;
+  }
+
+  /**
+   * Return shipping charges.
+   *
+   * @return float
+   */
+  public function getShippingCharge()
+  {
+    $class = sfConfig::get('app_rt_shop_shipping_class','rtShopShipping');
+    $shipping = new $class($this->getOrder());
+    $result = $shipping->getShippingInfo();
+    return $result['charge'];
+  }
+
+  /**
+   * Get the total reduction value applied by promotions.
+   *
+   * @return float
+   */
+  public function getPromotionReduction()
+  {
+    return (float) $this->getItemsCharge() - rtShopPromotionToolkit::applyPromotion($this->getItemsCharge());
+  }
+
+  /**
+   * Get the total reduction value applied by a voucher.
+   *
+   * @return float
+   */
+  public function getVoucherReduction()
+  {
+    $charge = $this->getPreTotalCharge();
+    
+		if(is_null($this->getVoucherCode()))
+		{
+			return 0.00;
+		}
+    
+    return (float) $charge - rtShopVoucherToolkit::applyVoucher($this->getVoucherCode(), $charge);
+  }
+  
+  /**
+   * Proxy to getItemsCharge().
+   *
+   * @see rtShopCartManager::getItemsCharge()
+   * @return float
+   */
+  public function getSubTotal()
+  {
+    return $this->getItemsCharge();
+  }
+  
+  /**
+   * @return rtShopOrder
+   */
+  public function getOrder()
+  {
+    return $this->_order;
+  }
+  /**
+   * @return sfUser
+   */
+  public function getUser()
+  {
+    return $this->_user;
+  }
+  
+  /**
+   * @return rtShopPromotion
+   */
+  public function getPromotion()
+  {
+    if(is_null($this->_promotion))
+    {
+      $this->_promotion = rtShopPromotionToolkit::getBest($this->getItemsCharge());
+    }
+		return $this->_promotion;
+  }
+
+  /**
+   * Is this a wholesale cart
+   * 
+   * @return boolean
+   */
+  public function isWholesale()
+  {
+    return $this->_is_wholesale;
+  }
+
+  /**
+   * Get the taxation mode, either inclusive or exclusive.
+   *
+   * inclusive = Value Added Tax (VAT) or  Goods and Services Tax (GST)
+   * exclusive = Sales Tax
+   *
+   * @return string
+   */
+  public function getTaxMode()
+  {
+    return sfConfig::get('app_rt_shop_tax_mode', 'inclusive');
+  }
+
+  /**
+   * Is the taxation mode inclusive
+   *
+   * @return string
+   */
+  public function isTaxModeInclusive()
+  {
+    return $this->getTaxMode() == 'inclusive';
+  }
+
+  /**
+   * Get the taxation rate
+   *
+   * @return float
+   */
+  public function getTaxRate()
+  {
+    return (float) sfConfig::get('app_rt_shop_tax_rate', 0.0);
+  }
+  
+  /**
+   * Return a summary array of stock line items for the order.
+   *
+   * @see rtShopOrder::getStockInfoArray()
+   * @return array
+   */
+  public function getStockInfoArray()
+  {
+    return $this->getOrder()->getStockInfoArray();
+  }
 
   /**
    * Add products to cart
@@ -144,10 +386,9 @@ class rtShopCartManager
   {
     $order = $this->getOrder();
 
-    $query = Doctrine_Query::create()
-             ->from('rtShopOrderToStock os')
-             ->addWhere('os.order_id = ?', $order->getId());
-    $order_to_stock = $query->fetchArray();
+    $order_to_stock = Doctrine_Query::create()->from('rtShopOrderToStock os')
+             ->addWhere('os.order_id = ?', $order->getId())
+             ->fetchArray();
 
     if(!$order_to_stock) {
       return 0;
@@ -162,203 +403,21 @@ class rtShopCartManager
   }
 
   /**
-   * Return a summary array of stock line items for this order. The returned
-   * data is derived from order_to_stock, stock, and product.
+   * Get voucher code
    *
-   * @return array
+   * @return string
    */
-  public function getStockInfoArray()
-  {
-    return $this->getOrder()->getStockInfoArray();
-  }
-
-  /**
-   * Get shipping charge
-   *
-   * @return Float Charge
-   */
-	public function getShipping()
+	public function getVoucherCode()
 	{
-		return $this->getOrder()->getShippingCharge();
-	}
-  
-  /**
-   * Get order subTotal with tax
-   *
-   * @return Float subTotal
-   */
-	public function getSubTotal()
-	{
-//    if(sfConfig::get('app_rt_shop_tax_mode', 'inclusive') == 'inclusive')
-//    {
-      return $this->getSubTotalWithoutTax();
-//    }
-//		return $this->getOrder()->getTotalPriceWithTax();
-	}
-
-  /**
-   * Get order subTotal without tax
-   *
-   * @return Float subTotal
-   */
-	public function getSubTotalWithoutTax()
-	{
-		return $this->getOrder()->getTotalPriceWithoutTax();
-	}
-
-  /**
-   * Get promotion details
-   *
-   * @return rtShopPromotion Object
-   */
-	public function getPromotion()
-	{
-    if(is_null($this->_promotion))
-    {
-      $this->_promotion = rtShopPromotionToolkit::getBest($this->getSubTotal());
-    }
-		return $this->_promotion;
-	}
-
-  /**
-   * Get voucher details
-   *
-   * @return Object rtShopVoucher object
-   */
-	public function getVoucher()
-	{
-    return $this->_voucher;
+    return $this->getOrder()->getVoucherCode();
 	}
   
   /**
    * Set voucher details
-   *
-   * @param Object $voucher Voucher object
    */
-	public function setVoucher($voucher)
+	public function setVoucherCode($voucher_code)
 	{
-		$this->_voucher = $voucher;
-	}
-
-  /**
-   * Get order total without applied voucher
-   *
-   * @param Object $voucher Voucher object
-   * @return Float Order total
-   */
-	public function getTotalWithoutVoucher($voucher = null)
-	{
-		// inc. tax.... pre-shipping
-		$total = $this->getSubTotal();
-    if($total > 0)
-    {
-      $total = $this->applyPromotion($total);
-      $total = $this->applyShipping($total);
-    }
-    return $total;
-	}
-
-  /**
-   * Get order total
-   *
-   * @param Object $voucher Voucher object
-   * @return Float Order total
-   */
-	public function getTotal($voucher = null)
-	{
-		// inc. tax.... pre-shipping
-		$total = $this->getSubTotal();
-    if($total > 0)
-    {
-      $total = $this->applyTaxation($total);
-      $total = $this->applyPromotion($total);
-      $total = $this->applyVoucher($total);
-      $total = $this->applyShipping($total);
-    }
-		return $total;
-	}
-
-  public function getTotalWithoutShipping()
-  {
-    return $this->getTotal() - $this->getShipping();
-  }
-
-  public function getPromotionReduction()
-  {
-    return $this->getSubTotal() - $this->applyPromotion($this->getSubTotal());
-  }
-
-  /**
-   * Apply shipping charges to order total
-   *
-   * @param Float $total Order total
-   * @return Float Adjusted order total
-   */
-  private function applyShipping($total)
-  {
-    $total = $total + $this->getShipping();
-    return $total;
-  }
-
-  /**
-   * Apply promotion to order
-   *
-   * @param Float $total Order total
-   * @return Float Adjusted order total
-   */
-	private function applyPromotion($total)
-	{
-		return rtShopPromotionToolkit::applyPromotion($total);
-	}
-
-  /**
-   * Apply taxation to order
-   *
-   * @param Float $total Order total
-   * @return Float Adjusted order total
-   */
-	private function applyTaxation($total)
-	{
-    if(sfConfig::get('app_rt_shop_tax_mode', 'inclusive') == 'inclusive')
-    {
-      return $total;
-    }
-
-    $stocks = $this->getStockInfoArray();
-    
-    $total_price = 0;
-
-    foreach ($stocks as $stock)
-    {
-      $item_price = $stock['price_promotion'] > 0 ? $stock['price_promotion'] : $stock[$this->getOrder()->getPriceColumn()];
-      $line_price = $stock['rtShopOrderToStock'][0]['quantity'] * $item_price;
-
-      $tax_inclusion = 0;
-      $tax_rate = sfConfig::get('app_rt_shop_tax_rate' , '0');
-      // Check if product is taxable
-      if($stock['rtShopProduct']['is_taxable'])
-      {
-        $tax_inclusion += ( $tax_rate / 100 ) * $line_price;
-      }
-      //sfContext::getInstance()->getLogger()->info(sprintf('{rtShopCartManager} Total: %s, Line price:  %s, Tax inclusion: %s',$total_price,$line_price,$tax_inclusion));
-      $total_price = $total_price + $line_price + $tax_inclusion;
-    }
-    return (float) $total_price;
-	}
-
-  /**
-   * Apply voucher to order
-   *
-   * @param Float $total Order total
-   * @return Float Adjusted order total
-   */
-	private function applyVoucher($total)
-	{
-		if(is_null($this->getVoucher()))
-		{
-			return $total;
-		}
-		return rtShopVoucherToolkit::applyVoucher($this->getVoucher(), $total);
+		$this->getOrder()->setVoucherCode($voucher_code);
 	}
 
    /**
@@ -402,15 +461,14 @@ class rtShopCartManager
      }
 
      $order->setClosedProducts($products);
-     $order->setClosedShippingRate($this->getShipping());
-     $order->setClosedTaxes($this->getTaxValue());
-     $order->setClosedPromotions($this->getPromotion());
-     $order->setClosedTotal($this->getTotal());
+     $order->setClosedShippingRate($this->getShippingCharge());
+     $order->setClosedTaxes($this->getTaxCharge());
+     $order->setClosedPromotions($this->getPromotionReduction());
+     $order->setClosedTotal($this->getTotalCharge());
    }
 
    /**
     * Adjust stock quantities
-    *
     */
   public function adjustStockQuantities()
   {
@@ -431,9 +489,31 @@ class rtShopCartManager
   }
 
    /**
-    * Remove Cache for products.
-    *
+    * Adjust voucher count
     */
+  public function adjustVoucherCount()
+  {
+    if($this->getVoucherCode() != '')
+    {
+      $by_code = Doctrine::getTable('rtShopVoucher')->findByCode($this->getVoucherCode());
+      $array = $by_code->getData();
+      $voucher = $array[0];
+
+      $count_before = $voucher->getCount();
+      if($voucher && $voucher->getCount() > 0)
+      {
+        $voucher->adjustCountBy(1);
+        $voucher->save();
+
+        sfContext::getInstance()->getLogger()->info(sprintf('{rtShopCartManager} Adjust voucher code = %s by count = 1. Count before = %s. Count after =  %s',$this->getVoucherCode(),$count_before,$voucher->getCount()));
+      }
+    }
+  }
+
+  /**
+   * Remove Cache for products altered in the order submission
+   *
+   */
   public function clearCache($product_ids = array())
   {
     foreach($this->getOrder()->getStockInfoArray() as $stock)
@@ -452,29 +532,6 @@ class rtShopCartManager
     }
   }
 
-   /**
-    * Adjust voucher count
-    *
-    */
-  public function adjustVoucherCount()
-  {
-    if($this->getVoucher() != '')
-    {
-      $by_code = Doctrine::getTable('rtShopVoucher')->findByCode($this->getVoucher());
-      $array = $by_code->getData();
-      $voucher = $array[0];
-
-      $count_before = $voucher->getCount();
-      if($voucher && $voucher->getCount() > 0)
-      {
-        $voucher->adjustCountBy(1);
-        $voucher->save();
-        
-        sfContext::getInstance()->getLogger()->info(sprintf('{rtShopCartManager} Adjust voucher code = %s by count = 1. Count before = %s. Count after =  %s',$this->getVoucher(),$count_before,$voucher->getCount()));
-      }
-    }
-  }
-
   /**
    * Does the cart contain any stock selections.
    *
@@ -486,76 +543,6 @@ class rtShopCartManager
   }
 
   /**
-   * Get order object
-   *
-   * @return rtShopOrder object
-   */
-	public function getOrder()
-	{
-		if(is_null($this->_order))
-		{
-			$order_id = $this->_sf_user->getAttribute('rt_shop_frontend_order_id');
-
-			if(!is_null($order_id) && $order_id != '')
-			{
-				$order = Doctrine::getTable('rtShopOrder')->find($order_id);
-
-				if($order)
-				{
-					sfContext::getInstance()->getLogger()->info('{rtShopCartManager} Found existing order with id: '.$order->getId());
-				}
-			}
-			else
-			{
-				$order = new rtShopOrder();
-				$order->save();
-				$this->_sf_user->setAttribute('rt_shop_frontend_order_id', $order->getId());
-				sfContext::getInstance()->getLogger()->info('{rtShopCartManager} Created new order with id: '.$order->getId());
-			}
-
-			$this->_order = $order;
-		}
-		return $this->_order;
-	}
-
-  /**
-   * Return total tax for order
-   *
-   * @return float
-   */
-  public function getTaxValue()
-  {
-    $tax = 0;
-    if(sfConfig::get('app_rt_shop_tax_mode') == 'exclusive')
-    {
-      $tax = $this->applyTaxation($this->getSubTotal()) - $this->getSubTotal();
-    }
-    else
-    {
-      //$total_ex_tax = $this->getTotalWithoutShipping() * 100 / (sfConfig::get('app_rt_shop_tax_rate', 0) + 100);
-      //echo $this->getTotalWithoutShipping()." / ".$total_ex_tax;
-      //$tax = $this->getTotalWithoutShipping() - $total_ex_tax;
-      $stocks = $this->getStockInfoArray();
-      $total_taxable_price = 0;
-      foreach ($stocks as $stock)
-      {
-        $item_price = $stock['price_promotion'] > 0 ? $stock['price_promotion'] : $stock[$this->getOrder()->getPriceColumn()];
-        $line_price = $stock['rtShopOrderToStock'][0]['quantity'] * $item_price;
-
-        if($stock['rtShopProduct']['is_taxable'])
-        {
-          $total_taxable_price += $line_price;
-        }
-      }
-      $taxable = $total_taxable_price;
-      $total_ex_tax = $taxable * 100 / (sfConfig::get('app_rt_shop_tax_rate', 0) + 100);
-      $tax = $taxable - $total_ex_tax;
-    }
-
-    return $tax;
-  }
-
-  /**
    * For logging pricing data
    *
    * @return string
@@ -564,23 +551,15 @@ class rtShopCartManager
   {
     $string = '{rtShopCartManager} ';
 
-    $string .= sprintf('->getSubTotal() = %s, ',                 $this->getSubTotal());
-    if($this->getPromotion())
-    {
-      $string .= sprintf('->getPromotionReduction() = %s, ',  $this->getPromotionReduction());
-      $string .= sprintf('->getPromotionType() = %s, ',          $this->getPromotion()->getReductionType());
-      $string .= sprintf('->getPromotionValue() = %s, ',         $this->getPromotion()->getReductionValue());
-    }
-    $string .= sprintf('->getTaxValue() = %s, ',                 $this->getTaxValue());
-    $string .= sprintf('->getShippingRate() = %s, ',             $this->getShipping());
-    if($this->getVoucher())
-    {
-      $string .= sprintf('->getTotal() with voucher = %s, ',     $this->getTotal());
-    }
-    else
-    {
-      $string .= sprintf('->getTotal() = %s, ',                  $this->getTotal());
-    }
+    $string .= sprintf('->getTaxRate() = %s, ',             $this->getTaxRate());
+    $string .= sprintf('->getTaxMode() = %s, ',             $this->getTaxMode());
+    $string .= sprintf('->getItemsCharge() = %s, ',         $this->getItemsCharge());
+    $string .= sprintf('->getPromotionReduction() = %s, ',  $this->getPromotionReduction());
+    $string .= sprintf('->getVoucherReduction() = %s, ',    $this->getVoucherReduction());
+    $string .= sprintf('->getTaxCharge() = %s, ',           $this->getTaxCharge());
+    $string .= sprintf('->getShippingCharge() = %s, ',      $this->getShippingCharge());
+    $string .= sprintf('->getTaxCharge() = %s, ',           $this->getTaxCharge());
+    $string .= sprintf('->getTaxComponent() = %s, ',        $this->getTaxComponent());
 
     return $string;
   }
