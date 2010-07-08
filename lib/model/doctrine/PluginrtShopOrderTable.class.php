@@ -30,6 +30,45 @@ class PluginrtShopOrderTable extends Doctrine_Table
   }
 
   /**
+   * Return a query with pending orders that are older than x days
+   *
+   * @param  string          $days   Older than days
+   * @param  Doctrine_Query  $query  an optional query object
+   * @return Doctrine_Query
+   */
+  public function getPendingOlderThanQuery($days = 0, Doctrine_Query $q = null)
+  {
+    if($days === 0)
+    {
+      $date = date('Y-m-d h:i');
+    }
+    else
+    {
+      $date = date('Y-m-d h:i',strtotime(sprintf("-%s days",$days)));
+    }
+    
+    $q = $this->getQuery($q);
+    $q->andWhere('(o.status = ?)', rtShopOrder::STATUS_PENDING);
+    $q->andWhere('(o.created_at <= ?)', $date);
+    return $q;
+  }
+
+   /**
+   * Return a query with paid orders which do not have archive data
+   *
+   * @param  Doctrine_Query  $query  an optional query object
+   * @return Doctrine_Query
+   */
+  public function getNotArchivedQuery(Doctrine_Query $q = null)
+  {
+    $q = $this->getQuery($q);
+    $q->andWhere('(o.status = ?)', rtShopOrder::STATUS_PAID);
+    $q->andWhere("(o.closed_products IS ? OR o.closed_products = '')",NULL);
+    $q->andWhere("(o.closed_total like ?)",0);
+    return $q;
+  }
+
+  /**
    * Returns a Doctrine_Query object.
    *
    * @param Doctrine_Query $q
