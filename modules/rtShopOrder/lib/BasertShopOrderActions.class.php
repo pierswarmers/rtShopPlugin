@@ -503,9 +503,7 @@ class BasertShopOrderActions extends sfActions
       $this->logMessage('{rtShopReceipt} Order #'.$cm->getOrder()->getReference().' was successful but confirmation email could not be sent due to missing admin email in configuration.');
     }
 
-    $this->logMessage('{rtShopReceipt} Confimation emails for order #'.$cm->getOrder()->getReference().' were sent successfully.');
-
-    //$this->cleanSession();
+    $this->cleanSession();
   }
 
   /**
