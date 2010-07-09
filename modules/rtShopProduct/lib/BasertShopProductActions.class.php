@@ -39,6 +39,10 @@ class BasertShopProductActions extends sfActions
       $this->forward404('Product isn\'t published.');
     }
 
+    $query = Doctrine::getTable('rtShopProduct')->addRelatedProductQuery($this->rt_shop_product);
+
+    $this->related_products = $query->execute();
+
     rtSiteToolkit::checkSiteReference($this->rt_shop_product);
     
     $this->updateResponse($this->rt_shop_product);
