@@ -11,9 +11,11 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
   <?php include_partial('rtShopProduct/gallery', array('rt_shop_product' => $rt_shop_product)) ?>
   </div>
   <div class="rt-shop-product-details">
+    <?php include_component('rtSnippet','snippetPanel', array('collection' => 'shop-product-prefix','sf_cache_key' => 'shop-product-prefix')); ?>
     <?php include_partial('details_preffix', array('rt_shop_product' => $rt_shop_product)) ?>
     <?php include_partial('rtShopProduct/order_panel', array('rt_shop_product' => $rt_shop_product)) ?>
     <?php include_partial('details_suffix', array('rt_shop_product' => $rt_shop_product)) ?>
+    <?php include_component('rtSnippet','snippetPanel', array('collection' => 'shop-product-suffix','sf_cache_key' => 'shop-product-suffix')); ?>
   </div>
 </div>
 
