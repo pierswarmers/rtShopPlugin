@@ -17,8 +17,6 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
   </div>
 </div>
 
-<?php get_partial(); ?>
-
 <?php if($related_products): ?>
 <h2><?php echo __('Related Products') ?></h2>
 <div class="rt-container rt-collection">
