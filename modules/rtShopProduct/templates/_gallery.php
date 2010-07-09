@@ -15,7 +15,7 @@ use_stylesheet('/rtCorePlugin/vendor/jquery/css/ui/jquery.ui.css');
   <?php $style = ''; foreach($rt_shop_product->getImages() as $image): ?>
     <?php
       $image_large   = rtAssetToolkit::getThumbnailPath($image->getSystemPath(), array('maxHeight' => 500, 'maxWidth' => 800));
-      $image_medium  = rtAssetToolkit::getThumbnailPath($image->getSystemPath(), array('maxHeight' => 250, 'maxWidth' => 190));
+      $image_medium  = rtAssetToolkit::getThumbnailPath($image->getSystemPath(), array('maxHeight' => 230, 'maxWidth' => 180));
 
       $image_variation_key  = $image->getOriginalFilename();
       $needles              = array("_","-");
@@ -38,7 +38,7 @@ use_stylesheet('/rtCorePlugin/vendor/jquery/css/ui/jquery.ui.css');
   <?php $i = 1; foreach($rt_shop_product->getImages() as $image): ?>
     <div class="rt-list-item-<?php echo $i ?>">
       <span>
-        <?php echo image_tag(rtAssetToolkit::getThumbnailPath($image->getSystemPath(), array('maxHeight' => 70, 'maxWidth' => 50)), array('class' => 'primary-image-holder-'.$image->getId())) ?>
+        <?php echo image_tag(rtAssetToolkit::getThumbnailPath($image->getSystemPath(), array('maxHeight' => 69, 'maxWidth' => 49)), array('class' => 'primary-image-holder-'.$image->getId())) ?>
       </span>
     </div>
   <?php $i++; endforeach; ?>
