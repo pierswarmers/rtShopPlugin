@@ -49,7 +49,7 @@ use_stylesheet('/rtCorePlugin/vendor/jquery/css/ui/jquery.ui.css');
     $(".rt-shop-product-primary-image a").colorbox({preloading:false});
     $(".rt-shop-product-image-thumbs div").click(function()
     {
-      $(".rt-shop-product-primary-image a#" + $(this).children('img').attr('class')).css("display","inline").siblings('a').css("display","none");
+      $(".rt-shop-product-primary-image a#" + $(this).children().children('img').attr('class')).css("display","inline").siblings('a').css("display","none");
     });
   });
 </script>
