@@ -26,7 +26,6 @@ Product display
 .rt-shop-product-primary-image { height:250px; text-align: center; padding-top:10px;width:200px;}
 .rt-shop-product-image-thumbs div {border:1px solid #CCC;cursor:pointer;float:left;margin-bottom:10px;margin-right:5px;}
 .rt-shop-product-image-thumbs span {display:table-cell;height:75px;text-align:center;vertical-align:middle;width:55px;}
-.rt-shop-product-image-thumbs img { margin-top:5px; }
 .rt-shop-product-details { float:right; width:380px; }
 .rt-shop-product-price {font-size:120%;font-weight:bold;}
 .rt-shop-item-quantity input {width:50px; margin:0;}
