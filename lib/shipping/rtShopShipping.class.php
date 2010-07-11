@@ -16,67 +16,77 @@
  */
 class rtShopShipping
 {
-	public $_shipment,
-					$_order,
-					$_error_message,
-					$_charge,
-					$_tax;
+	private $_cart_manager;
 
   /**
    * Constructor
    *
    * @param SteerShopOrder Order object
    */
-	public function __construct(rtShopOrder $order)
+	public function __construct(rtShopCartManager $cm)
 	{
-		$this->_order = $order;
-
-		if($this->_order->isNew())
+		if($cm->getOrder()->isNew())
 		{
 			throw new Exception('rtShopOrder object can\'t be new');
 		}
+    
+    $this->_cart_manager = $cm;
 	}
 
   public function getShippingInfo()
   {
-    $response = array();
+    $address = $this->getAddress();
+    $response = array('charge' => 0);
 
-    $address = $this->_order->getShippingAddressArray();
-    
-    if(count($address) == 0)
+    if(!$address || !isset($address['country']) || is_null($address['country']) || $address['country'] == '')
     {
-      $address = $this->_order->getBillingAddressArray();
+      return false;
     }
 
-    if(isset($address[0]))
+    if(!isset($address['country']) || is_null($address['country']) || $address['country'] == '')
     {
-      $address = $address[0];
-      $handling_charge = sfConfig::get('app_rt_shop_shipping_rate',array('domestic' => 0, 'international' => 0));
-
-      if (!isset($address['country']) || is_null($address['country']) || $address['country'] == '') {
-        return false;
-      }
-
-      if ($address['country'] == sfConfig::get('app_rt_shop_default_country', 'AU')) {
-        $response['charge'] = $handling_charge['domestic'];
-      } else {
-        $response['charge'] = $handling_charge['international'];
-      }
+      return false;
     }
-    else
+
+    $shipping_charges = sfConfig::get('app_rt_shop_shipping_charges', array());
+
+    if(isset($shipping_charges[$address['country']]))
     {
-      $response['charge'] = 0;
+      $response['charge'] = $shipping_charges[$address['country']];
+    }
+    elseif(isset($shipping_charges['default']))
+    {
+      $response['charge'] = $shipping_charges['default'];
     }
 
     return $response;
   }
 
-  /**
-   * If shipment complete save changes
-   * 
-   */
-	public function complete()
-	{
 
-	}  
+  /**
+   * Returns an address from the order object.
+   *
+   * @return array|false
+   */
+  public function getAddress()
+  {
+    $address = $this->getCartManager()->getOrder()->getShippingAddressArray();
+
+    if(count($address) == 0)
+    {
+      $address = $this->getCartManager()->getOrder()->getBillingAddressArray();
+    }
+
+    return isset($address[0]) ? $address[0] : false;
+  }
+
+  /**
+   * Get the cart manager object.
+   *
+   * @return rtShopCartManager
+   */
+  public function getCartManager()
+  {
+    return $this->_cart_manager;
+  }
 }
