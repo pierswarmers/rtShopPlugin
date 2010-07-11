@@ -7,24 +7,43 @@
   <?php
     $item_price = $stock['price_promotion'] != 0 ? $stock['price_promotion'] : $stock['price_retail'];
     $product = Doctrine::getTable('rtShopProduct')->find($stock['product_id']);
+
+    $match = null;
+    $variations = '';
+
+    if(count($stock['rtShopVariations']) > 0)
+    {
+      $comma = '';
+      $or = '';
+      
+      foreach($stock['rtShopVariations'] as $variation)
+      {
+        $variations .= $comma . $variation['title'];
+        $comma = ', ';
+
+        $cleaned_title = rtAssetToolkit::cleanFilename($variation['title'], true);
+
+        if(!is_numeric($cleaned_title))
+        {
+          // avoid simple numbers.
+          $match .= $or . rtAssetToolkit::cleanFilename($cleaned_title, true);
+          $or = '|';
+        }
+      }
+
+      $match = '/('.$match.')/i';
+    }
+
   ?>
   <tr class="<?php echo (isset($stock_exceeded[$stock['id']])) ? 'error' : '' ?>">
-    <td class="rt-shop-cart-primary-image-thumb"><?php echo link_to(($product->getPrimaryImage()) ? image_tag(rtAssetToolkit::getThumbnailPath($product->getPrimaryImage()->getSystemPath(), array('maxHeight' => 70, 'maxWidth' => 50))) : '', '@rt_shop_product_show?id='.$stock['rtShopProduct']['id'].'&slug='.$stock['rtShopProduct']['slug']) ?></td>
+    <td class="rt-shop-cart-primary-image-thumb"><?php echo link_to(($product->getPrimaryImage($match)) ? image_tag(rtAssetToolkit::getThumbnailPath($product->getPrimaryImage($match)->getSystemPath(), array('maxHeight' => 70, 'maxWidth' => 50))) : '', '@rt_shop_product_show?id='.$stock['rtShopProduct']['id'].'&slug='.$stock['rtShopProduct']['slug']) ?></td>
     <td class="rt-shop-cart-details">
       <input type="hidden" name="product_id[]" value="<?php echo $stock['rtShopProduct']['id']; ?>" />
       <?php echo link_to($stock['rtShopProduct']['title'], '@rt_shop_product_show?id='.$stock['rtShopProduct']['id'].'&slug='.$stock['rtShopProduct']['slug']) ?>
       <br />
       <span><?php
 
-        if(count($stock['rtShopVariations']) > 0)
-        {
-          $comma = '';
-          foreach($stock['rtShopVariations'] as $variation)
-          {
-            echo $comma . $variation['title'];
-            $comma = ', ';
-          }
-        }
+        echo $variations
 
         ?></span>
         <?php if(rtSiteToolkit::isMultiSiteEnabled()): ?>
