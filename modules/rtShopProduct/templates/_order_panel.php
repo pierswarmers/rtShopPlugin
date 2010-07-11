@@ -63,8 +63,10 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
     <input type="text" name="rt-shop-quantity" class="text minitext" value="1" />
   </p>
 
-  <?php if(sfConfig::get('rt_shop_ordering_enabled', true)): ?>
-  <p><button type="submit" class="disabled" disabled><?php echo __('Add to Cart') ?></button></p>
+  <?php if(sfConfig::get('app_rt_shop_ordering_enabled', true)): ?>
+  <p>
+    <button type="submit" class="disabled" disabled><?php echo __('Add to Cart') ?></button>
+  </p>
   <?php endif; ?>
 
   <script type="text/javascript">
