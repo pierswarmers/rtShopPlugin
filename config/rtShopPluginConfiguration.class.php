@@ -67,15 +67,11 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
        new sfRoute('/rtShopPromotionCartAdmin/:action/id/:id', array('module' => 'rtShopPromotionAdmin'))
     );
 
-<<<<<<< HEAD
     $routing->prependRoute('rt_shop_order_show', new sfRoute('/rtShopOrderAdmin/show', array('module' => 'rtShopOrderAdmin', 'action' => 'show')));
-=======
-
     $routing->prependRoute('rt_shop_send_to_friend', new sfRoute(sprintf('/%s/send_to_friend',$shop_route_token), array('module' => 'rtShopProduct', 'action' => 'sendToFriend')));
     $routing->prependRoute('rt_shop_add_to_wishlist', new sfRoute(sprintf('/%s/add-to-wishlist',$shop_route_token), array('module' => 'rtShopProduct', 'action' => 'addToWishlist')));
     $routing->prependRoute('rt_shop_show_wishlist', new sfRoute(sprintf('/%s/wishlist',$shop_route_token), array('module' => 'rtShopProduct', 'action' => 'showWishlist')));
     $routing->prependRoute('rt_shop_order_check_voucher', new sfRoute('/order/check-voucher.:sf_format', array('module' => 'rtShopOrder', 'action' => 'checkVoucher')));
->>>>>>> 9cdf0f782a8c809c8fda3d02602f60f8ae3d0707
     $routing->prependRoute('rt_shop_order_add_to_bag', new sfRoute('/order/add-to-bag', array('module' => 'rtShopOrder', 'action' => 'addToBag')));
     $routing->prependRoute('rt_shop_order_cart', new sfRoute('/order/cart', array('module' => 'rtShopOrder', 'action' => 'cart')));
     $routing->prependRoute('rt_shop_order_membership', new sfRoute('/order/membership', array('module' => 'rtShopOrder', 'action' => 'membership')));
