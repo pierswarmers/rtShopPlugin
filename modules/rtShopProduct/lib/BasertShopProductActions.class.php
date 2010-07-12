@@ -57,7 +57,12 @@ class BasertShopProductActions extends sfActions
 
   public function executeShowWishlist(sfWebRequest $request)
   {
-
+    if($request->hasParameter('delete'))
+    {
+      $wishlist = $this->getUser()->getAttribute('rt_shop_wish_list', array());
+      unset($wishlist[$request->getParameter('delete')]);
+      $this->getUser()->setAttribute('rt_shop_wish_list', $wishlist);
+    }
   }
 
   public function executeSendToAFriend(sfWebRequest $request)
