@@ -154,9 +154,29 @@ class rtShopCartManager
   public function getShippingCharge()
   {
     $class = sfConfig::get('app_rt_shop_shipping_class','rtShopShipping');
-    $shipping = new $class($this->getOrder());
+    $shipping = new $class($this);
     $result = $shipping->getShippingInfo();
     return $result['charge'];
+  }
+
+  /**
+   * Return shipping address - defaults to billing address if no shipping address found.
+   *
+   * @return array
+   */
+  public function getShippingAddress()
+  {
+    return $this->getOrder()->getShippingAddressArray();
+  }
+
+  /**
+   * Return billing address.
+   *
+   * @return array
+   */
+  public function getBillingAddress()
+  {
+    return $this->getOrder()->getBillingAddressArray();
   }
 
   /**

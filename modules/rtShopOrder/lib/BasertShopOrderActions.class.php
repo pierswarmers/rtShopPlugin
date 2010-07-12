@@ -362,6 +362,44 @@ class BasertShopOrderActions extends sfActions
   }
 
   /**
+   * Can be used with an ajax request to validate and return the voucher.
+   * 
+   * @param sfWebRequest $request
+   */
+  public function executeCheckVoucher(sfWebRequest $request)
+  {
+    $cm = $this->getCartManager();
+
+    $this->voucher = array('error' => '', 'id' => '');
+
+    if($request->getParameter('code', '') !== '')
+    {
+      $voucher = rtShopVoucherToolkit::getApplicable($request->getParameter('code'), $cm->getTotalCharge());
+
+      if($voucher)
+      {
+        $cm->getOrder()->setVoucherCode($voucher->getCode());
+        $this->voucher = $voucher->getData();
+      }
+      else
+      {
+        $cm->getOrder()->setVoucherCode(null);
+        $this->voucher['error'] = true;
+      }
+    }
+    else
+    {
+      $cm->getOrder()->setVoucherCode(null);
+    }
+    
+    $cm->getOrder()->save();
+    $this->voucher['shipping_charge'] = $cm->getShippingCharge();
+    $this->voucher['total_charge'] = $cm->getTotalCharge();
+    $numberFormat = new sfNumberFormat(sfContext::getInstance()->getUser()->getCulture());
+    $this->voucher['total_charge_formatted'] = $numberFormat->format($cm->getTotalCharge(), 'c', sfConfig::get('app_rt_shop_payment_currency','AUD'));
+  }
+
+  /**
    * Executes the payment page
    *
    * @param sfWebRequest $request
@@ -383,7 +421,7 @@ class BasertShopOrderActions extends sfActions
 
     $this->form = new rtShopPaymentForm($cm->getOrder(), array('rt_shop_cart_manager' => $cm));
 
-    $this->form->setDefault('voucher_code', $this->getUser()->getAttribute('rt_shop_vouchure_code', ''));
+    //$this->form->setDefault('voucher_code', $this->getUser()->getAttribute('rt_shop_vouchure_code', ''));
 
     $this->form_cc = new rtShopCreditCardPaymentForm();
 
@@ -476,27 +514,18 @@ class BasertShopOrderActions extends sfActions
               ->setContentType('text/html')
               ->setFrom(sfConfig::get('app_rt_shop_order_admin_email', 'from@noreply.com'))
               ->setTo($cm->getOrder()->getEmail())
+              ->setBcc(sfConfig::get('app_rt_shop_order_admin_email'))
               ->setSubject(sprintf('Order confirmation: #%s', $order_reference))
               ->setBody($this->getPartial('rtShopOrderAdmin/invoice', array('rt_shop_order' => $cm->getOrder())));
       if(!$this->getMailer()->send($message))
       {
-        $this->logMessage('{rtShopReceipt} User email for order #'.$cm->getOrder()->getReference().' could not be sent.');
+        $this->logMessage('{rtShopReceipt} Email for order #'.$cm->getOrder()->getReference().' could not be sent.');
       }
 
       //Send confirmation mail to shop admin
-      $routing = $this->getContext()->getRouting();
-      $url = $routing->generate('rt_shop_order_show', array('id' => $cm->getOrder()->getId()), true);
-      $body = "<p>A new order with reference <a href='$url' target=\'_blank\'>#$order_reference</a> has been added.</p>";
-      $message = Swift_Message::newInstance()
-              ->setContentType('text/html')
-              ->setFrom(sfConfig::get('app_rt_shop_order_admin_email'))
-              ->setTo(sfConfig::get('app_rt_shop_order_admin_email'))
-              ->setSubject(sprintf('Order confirmation: #%s', $order_reference))
-              ->setBody($body.$this->getPartial('rtShopOrderAdmin/invoice', array('rt_shop_order' => $cm->getOrder())));
-      if(!$this->getMailer()->send($message))
-      {
-        $this->logMessage('{rtShopReceipt} Admin email for order #'.$cm->getOrder()->getReference().' could not be sent.');
-      }
+      //$routing = $this->getContext()->getRouting();
+      //$url = $routing->generate('rt_shop_order_show', array('id' => $cm->getOrder()->getId()), true);
+      //$body = "<p>A new order with reference <a href='$url' target=\'_blank\'>#$order_reference</a> has been added.</p>";
     }
     else
     {
@@ -555,7 +584,7 @@ class BasertShopOrderActions extends sfActions
   {
     if(is_null($this->_rt_shop_cart_manager))
     {
-      $this->_rt_shop_cart_manager = new rtShopCartManager($this->getUser());
+      $this->_rt_shop_cart_manager = new rtShopCartManager();
     }
     
     return $this->_rt_shop_cart_manager;

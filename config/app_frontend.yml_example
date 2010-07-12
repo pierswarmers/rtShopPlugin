@@ -14,9 +14,10 @@ all:
     #shop_payment_currency:             AUD                      # Currency acronym (e.g AU = Australian Dollar)
     #shop_payment_class:                "rtShopEwayPayment"      # Name of payment class
     #shop_shipping_class:               "rtShopShipping"         # Name of shipping class
-    #shop_shipping_rate:
-      #domestic:                        10                       # Domestic shipping rate applicable to order (i.e 8 = $8)
-      #international:                   20                       # International shipping rate applicable to order (i.e 15 = $15)
+    #shop_shipping_charges:
+      #default:                         30                      # Default shipping charge
+      #AU:                               9                      # Domestic shipping rate applicable to order (i.e 8 = $8)
+      #NZ:                              15                      # International shipping rate applicable to order (i.e 15 = $15)
     #shop_tax_rate:                     10                       # Tax rate in % (e.g 5 = 5%)
     #shop_tax_mode:                     exclusive                # Either 'inclusive' or 'exclusive'
     #shop_payment_methods:

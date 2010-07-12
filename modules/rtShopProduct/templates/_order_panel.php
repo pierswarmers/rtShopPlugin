@@ -63,14 +63,41 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
     <input type="text" name="rt-shop-quantity" class="text minitext" value="1" />
   </p>
 
-  <?php if(sfConfig::get('rt_shop_ordering_enabled', true)): ?>
-  <p><button type="submit" class="disabled" disabled><?php echo __('Add to Cart') ?></button></p>
+  <?php if(sfConfig::get('app_rt_shop_ordering_enabled', true)): ?>
+  <p>
+    <button type="submit" class="disabled" disabled><?php echo __('Add to Cart') ?></button>
+    <span id="rt-shop-add-to-wishlist"><a href="#"><?php echo __('Add to wishlist') ?></a></span> |
+    <span id="rt-shop-send-to-friend"><a href="<?php echo url_for('rt_shop_send_to_friend', array('product_id' => $rt_shop_product->getId())) ?>"><?php echo __('Send to a friend') ?></a></span>
+  </p>
   <?php endif; ?>
 
   <script type="text/javascript">
   $("form.rt-shop-product-order-panel").hide();
 
   $(function() {
+
+    // Handle wishlist clicks.
+    $("#rt-shop-add-to-wishlist a").click(function() {
+      $('#rt-shop-add-to-wishlist').addClass('loading').html('<?php echo __('Adding to wishlist') ?>...');
+      $.ajax({
+        type: "POST",
+        url: '<?php echo url_for('rt_shop_add_to_wishlist') ?>',
+        data: ({
+          id : '<?php echo $rt_shop_product->getId() ?>'
+        }),
+        dataType: "xhr",
+        success: function(data) {
+          $('#rt-shop-add-to-wishlist').removeClass('loading').addClass('success');
+          $('#rt-shop-add-to-wishlist').html(data);
+        }
+      });
+      return false;
+    });
+
+
+
+
+    // Handle variation selections.
     $(".rt-shop-option-set").buttonset().find(':radio');
     $(".rt-shop-option-set").find(':radio').click(function() {
       var match = $(this).attr("title").toLowerCase().replace(/[^a-zA-Z0-9]/g, "");

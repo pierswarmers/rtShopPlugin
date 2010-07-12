@@ -51,14 +51,17 @@ class rtShopVoucherToolkit
   /**
    * Get applicable voucher
    *
-   * @param String $code Code
+   * @param String $voucher Code
    * @param String $date Order date
-   * @return Object Voucher Object
+   * @return rtOrderVoucher
    */
-  public static function getApplicable($code, $total, $date = null)
+  public static function getApplicable($voucher, $total, $date = null)
   {
-    $voucher = Doctrine::getTable('rtShopVoucher')->findValid($code, $total, $date);
-
+    if(is_string($voucher))
+    {
+      $voucher = Doctrine::getTable('rtShopVoucher')->findValid($voucher, $total, $date);
+    }
+    
     if (count($voucher) > 0) {
       return Doctrine::getTable('rtShopVoucher')->find($voucher[0]['id']);
     }
@@ -69,14 +72,18 @@ class rtShopVoucherToolkit
   /**
    * Apply voucher to order total
    *
-   * @param String $code  Code
-   * @param Float  $total Order total
-   * @param String $date  Order date
-   * @return Float        Total
+   * @param string|rtOrderVoucher $voucher
+   * @param float  $total
+   * @param rtOrderVoucher $voucher
+   * @param string $date
+   * @return float
    */
-  public static function applyVoucher($code, $total, $date = null)
+  public static function applyVoucher($voucher, $total, $date = null)
   {
-    $voucher = self::getApplicable($code, $total, $date);
+    if(is_string($voucher))
+    {
+      $voucher = self::getApplicable($voucher, $total, $date);
+    }
 
     if($voucher) {
       $reduction_type = $voucher->getReductionType();

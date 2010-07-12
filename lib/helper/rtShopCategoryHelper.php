@@ -137,7 +137,17 @@ function rt_shop_category_map($rt_shop_category = null, $options = array())
       $string .= '</li></ul>';
     }
   }
-  return '<ul class="rt-site-page-navigation">' . $string . '</li></ul>';
+
+  $string = '<ul class="rt-site-page-navigation">' . $string . '</li></ul>';
+
+  $string = str_replace('<ul class="rt-site-page-navigation"></li>', '<ul class="rt-site-page-navigation">', $string);
+
+  if(trim(strip_tags($string)) == '')
+  {
+    return '';
+  }
+
+  return $string;
 }
 
 /**

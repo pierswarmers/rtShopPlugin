@@ -10,10 +10,12 @@ use_stylesheet('/rtCorePlugin/vendor/jquery/css/ui/jquery.ui.css');
 ?>
 
 <div class="rt-shop-product-primary-image">
+  <?php $promo_span = $rt_shop_product->isOnPromotion() ? '<span class="rt-shop-product-promotion">'.__('On Sale Now').'</span>' : ''; ?>
+  <?php echo $promo_span ?>
   <?php $style = ''; foreach($rt_shop_product->getImages() as $image): ?>
     <?php
       $image_large   = rtAssetToolkit::getThumbnailPath($image->getSystemPath(), array('maxHeight' => 500, 'maxWidth' => 800));
-      $image_medium  = rtAssetToolkit::getThumbnailPath($image->getSystemPath(), array('maxHeight' => 250, 'maxWidth' => 190));
+      $image_medium  = rtAssetToolkit::getThumbnailPath($image->getSystemPath(), array('maxHeight' => 230, 'maxWidth' => 180));
 
       $image_variation_key  = $image->getOriginalFilename();
       $needles              = array("_","-");
@@ -35,7 +37,9 @@ use_stylesheet('/rtCorePlugin/vendor/jquery/css/ui/jquery.ui.css');
 <div class="rt-shop-product-image-thumbs">
   <?php $i = 1; foreach($rt_shop_product->getImages() as $image): ?>
     <div class="rt-list-item-<?php echo $i ?>">
-      <?php echo image_tag(rtAssetToolkit::getThumbnailPath($image->getSystemPath(), array('maxHeight' => 70, 'maxWidth' => 50)), array('class' => 'primary-image-holder-'.$image->getId())) ?>
+      <span>
+        <?php echo image_tag(rtAssetToolkit::getThumbnailPath($image->getSystemPath(), array('maxHeight' => 69, 'maxWidth' => 49)), array('class' => 'primary-image-holder-'.$image->getId())) ?>
+      </span>
     </div>
   <?php $i++; endforeach; ?>
 </div>
@@ -45,7 +49,7 @@ use_stylesheet('/rtCorePlugin/vendor/jquery/css/ui/jquery.ui.css');
     $(".rt-shop-product-primary-image a").colorbox({preloading:false});
     $(".rt-shop-product-image-thumbs div").click(function()
     {
-      $(".rt-shop-product-primary-image a#" + $(this).children('img').attr('class')).css("display","inline").siblings('a').css("display","none");
+      $(".rt-shop-product-primary-image a#" + $(this).children().children('img').attr('class')).css("display","inline").siblings('a').css("display","none");
     });
   });
 </script>

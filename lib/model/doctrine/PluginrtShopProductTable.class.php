@@ -7,8 +7,26 @@
  */
 class PluginrtShopProductTable extends rtPageTable
 {
+  /**
+   * Return all related products, ordered and published.
+   *
+   * @param rtShopProduct $rt_shop_product
+   * @param Doctrine_Query $query
+   * @return Doctrine_Collection
+   */
+  public function addRelatedProductQuery(rtShopProduct $rt_shop_product, Doctrine_Query $query = null)
+  {
+    $query = $this->addPublishedQuery($query);
 
+    $query->leftJoin('page.rtShopProducts related')
+          ->leftJoin('page.rtShopProductToProduct link')
+          ->orderBy('link.position ASC')
+          ->andWhere('link.product_id = ?', $rt_shop_product->getId());
 
+    return $query;
+  }
+
+//addPublishedQuery
   /**
    * Returns an instance of this class.
    *
@@ -18,5 +36,6 @@ class PluginrtShopProductTable extends rtPageTable
   {
       return Doctrine_Core::getTable('PluginrtShopProduct');
   }
+
   
 }

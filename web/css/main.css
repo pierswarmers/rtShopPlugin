@@ -22,10 +22,10 @@ span.rt-shop-product-promotion{position:absolute;top:0;right:0;background:orange
 Product display
 
 */
-.rt-shop-product-gallery {float:left;width:200px;}
-.rt-shop-product-primary-image { height:250px; text-align: center; padding-top:10px;}
-.rt-shop-product-image-thumbs div { cursor:pointer; border: 1px solid #CCC;text-align: center;  width:55px;height:75px;float:left;margin-right:5px;margin-bottom:10px; }
-.rt-shop-product-image-thumbs img { margin-top:5px; }
+.rt-shop-product-gallery {float:left;position:relative;width:200px;}
+.rt-shop-product-primary-image { height:250px; text-align: center; padding-top:10px;width:200px;}
+.rt-shop-product-image-thumbs div {border:1px solid #CCC;cursor:pointer;float:left;margin-bottom:10px;margin-right:5px;}
+.rt-shop-product-image-thumbs span {display:table-cell;height:75px;text-align:center;vertical-align:middle;width:55px;}
 .rt-shop-product-details { float:right; width:380px; }
 .rt-shop-product-price {font-size:120%;font-weight:bold;}
 .rt-shop-item-quantity input {width:50px; margin:0;}
@@ -36,18 +36,17 @@ UI overide
 
 */
 .ui-buttonset {float:left;margin:0;width:400px;}
-.ui-buttonset label { border:0; -moz-border-radius:5px; -webkit-border-radius:5px; background-repeat: no-repeat; }
-.ui-buttonset label.available { border-color:#FFF; }
-.ui-buttonset label.unavailable { border-style: solid; }
-.ui-buttonset label.image-swatch { width:30px; height:30px; }
-.ui-buttonset label.image-swatch span { width:30px; height:30px;padding:0;margin:0;text-indent:-10000px; }
+.ui-buttonset label { border:2px solid #FFF;-moz-border-radius:5px; -webkit-border-radius:5px; background-repeat: no-repeat; }
+.ui-buttonset label.image-swatch {background-repeat:no-repeat !important;}
+.ui-buttonset label.image-swatch span {background-color:#E6E6E6;margin:0 0 0 30px;padding-left:6px;-webkit-border-top-left-radius:0;-webkit-border-bottom-left-radius:0;-moz-border-radius-topleft:0;-moz-border-radius-bottomleft:0;}
+.ui-buttonset .ui-state-active {border:2px solid #7d7d7d;}
+.ui-button-text-only .ui-button-text {padding:0.28em 1em;}
 .ui-buttonset .ui-button { margin:0;}
-.ui-buttonset .ui-button span {float:left;-moz-border-radius:5px; -webkit-border-radius:5px; background:url(../images/radio-tick-alt.png) no-repeat 5px 50%; padding-left:25px; }
-.ui-buttonset .ui-state-active { border-color: #FFF!important; background:#DADADA; }
-.ui-buttonset .ui-state-active span { background:url(../images/radio-tick.png) no-repeat 5px 50%; padding-left:25px; }
+.ui-buttonset .ui-button span {float:left;-moz-border-radius:5px; -webkit-border-radius:5px;}
+.ui-buttonset .ui-state-active {background:#DADADA;}
 .ui-buttonset .image-swatch span { background-position: 50% 50%; padding-left:0; }
-.ui-buttonset .ui-state-disabled span { background:url(../images/radio-cross-alt.png) no-repeat 5px 50% #CCC; color:#555; padding-left:20px; }
-.ui-buttonset .image-swatch.ui-state-disabled span { background:url(../images/radio-cross-alt.png) no-repeat 50% 50%; padding-left:0; }
+.ui-buttonset label.ui-state-disabled {color:#555;display:none!important;}
+.ui-buttonset label.ui-state-disabled span {display:none;}
 .ui-state-default { background-image: none;} 
 .ui-helper-hidden-accessible {position:absolute!important;} /*don't remove this important! blueprint overrides otherwise this UI style */
 /*
