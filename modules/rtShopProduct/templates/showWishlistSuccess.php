@@ -10,14 +10,20 @@
   <?php if(count($wishlist) > 0): ?>
     <div class="rt-container rt-collection">
     <?php $i = 1; foreach ($wishlist as $id): ?>
+    <?php
+
+    $product = Doctrine::getTable('rtShopProduct')->find($id);
+
+    if($product): ?>
     <div class="rt-list-item rt-list-item-<?php echo $i ?>">
       <?php echo link_to(__('Delete item'), 'rt_shop_show_wishlist', array('delete' => $id), array('class' => 'delete  '))?>
-      <?php include_partial('rtShopProduct/shopProductMini', array('rt_shop_product' => Doctrine::getTable('rtShopProduct')->find($id))); ?>
+      <?php include_partial('rtShopProduct/shopProductMini', array('rt_shop_product' => $product)); ?>
     </div>
+    <?php endif; ?>
     <?php $i++; endforeach; ?>
     </div>
     <?php else: ?>
-    <p><?php echo__('No items in your wishlist yet.') ?></p>
+    <p><?php echo __('No items in your wishlist yet.') ?></p>
     <?php endif; ?>
   </div>
 

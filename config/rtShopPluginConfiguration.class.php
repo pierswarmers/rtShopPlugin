@@ -68,6 +68,7 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
     );
 
 
+    $routing->prependRoute('rt_shop_send_to_friend', new sfRoute(sprintf('/%s/send_to_friend',$shop_route_token), array('module' => 'rtShopProduct', 'action' => 'sendToFriend')));
     $routing->prependRoute('rt_shop_add_to_wishlist', new sfRoute(sprintf('/%s/add-to-wishlist',$shop_route_token), array('module' => 'rtShopProduct', 'action' => 'addToWishlist')));
     $routing->prependRoute('rt_shop_show_wishlist', new sfRoute(sprintf('/%s/wishlist',$shop_route_token), array('module' => 'rtShopProduct', 'action' => 'showWishlist')));
     $routing->prependRoute('rt_shop_order_check_voucher', new sfRoute('/order/check-voucher.:sf_format', array('module' => 'rtShopOrder', 'action' => 'checkVoucher')));

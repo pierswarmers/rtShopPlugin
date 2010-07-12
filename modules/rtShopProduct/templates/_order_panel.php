@@ -66,8 +66,8 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
   <?php if(sfConfig::get('app_rt_shop_ordering_enabled', true)): ?>
   <p>
     <button type="submit" class="disabled" disabled><?php echo __('Add to Cart') ?></button>
-    <span id="rt-shop-add-to-wishlist"><a href="#"><?php echo __('Add to wishlist') ?></a></span> | 
-    <a href=""><?php echo __('Email a friend') ?></a>
+    <span id="rt-shop-add-to-wishlist"><a href="#"><?php echo __('Add to wishlist') ?></a></span> |
+    <span id="rt-shop-send-to-friend"><a href="<?php echo url_for('rt_shop_send_to_friend', array('product_id' => $rt_shop_product->getId())) ?>"><?php echo __('Send to a friend') ?></a></span>
   </p>
   <?php endif; ?>
 
