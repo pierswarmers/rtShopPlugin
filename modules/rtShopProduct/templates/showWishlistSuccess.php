@@ -27,7 +27,7 @@
     <?php endif; ?>
   </div>
 
-  <div class="rt-container rt-tools rt-shop-wishlist-tools">
+  <div class="rt-container rt-tools rt-shop-wishlist-tools" style="display:none;">
     <button type="submit" class="button rt-shop-wishlist-email"><?php echo __('Email this wishlist') ?></button>
   </div>
 </div>
