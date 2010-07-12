@@ -66,6 +66,8 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
   <?php if(sfConfig::get('app_rt_shop_ordering_enabled', true)): ?>
   <p>
     <button type="submit" class="disabled" disabled><?php echo __('Add to Cart') ?></button>
+    <span id="rt-shop-add-to-wishlist"><a href="#"><?php echo __('Add to wishlist') ?></a></span> | 
+    <a href=""><?php echo __('Email a friend') ?></a>
   </p>
   <?php endif; ?>
 
@@ -73,6 +75,29 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
   $("form.rt-shop-product-order-panel").hide();
 
   $(function() {
+
+    // Handle wishlist clicks.
+    $("#rt-shop-add-to-wishlist a").click(function() {
+      $('#rt-shop-add-to-wishlist').addClass('loading').html('<?php echo __('Adding to wishlist') ?>...');
+      $.ajax({
+        type: "POST",
+        url: '<?php echo url_for('rt_shop_add_to_wishlist') ?>',
+        data: ({
+          id : '<?php echo $rt_shop_product->getId() ?>'
+        }),
+        dataType: "xhr",
+        success: function(data) {
+          $('#rt-shop-add-to-wishlist').removeClass('loading').addClass('success');
+          $('#rt-shop-add-to-wishlist').html(data);
+        }
+      });
+      return false;
+    });
+
+
+
+
+    // Handle variation selections.
     $(".rt-shop-option-set").buttonset().find(':radio');
     $(".rt-shop-option-set").find(':radio').click(function() {
       var match = $(this).attr("title").toLowerCase().replace(/[^a-zA-Z0-9]/g, "");

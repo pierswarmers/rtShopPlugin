@@ -66,7 +66,10 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
       'rt_shop_promotion_cart_correction',
        new sfRoute('/rtShopPromotionCartAdmin/:action/id/:id', array('module' => 'rtShopPromotionAdmin'))
     );
-    
+
+
+    $routing->prependRoute('rt_shop_add_to_wishlist', new sfRoute(sprintf('/%s/add-to-wishlist',$shop_route_token), array('module' => 'rtShopProduct', 'action' => 'addToWishlist')));
+    $routing->prependRoute('rt_shop_show_wishlist', new sfRoute(sprintf('/%s/wishlist',$shop_route_token), array('module' => 'rtShopProduct', 'action' => 'showWishlist')));
     $routing->prependRoute('rt_shop_order_check_voucher', new sfRoute('/order/check-voucher.:sf_format', array('module' => 'rtShopOrder', 'action' => 'checkVoucher')));
     $routing->prependRoute('rt_shop_order_add_to_bag', new sfRoute('/order/add-to-bag', array('module' => 'rtShopOrder', 'action' => 'addToBag')));
     $routing->prependRoute('rt_shop_order_cart', new sfRoute('/order/cart', array('module' => 'rtShopOrder', 'action' => 'cart')));

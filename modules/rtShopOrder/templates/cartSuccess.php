@@ -74,7 +74,7 @@
       </table>
     </div>
 
-    <div class="rt-container rt-shop-order-tools">
+    <div class="rt-container rt-tools rt-shop-order-tools">
       <?php echo link_to(__('Continue Shopping'),'rt_shop_category_index', array(), array('class' => 'rt_shop_cart_actions_continue button rt-shop-order-continue-shopping')) ?>
       <button type="submit" name="_update_quantities" class="button rt-shop-order-update"><?php echo __('Update Quantities') ?></button>
       <button type="submit" name="_proceed_to_checkout" class="button rt-shop-order-proceed"><?php echo __('Proceed to Checkout') ?></button>

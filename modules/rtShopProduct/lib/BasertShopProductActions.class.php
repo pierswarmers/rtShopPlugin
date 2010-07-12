@@ -48,6 +48,23 @@ class BasertShopProductActions extends sfActions
     $this->updateResponse($this->rt_shop_product);
   }
 
+  public function executeAddToWishlist(sfWebRequest $request)
+  {
+    $wishlist = $this->getUser()->getAttribute('rt_shop_wish_list', array());
+    $wishlist[$request->getParameter('id')] = $request->getParameter('id');
+    $this->getUser()->setAttribute('rt_shop_wish_list', $wishlist);
+  }
+
+  public function executeShowWishlist(sfWebRequest $request)
+  {
+
+  }
+
+  public function executeSendToAFriend(sfWebRequest $request)
+  {
+    
+  }
+
   private function updateResponse(rtShopProduct $page)
   {
     rtResponseToolkit::setCommonMetasFromPage($page, $this->getUser(), $this->getResponse());
