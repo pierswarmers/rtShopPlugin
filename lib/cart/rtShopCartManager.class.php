@@ -423,6 +423,26 @@ class rtShopCartManager
   }
 
   /**
+   * Get voucher object
+   *
+   * @return object
+   */
+  public function getVoucher()
+  {
+    //$voucher = Doctrine::getTable('rtShopVoucher')->findByCode(($this->getVoucherCode()) ? $this->getVoucherCode() : '');
+    $voucher = Doctrine_Query::create()->from('rtShopVoucher v')
+             ->addWhere('v.code = ?', ($this->getVoucherCode()) ? $this->getVoucherCode() : '')
+             ->execute();
+
+    if($voucher)
+    {
+      return $voucher;
+    }
+
+    return false;
+  }
+
+  /**
    * Get voucher code
    *
    * @return string
