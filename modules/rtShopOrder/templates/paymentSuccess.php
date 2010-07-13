@@ -7,6 +7,60 @@
     <div class="rt-container">
       <?php include_partial('breadcrumb', array()) ?>
       <?php echo $form->renderHiddenFields(); ?>
+
+      <h2><?php echo __('Products Ordered') ?></h2>
+      <table>
+        <thead>
+          <tr>
+            <th><?php echo __('Preview'); ?></th>
+            <th><?php echo __('Description'); ?></th>
+            <th><?php echo __('Each'); ?></th>
+            <th><?php echo __('Quantity'); ?></th>
+            <th><?php echo __('Total'); ?></th>
+          </tr>
+        </thead>
+        <?php include_partial('cart', array('rt_shop_cart_manager' => $rt_shop_cart_manager, 'editable' => false)) ?>
+        <tfoot>
+         <?php if(!$rt_shop_cart_manager->isTaxModeInclusive()): ?>
+          <tr class="rt-shop-cart-tax">
+            <th colspan="4"><?php echo __('Tax'); ?>:</th>
+            <td><?php echo format_currency($rt_shop_cart_manager->getTaxCharge(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
+          </tr>
+          <?php endif; ?>
+
+          <?php if($rt_shop_cart_manager->getPromotion()): ?>
+          <tr class="rt-shop-cart-promotion">
+            <th colspan="4"><?php echo $rt_shop_cart_manager->getPromotion()->getTitle(); ?>:</th>
+            <td>-<?php echo format_currency($rt_shop_cart_manager->getPromotionReduction(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
+          </tr>
+          <?php endif; ?>
+
+          <?php if($rt_shop_cart_manager->getShippingCharge() > 0): ?>
+          <tr class="rt-shop-cart-shipping">
+            <th colspan="4"><?php echo __('Shipping') ?>:</th>
+            <td><?php echo format_currency($rt_shop_cart_manager->getShippingCharge(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
+          </tr>
+          <?php endif; ?>
+          <?php
+          $includes_message = '';
+
+          if(sfConfig::get('app_rt_shop_tax_rate', 0) > 0 && sfConfig::get('app_rt_shop_tax_mode') == 'inclusive')
+          {
+            $includes_message = sprintf('(includes %s tax)',format_currency($rt_shop_cart_manager->getTaxComponent(), sfConfig::get('app_rt_currency', 'AUD')));
+          }
+
+          if($rt_shop_cart_manager->getPromotion())
+          {
+            $promo_message = sprintf('(Includes %s)',$rt_shop_cart_manager->getPromotion()->getTitle());
+          }
+          ?>
+          <tr class="rt-shop-cart-total">
+            <th colspan="4"><?php echo __('Total'); ?> <?php echo $includes_message  ?>:</th>
+            <td><?php echo format_currency($rt_shop_cart_manager->getTotalCharge(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
+          </tr>
+        </tfoot>
+      </table>
+
       <h2><?php echo __('Voucher Details') ?></h2>
       <table>
         <tbody>
