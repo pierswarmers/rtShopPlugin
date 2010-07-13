@@ -9,7 +9,7 @@
       <?php echo $form->renderHiddenFields(); ?>
 
       <h2><?php echo __('Products Ordered') ?></h2>
-      <table>
+      <table class="rt-shop-order-summary">
         <thead>
           <tr>
             <th><?php echo __('Preview'); ?></th>
