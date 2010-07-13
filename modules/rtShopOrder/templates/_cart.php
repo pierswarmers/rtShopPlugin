@@ -1,4 +1,7 @@
 <?php
+  // Distinguish between editable or not, default is true
+  $editable = isset($editable) ? false : true;
+  // Stock update
   $update_quantities = isset($update_quantities) ? $update_quantities : array();
   $stock_exceeded = isset($stock_exceeded) ? $stock_exceeded : array(); // needed for output escaping
 ?>
@@ -50,16 +53,22 @@
         <?php include_partial('rtAdmin/site_reference_key', array('id' => $product->getSiteId()))?>
         <?php endif; ?>
     </td>
-    <td class="rt-shop-cart-actions"><?php echo link_to(__('Delete'), '@rt_shop_order_stock_delete?id='.$stock['id']) ?></td>
+    <?php if($editable == true): ?>
+      <td class="rt-shop-cart-actions"><?php echo link_to(__('Delete'), '@rt_shop_order_stock_delete?id='.$stock['id']) ?></td>
+    <?php endif; ?>
     <td class="rt-shop-cart-price-unit">
         <?php echo format_currency($item_price, sfConfig::get('app_rt_currency', 'AUD')); ?>
     </td>
     <td class="rt-shop-cart-quantity">
-      <input type="text" name="quantity[]" class="minitext" value="<?php echo isset($update_quantities[$stock['id']]) ? $update_quantities[$stock['id']] :$stock['rtShopOrderToStock'][0]['quantity']; ?>" />
-      <?php if(isset($stock_exceeded[$stock['id']])): ?>
-      <span>(<?php echo $stock_exceeded[$stock['id']] . ' ' . __('available') ?>)</span>
+      <?php if($editable == false): ?>
+        <?php echo $stock['rtShopOrderToStock'][0]['quantity'] ?>
+      <?php else: ?>
+        <input type="text" name="quantity[]" class="minitext" value="<?php echo isset($update_quantities[$stock['id']]) ? $update_quantities[$stock['id']] :$stock['rtShopOrderToStock'][0]['quantity']; ?>" />
+        <?php if(isset($stock_exceeded[$stock['id']])): ?>
+        <span>(<?php echo $stock_exceeded[$stock['id']] . ' ' . __('available') ?>)</span>
+        <?php endif; ?>
+        <input type="hidden" name="stock_id[]" value="<?php echo $stock['id']; ?>" />
       <?php endif; ?>
-      <input type="hidden" name="stock_id[]" value="<?php echo $stock['id']; ?>" />
     </td>
     <td class="rt-shop-cart-price-total">
       <?php echo format_currency($stock['rtShopOrderToStock'][0]['quantity'] * $item_price, sfConfig::get('app_rt_currency', 'AUD')) ?>
