@@ -507,32 +507,31 @@ class BasertShopOrderActions extends sfActions
     $this->rt_shop_order = $cm->getOrder();
 
     //Send mail to admin and user
+
+    $order_reference = $cm->getOrder()->getReference();
+
+    //Send confirmation mail to customer
+    $message = Swift_Message::newInstance()
+            ->setContentType('text/html')
+            ->setFrom(sfConfig::get('app_rt_shop_order_admin_email', 'from@noreply.com'))
+            ->setTo($cm->getOrder()->getEmail())
+            ->setSubject(sprintf('Order confirmation: #%s', $order_reference))
+            ->setBody($this->getPartial('rtShopOrderAdmin/invoice', array('rt_shop_order' => $cm->getOrder())));
+
     if(sfConfig::get('app_rt_shop_order_admin_email'))
     {
-      $order_reference = $cm->getOrder()->getReference();
-
-      //Send confirmation mail to customer
-      $message = Swift_Message::newInstance()
-              ->setContentType('text/html')
-              ->setFrom(sfConfig::get('app_rt_shop_order_admin_email', 'from@noreply.com'))
-              ->setTo($cm->getOrder()->getEmail())
-              ->setBcc(sfConfig::get('app_rt_shop_order_admin_email'))
-              ->setSubject(sprintf('Order confirmation: #%s', $order_reference))
-              ->setBody($this->getPartial('rtShopOrderAdmin/invoice', array('rt_shop_order' => $cm->getOrder())));
-      if(!$this->getMailer()->send($message))
-      {
-        $this->logMessage('{rtShopReceipt} Email for order #'.$cm->getOrder()->getReference().' could not be sent.');
-      }
-
-      //Send confirmation mail to shop admin
-      //$routing = $this->getContext()->getRouting();
-      //$url = $routing->generate('rt_shop_order_show', array('id' => $cm->getOrder()->getId()), true);
-      //$body = "<p>A new order with reference <a href='$url' target=\'_blank\'>#$order_reference</a> has been added.</p>";
+      $message->setBcc(sfConfig::get('app_rt_shop_order_admin_email'));
     }
-    else
+
+    if(!$this->getMailer()->send($message))
     {
-      $this->logMessage('{rtShopReceipt} Order #'.$cm->getOrder()->getReference().' was successful but confirmation email could not be sent due to missing admin email in configuration.');
+      $this->logMessage('{rtShopReceipt} Email for order #'.$cm->getOrder()->getReference().' could not be sent.');
     }
+
+    //Send confirmation mail to shop admin
+    //$routing = $this->getContext()->getRouting();
+    //$url = $routing->generate('rt_shop_order_show', array('id' => $cm->getOrder()->getId()), true);
+    //$body = "<p>A new order with reference <a href='$url' target=\'_blank\'>#$order_reference</a> has been added.</p>";
 
     $this->cleanSession();
   }
