@@ -1,7 +1,7 @@
 # default values
 all:
   #rt:
-    #address: |
+    #company_address: |
       #Company name
       #Number Streetname, Town
       #City, Country

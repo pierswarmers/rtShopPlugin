@@ -516,7 +516,7 @@ class BasertShopOrderActions extends sfActions
             ->setFrom(sfConfig::get('app_rt_shop_order_admin_email', 'from@noreply.com'))
             ->setTo($cm->getOrder()->getEmail())
             ->setSubject(sprintf('Order confirmation: #%s', $order_reference))
-            ->setBody($this->getPartial('rtShopOrderAdmin/invoice', array('rt_shop_order' => $cm->getOrder())));
+            ->setBody($this->getPartial('rtShopOrderAdmin/email_invoice', array('rt_shop_order' => $cm->getOrder())));
 
     if(sfConfig::get('app_rt_shop_order_admin_email'))
     {
@@ -617,7 +617,7 @@ class BasertShopOrderActions extends sfActions
   {
     $options = array('CardHoldersName'  => $cc_values['cc_name'],
                      'CardType'         => $cc_values['cc_type'],
-                     'CardNumber'       => $cc_values['cc_number'],  //TODO: Clean number if not done by validator
+                     'CardNumber'       => str_replace(' ', '', $cc_values['cc_number']),  //TODO: Clean number if not done by validator
                      'CardExpiryMonth'  => $cc_values['cc_expire']['month'],
                      'CardExpiryYear'   => $cc_values['cc_expire']['year'],
                      'CVN'              => $cc_values['cc_verification']);

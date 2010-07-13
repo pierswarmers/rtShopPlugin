@@ -1,8 +1,8 @@
 <?php if(count($rt_shop_order->getClosedProducts()) > 0): ?>
   <tbody>
     <tr>
-      <th><?php echo __('SKU'); ?></th>
       <th><?php echo __('Description'); ?></th>
+      <th><?php echo __('SKU'); ?></th>
       <th><?php echo __('Price (each)'); ?></th>
       <th><?php echo __('Quantity'); ?></th>
       <th><?php echo __('Price'); ?></th>
@@ -10,8 +10,8 @@
     <?php $sub_total = 0; ?>
     <?php foreach($rt_shop_order->getClosedProducts() as $product): ?>
       <tr>
-        <td><code><?php echo link_to_if($product['sku'] != '',$product['sku'],'/rtShopProductAdmin/stock?id='.$product['id_product']); ?></code></td>
-        <td><?php echo link_to($product['title'],'/rtShopProductAdmin/edit?id='.$product['id_product']); ?> <?php echo ($product['variations'] != '' && !empty ($product['variations'])) ? sprintf('[%s]',$product['variations']) : ''; ?></td>
+        <td><?php echo $product['title'] ?> <?php echo ($product['variations'] != '' && !empty ($product['variations'])) ? sprintf('(%s)',$product['variations']) : ''; ?></td>
+        <td><?php echo $product['sku']; ?></td>
         <td><?php echo format_currency($product['charge_price'], $product['currency']); ?></td>
         <td><?php echo $product['quantity']; ?></td>
         <td><?php echo format_currency($product['quantity']*$product['charge_price'], $product['currency']); ?></td>

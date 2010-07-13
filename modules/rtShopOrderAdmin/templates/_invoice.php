@@ -5,12 +5,12 @@
   <tbody>
     <tr>
       <th style="width:25%"><?php echo __('Order reference') ?>:</th>
-      <td style="width:25%"><code><?php echo "#".$rt_shop_order->getReference() ?></code></td>
-      <td style="width:50%" rowspan="7"><?php echo nl2br(sfConfig::get('app_rt_address','')) ?></td>
+      <td style="width:25%"><?php echo "#".$rt_shop_order->getReference() ?></td>
+      <td style="width:50%" rowspan="7"><?php echo nl2br(sfConfig::get('app_rt_company_address','')) ?></td>
     </tr>
     <tr>
       <th><?php echo __('Payment transaction ID') ?>:</th>
-      <td><code><?php echo $rt_shop_order->getPaymentTransactionId() ?></code></td>
+      <td><?php echo $rt_shop_order->getPaymentTransactionId() ?></td>
     </tr>
     <tr>
       <th><?php echo __('Payment charge') ?>:</th>
