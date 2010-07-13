@@ -395,7 +395,9 @@ class BasertShopOrderActions extends sfActions
     $cm->getOrder()->save();
     $this->voucher['shipping_charge'] = $cm->getShippingCharge();
     $this->voucher['total_charge'] = $cm->getTotalCharge();
+    $this->voucher['reduction'] = $cm->getVoucherReduction();
     $numberFormat = new sfNumberFormat(sfContext::getInstance()->getUser()->getCulture());
+    $this->voucher['reduction_formatted'] = $numberFormat->format($cm->getVoucherReduction(), 'c', sfConfig::get('app_rt_shop_payment_currency','AUD'));
     $this->voucher['total_charge_formatted'] = $numberFormat->format($cm->getTotalCharge(), 'c', sfConfig::get('app_rt_shop_payment_currency','AUD'));
   }
 
