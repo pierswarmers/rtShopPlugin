@@ -48,6 +48,7 @@ class rtShopShippingAddressForm extends BasertAddressForm
     $this->setValidator('town', new sfValidatorString(array('max_length' => 255, 'required' => true), array('required' => 'Please provide a town')));
     $this->setValidator('state', new sfValidatorString(array('max_length' => 255, 'required' => true), array('required' => 'Please provide a state')));
     $this->setValidator('postcode', new sfValidatorInteger(array('required' => true), array('required' => 'Please provide a postcode')));
+    $this->setValidator('phone', new sfValidatorString(array('max_length' => 20, 'required' => false)));
 
     $this->widgetSchema->setNameFormat('rt_address[%s]');
     $this->errorSchema = new sfValidatorErrorSchema($this->validatorSchema);
