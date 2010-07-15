@@ -34,6 +34,25 @@ all:
       #backordered:           backordered
       #paid:                  paid
 
+    #snippets:
+      #Homepage:
+        #homepage-left: Left mini-badge (homepage-left)
+        #homepage-center: Center mini-badge (homepage-center)
+        #homepage-right: Right mini-badge (homepage-right)
+      #Products:
+        #shop-product-prefix: Product details view, global prefix (shop-product-prefix)
+        #shop-product-suffix: Product details view, global suffix (shop-product-suffix)
+      #Shopping:
+        #shop-cart-empty-prompt: Cart empty prompt in shopping process (shop-cart-empty-prompt)
+        #shop-cart-prefix: Cart prefix in shopping process (shop-cart-prefix)
+        #shop-cart-suffix: Cart suffix in shopping process (shop-cart-suffix)
+        #shop-membership-prompt: Membership prompt in shopping process (shop-membership-prompt)
+        #shop-payment-prefix: Payment prefix in shopping process (shop-payment-prefix)
+        #shop-payment-suffix: Payment suffix in shopping process (shop-payment-suffix)
+        #shop-receipt-message: Receipt message at the end of shopping process (shop-cart-receipt-message)
+      #General:
+        #column-left: Left column on content pages (column-left)
+
   eway:
     customer_id:            87654321                       # eWay customer ID [required] (e.g 87654321 default for testing)
     #payment_method:         REAL_TIME_CVN                  # eWay payment method
