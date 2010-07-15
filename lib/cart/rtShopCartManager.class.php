@@ -129,6 +129,11 @@ class rtShopCartManager
     // voucher reduction
     $charge -= $this->getVoucherReduction();
 
+    if($charge <= 0)
+    {
+      return 0.0;
+    }
+
     return $charge;
   }
 
@@ -543,15 +548,14 @@ class rtShopCartManager
     }
   }
 
-   /**
-    * Adjust voucher count
-    */
+ /**
+  * Adjust voucher count
+  */
   public function adjustVoucherCount()
   {
     if($this->getVoucherCode() != '')
     {
-      $by_code = Doctrine::getTable('rtShopVoucher')->findByCode($this->getVoucherCode());
-      $array = $by_code->getData();
+      $array = $this->getVoucher()->getData();
       $voucher = $array[0];
 
       $count_before = $voucher->getCount();
@@ -560,8 +564,47 @@ class rtShopCartManager
         $voucher->adjustCountBy(1);
         $voucher->save();
 
-        sfContext::getInstance()->getLogger()->info(sprintf('{rtShopCartManager} Adjust voucher code = %s by count = 1. Count before = %s. Count after =  %s',$this->getVoucherCode(),$count_before,$voucher->getCount()));
+        sfContext::getInstance()->getLogger()->info(sprintf('{rtShopCartManager} Adjust voucher #%s by count = 1. Count before = %s. Count after = %s',$this->getVoucherCode(),$count_before,$voucher->getCount()));
       }
+    }
+  }
+
+ /**
+  * Adjust voucher value
+  */
+  public function adjustVoucherValue()
+  {
+    $array = $this->getVoucher()->getData();
+    $voucher = $array[0];
+
+    if($voucher && $voucher->getReductionType() == 'dollarOff')
+    {
+      $value_before = $voucher->getReductionValue();
+      $voucher->adjustReductionValueBy($this->getTotalCharge());
+      $voucher->save();
+      
+      sfContext::getInstance()->getLogger()->info(sprintf('{rtShopCartManager} Adjust voucher #%s by value = %s. Value before = %s. Value after = %s',$this->getVoucherCode(),$this->getTotalCharge(),$value_before,$voucher->getReductionValue()));
+    }
+  }
+
+  /**
+   * Adjust voucher details such as count and value
+   */
+  public function adjustVoucherDetails()
+  {
+    if($this->getVoucher())
+    {
+      $array = $this->getVoucher()->getData();
+      $voucher = $array[0];
+      
+      $value_before = $voucher->getReductionValue();
+      $count_before = $voucher->getCount();
+      
+      $voucher->adjustReductionValueBy($this->getPreTotalCharge());
+      $voucher->adjustCountBy(1);
+      $voucher->save();
+
+      sfContext::getInstance()->getLogger()->info(sprintf('{rtShopCartManager} Adjust %s voucher #%s (Type: %s) || Value before = %s. Value after = %s || Count before = %s. Count after = %s',$voucher->getMode(),$this->getVoucherCode(),$voucher->getReductionType(),$value_before,$voucher->getReductionValue(),$count_before,$voucher->getCount()));
     }
   }
 
