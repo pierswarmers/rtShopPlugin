@@ -409,10 +409,15 @@ class BasertShopOrderActions extends sfActions
   public function executePayment(sfWebRequest $request)
   {
     // Get the cart manager... all access to order will be through the cart manager.
-
     $cm = $this->getCartManager();
-
     $this->redirectUnless(count($cm->getOrder()->Stocks) > 0, 'rt_shop_order_cart');
+
+    // If order placed is placed and total charge = 0
+    if($this->getCartManager()->getTotalCharge() == 0 && $cm->getVoucherCode() != '')
+    {
+      $this->closeOrder();
+      $this->redirect('rt_shop_order_receipt');
+    }
 
     if(!Doctrine::getTable('rtAddress')->getAddressForObjectAndType($cm->getOrder(), 'billing'))
     {
@@ -422,18 +427,21 @@ class BasertShopOrderActions extends sfActions
     $this->updateUserSession();
 
     $this->form = new rtShopPaymentForm($cm->getOrder(), array('rt_shop_cart_manager' => $cm));
-
-    //$this->form->setDefault('voucher_code', $this->getUser()->getAttribute('rt_shop_vouchure_code', ''));
-
     $this->form_cc = new rtShopCreditCardPaymentForm();
 
     if ($this->getRequest()->isMethod('PUT') || $this->getRequest()->isMethod('POST'))
     {
+      // If order placed is placed and total charge = 0
+      if($this->getCartManager()->getTotalCharge() == 0)
+      {
+        $this->closeOrder();
+        $this->redirect('rt_shop_order_receipt');
+      }
+
       $this->form    ->bind($request->getParameter($this->form->getName()), $request->getFiles($this->form->getName()));
       $this->form_cc ->bind($request->getParameter($this->form_cc->getName()), $request->getFiles($this->form_cc->getName()));
 
       // Has local validation passed?
-
       if(!$this->form->isValid() || !$this->form_cc->isValid())
       {
         // Validation failed... stop script here
@@ -450,7 +458,8 @@ class BasertShopOrderActions extends sfActions
         $cm->setVoucherCode($voucher_code);
         $cm->getOrder()->save();
       }
-      
+
+      // Charge is > 0... so process payment
       if($cm->getTotalCharge() > 0)
       {
         $this->logMessage('{rtShopPayment} Order: '.$cm->getOrder()->getReference().'. Proceeding to charge credit card with: ' . $cm->getTotalCharge());
@@ -467,32 +476,49 @@ class BasertShopOrderActions extends sfActions
         {
           if($payment->isApproved())
           {
-            $cm->getOrder()->setStatus(rtShopOrder::STATUS_PAID);
-            $cm->getOrder()->setPaymentType(get_class($payment));
-            $cm->getOrder()->setPaymentApproved($payment->isApproved());
-            $cm->getOrder()->setPaymentTransactionId($payment->getTransactionNumber());
-            $cm->getOrder()->setPaymentCharge($cm->getTotalCharge());
-            $cm->getOrder()->setPaymentResponse($payment->getLog());
-            $cm->archive();
-            $cm->getOrder()->save();
+            $this->closeOrder($payment);
 
-            // Adjust stock quantities
-            $cm->adjustStockQuantities();
-            $cm->adjustVoucherCount();
-
-            // Reset the products page cache
-            $cm->clearCache();
-
-            $this->logMessage('{rtShopPayment} Payment success for order ('.$cm->getOrder()->getReference().'): ' . $payment->getLog());
+            $this->logMessage('{rtShopPayment} Payment success for order #'.$cm->getOrder()->getReference().': ' . $payment->getLog());
             $this->redirect('rt_shop_order_receipt');
           }
         }
         
-        $this->logMessage('{rtShopPayment} Payment failure for order ('.$cm->getOrder()->getReference().'): '.$payment->getLog());
+        $this->logMessage('{rtShopPayment} Payment failure for order #'.$cm->getOrder()->getReference().': '.$payment->getLog());
         $this->getUser()->setFlash('error', $payment->getResponseMessage(), false);
       }
     }
     $this->rt_shop_cart_manager = $cm;
+  }
+
+  /**
+   * Close order and archive
+   *
+   * @param object $payment Payment object
+   */
+  public function closeOrder($payment = '')
+  {
+    $cm = $this->getCartManager();
+
+    $cm->getOrder()->setStatus(rtShopOrder::STATUS_PAID);
+    if(($cm->getTotalCharge() > 0) && is_object($payment))
+    {
+      $cm->getOrder()->setPaymentType(get_class($payment));
+      $cm->getOrder()->setPaymentApproved($payment->isApproved());
+      $cm->getOrder()->setPaymentTransactionId($payment->getTransactionNumber());
+      $cm->getOrder()->setPaymentCharge($cm->getTotalCharge());
+      $cm->getOrder()->setPaymentResponse($payment->getLog());
+    }
+    $cm->archive();
+    $cm->getOrder()->save();
+
+    // Adjust stock quantities
+    $cm->adjustStockQuantities();
+    $cm->adjustVoucherDetails();
+
+    // Reset the products page cache
+    $cm->clearCache();
+
+    $this->logMessage('{rtShopCloseOrder} Closed order #'.$cm->getOrder()->getReference().': '.date("Y-m-d H:i:s"));
   }
 
   /**
@@ -527,11 +553,6 @@ class BasertShopOrderActions extends sfActions
     {
       $this->logMessage('{rtShopReceipt} Email for order #'.$cm->getOrder()->getReference().' could not be sent.');
     }
-
-    //Send confirmation mail to shop admin
-    //$routing = $this->getContext()->getRouting();
-    //$url = $routing->generate('rt_shop_order_show', array('id' => $cm->getOrder()->getId()), true);
-    //$body = "<p>A new order with reference <a href='$url' target=\'_blank\'>#$order_reference</a> has been added.</p>";
 
     $this->cleanSession();
   }
