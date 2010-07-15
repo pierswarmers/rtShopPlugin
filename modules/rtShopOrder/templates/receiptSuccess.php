@@ -9,6 +9,6 @@
       $order_received = '<h3>' . __('Thank you!') . '</h3>';
       $order_received .= '<p>'  . sprintf('%s%s%s',__('Your order has been received. The order reference is #'),$rt_shop_order->getReference(),__(' and a confirmation email has been sent to you.')) . '</p>';
     ?>
-    <?php include_component('rtSnippet','snippetPanel', array('collection' => 'shop-cart-receipt-message','sf_cache_key' => 'shop-cart-receipt-message', 'default' => $order_received)); ?>
+    <?php include_component('rtSnippet','snippetPanel', array('collection' => 'shop-receipt-message','sf_cache_key' => 'shop-receipt-message', 'default' => $order_received)); ?>
   </div>
 </div>
