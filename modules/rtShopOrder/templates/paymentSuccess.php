@@ -96,7 +96,6 @@
               $('.rt-shop-cart-voucher').hide();
             }
               
-
             $(this).attr('disabled', true);
 
             $('#voucher-message').html('<span class="loading">Checking voucher, updating totals...</span>');
@@ -142,7 +141,7 @@
         <?php endif; ?>
       </span>
 
-      <h3><?php echo __('Total to be charged to your credit card: '); ?> <span id="order-total-charge rt-shop-total"><?php echo format_currency($rt_shop_cart_manager->getTotalCharge(), sfConfig::get('app_rt_shop_payment_currency','AUD')); ?></span></h3>
+      <h3><?php echo __('Total to be charged to your credit card: '); ?> <span id="order-total-charge" class="rt-shop-total"><?php echo format_currency($rt_shop_cart_manager->getTotalCharge(), sfConfig::get('app_rt_shop_payment_currency','AUD')); ?></span></h3>
 
       <div class="rt-container rt-shop-payment-suffix">
         <?php include_component('rtSnippet','snippetPanel', array('collection' => 'shop-payment-suffix','sf_cache_key' => 'shop-payment-suffix')); ?>
