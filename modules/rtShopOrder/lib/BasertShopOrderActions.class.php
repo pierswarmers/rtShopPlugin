@@ -65,7 +65,7 @@ class BasertShopOrderActions extends sfActions
     $rt_shop_product = Doctrine::getTable('rtShopProduct')->find($request->getParameter('rt-shop-product-id'));
     $this->forward404Unless($rt_shop_product);
     $stock_id = null;
-    
+
     if($request->hasParameter('rt-shop-stock-id'))
     {
       $stock_id = $request->getParameter('rt-shop-stock-id');
@@ -130,12 +130,12 @@ class BasertShopOrderActions extends sfActions
   public function executeUpdate(sfWebRequest $request)
   {
     $this->rt_shop_cart_manager = $this->getCartManager();
-    
+
     if($request->getMethod() !== 'POST')
     {
       $this->redirect('rt_shop_order_cart');
     }
-    
+
     $stock_exceeded = array();
     $stock_error = false;
 
@@ -167,7 +167,7 @@ class BasertShopOrderActions extends sfActions
     }
 
     $this->updateUserSession();
-    
+
     // Only go to checkout when no quantity errors
     if (count($stock_exceeded) == 0 && $request->hasParameter('_proceed_to_checkout'))
     {
@@ -182,14 +182,14 @@ class BasertShopOrderActions extends sfActions
     {
       $this->getUser()->setFlash('notice', ucfirst(sfConfig::get('rt_shop_cart_name', 'shopping bag')) . ' was updated.');
     }
-    
+
     $this->rt_shop_order = $this->getOrder();
     $this->update_quantities = $comb_array;
     $this->stock_exceeded = $stock_exceeded;
 
     $this->redirect('rt_shop_order_cart');
   }
-  
+
   /**
    * This action primarily prompts the user to either create an account or login.
    *
@@ -299,7 +299,7 @@ class BasertShopOrderActions extends sfActions
         $billing_address->setLastName($rt_user->getLastName());
       }
     }
-    
+
     $shipping_address->setType('shipping');
     $shipping_address->setModel('rtShopOrder');
     $shipping_address->setModelId($this->getOrder()->getId());
@@ -319,7 +319,7 @@ class BasertShopOrderActions extends sfActions
       $this->form->bind($request->getParameter($this->form->getName()), $request->getFiles($this->form->getName()));
       $this->form_billing->bind($request->getParameter($this->form_billing->getName()), $request->getFiles($this->form_billing->getName()));
       $this->form_shipping->bind($request->getParameter($this->form_shipping->getName()), $request->getFiles($this->form_shipping->getName()));
-      
+
       if($this->form->isValid() && $this->form_billing->isValid())
       {
         // At this point we have the two primary forms vaild...
@@ -363,7 +363,7 @@ class BasertShopOrderActions extends sfActions
 
   /**
    * Can be used with an ajax request to validate and return the voucher.
-   * 
+   *
    * @param sfWebRequest $request
    */
   public function executeCheckVoucher(sfWebRequest $request)
@@ -391,7 +391,7 @@ class BasertShopOrderActions extends sfActions
     {
       $cm->getOrder()->setVoucherCode(null);
     }
-    
+
     $cm->getOrder()->save();
     $this->voucher['shipping_charge'] = $cm->getShippingCharge();
     $this->voucher['total_charge'] = $cm->getTotalCharge();
@@ -450,7 +450,7 @@ class BasertShopOrderActions extends sfActions
         $cm->setVoucherCode($voucher_code);
         $cm->getOrder()->save();
       }
-      
+
       if($cm->getTotalCharge() > 0)
       {
         $this->logMessage('{rtShopPayment} Order: '.$cm->getOrder()->getReference().'. Proceeding to charge credit card with: ' . $cm->getTotalCharge());
@@ -487,7 +487,7 @@ class BasertShopOrderActions extends sfActions
             $this->redirect('rt_shop_order_receipt');
           }
         }
-        
+
         $this->logMessage('{rtShopPayment} Payment failure for order ('.$cm->getOrder()->getReference().'): '.$payment->getLog());
         $this->getUser()->setFlash('error', $payment->getResponseMessage(), false);
       }
@@ -558,7 +558,7 @@ class BasertShopOrderActions extends sfActions
     if ($this->getUser()->hasAttribute('rt_shop_order_cart_items')) {
       $this->getUser()->setAttribute('rt_shop_order_cart_items', '');
     }
-    
+
     // Mini cart - total
     if ($this->getUser()->hasAttribute('rt_shop_order_cart_total')) {
       $this->getUser()->setAttribute('rt_shop_order_cart_total', '');
@@ -587,7 +587,7 @@ class BasertShopOrderActions extends sfActions
     {
       $this->_rt_shop_cart_manager = new rtShopCartManager();
     }
-    
+
     return $this->_rt_shop_cart_manager;
   }
 
@@ -597,7 +597,7 @@ class BasertShopOrderActions extends sfActions
   private function updateUserSession()
   {
     $items = 0;
-    
+
     foreach($this->getOrder()->getStockInfoArray() as $stock)
     {
       $items += $stock['rtShopOrderToStock'][0]['quantity'];
@@ -606,7 +606,7 @@ class BasertShopOrderActions extends sfActions
     $this->getUser()->setAttribute('rt_shop_order_cart_items', $items);
     $this->getUser()->setAttribute('rt_shop_order_cart_total', $this->getCartManager()->getTotalCharge());
   }
-  
+
   /**
    * Get formatted info array for payment
    *

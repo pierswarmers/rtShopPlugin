@@ -24,16 +24,33 @@
       <td colspan="4"><?php echo __('Sub-Total'); ?>:</td>
       <td><?php echo format_currency($sub_total, sfConfig::get('app_rt_currency', 'AUD')); ?></td>
     </tr>
-    <tr>
-      <td colspan="4"><?php echo __('Taxes'); ?>:</td>
-      <td><?php echo format_currency($rt_shop_order->getClosedTaxes(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
-    </tr>
+    <?php if(sfConfig::get('app_rt_shop_tax_mode','inclusive') == 'exclusive'): ?>
+      <tr>
+        <td colspan="4"><?php echo __('Taxes'); ?>:</td>
+        <td><?php echo format_currency($rt_shop_order->getClosedTaxes(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
+      </tr>
+    <?php endif; ?>
+
+    <?php if($rt_shop_order->getClosedPromotions() > 0): ?>
+      <tr>
+        <td colspan="4"><?php echo __('Promotion'); ?>:</td>
+        <td>-<?php echo format_currency($rt_shop_order->getClosedPromotions(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
+      </tr>
+    <?php endif; ?>
+      
     <tr>
       <td colspan="4"><?php echo __('Shipping rate'); ?>:</td>
       <td><?php echo ($rt_shop_order->getClosedShippingRate() != false) ? format_currency($rt_shop_order->getClosedShippingRate(), sfConfig::get('app_rt_currency', 'AUD')) : __('undefined'); ?></td>
     </tr>
+    <?php
+    $includes_message = '';
+    if(sfConfig::get('app_rt_shop_tax_rate', 0) > 0 && sfConfig::get('app_rt_shop_tax_mode') == 'inclusive')
+    {
+      $includes_message = sprintf('(includes %s tax)',format_currency(rtShopCartManager::calcTaxComponent($rt_shop_order->getClosedTotal()), sfConfig::get('app_rt_currency', 'AUD')));
+    }
+    ?>
     <tr>
-      <td colspan="4"><?php echo __('Grand Total (including rates)'); ?>:</td>
+      <td colspan="4"><?php echo __('Total'); ?> <?php echo $includes_message  ?>:</td>
       <td><?php echo format_currency($rt_shop_order->getClosedTotal(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
     </tr>
   </tfoot>

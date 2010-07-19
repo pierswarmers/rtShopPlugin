@@ -107,6 +107,21 @@ class rtShopCartManager
     return 0.00;
   }
 
+  /**
+   * Returns the tax component of the total. Only applicatable for inclusive tax mode.
+   *
+   * @return float
+   */
+  static function calcTaxComponent($total)
+  {
+    if(sfConfig::get('app_rt_shop_tax_mode', 'inclusive'))
+    {
+      return (float) ($total * 10) / (sfConfig::get('app_rt_shop_tax_rate', 0.0) + 100);
+    }
+
+    return 0.00;
+  }
+
   public function getTotalCharge()
   {
     $charge = $this->getPreTotalCharge();

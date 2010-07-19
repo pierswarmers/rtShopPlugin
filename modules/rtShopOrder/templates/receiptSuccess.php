@@ -5,8 +5,10 @@
   <h1><?php echo ucwords(__(sfConfig::get('rt_shop_receipt_title', 'receipt'))) ?></h1>
 
   <div class="rt-container">
-    <h3><?php echo __('Thank you!'); ?></h3>
-
-    <p><?php echo sprintf('%s%s%s',__('Your order has been received. The order reference is #'),$rt_shop_order->getReference(),__(' and a confirmation email has been sent to you.')); ?></p>
+    <?php
+      $order_received = '<h3>' . __('Thank you!') . '</h3>';
+      $order_received .= '<p>'  . sprintf('%s%s%s',__('Your order has been received. The order reference is #'),$rt_shop_order->getReference(),__(' and a confirmation email has been sent to you.')) . '</p>';
+    ?>
+    <?php include_component('rtSnippet','snippetPanel', array('collection' => 'shop-cart-receipt-message','sf_cache_key' => 'shop-cart-receipt-message', 'default' => $order_received)); ?>
   </div>
 </div>
