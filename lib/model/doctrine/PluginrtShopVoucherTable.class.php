@@ -110,7 +110,7 @@ class PluginrtShopVoucherTable extends rtShopPromotionTable
     return $q;
   }
 
-   /**
+  /**
    * Return a query with code condition
    *
    * @param  float           $code   Voucher code
@@ -124,7 +124,7 @@ class PluginrtShopVoucherTable extends rtShopPromotionTable
     return $q;
   }
 
-    /**
+  /**
    * Return a query with count condition
    *
    * @param  float           $code   Voucher code
@@ -135,6 +135,20 @@ class PluginrtShopVoucherTable extends rtShopPromotionTable
   {
     $q = $this->getQuery($q);
     $q->andWhere('(p.count > ?)', 0);
+    return $q;
+  }
+
+  /**
+   * Return a query with expired condition
+   *
+   * @param  float           $code   Voucher code
+   * @param  Doctrine_Query  $query  An optional query object
+   * @return Doctrine_Query
+   */
+  public function getExpiredRescrictionQuery(Doctrine_Query $q = null)
+  {
+    $q = $this->getQuery($q);
+    $q->andWhere('(p.date_to < ?)', date('Y-m-d H:i:s'));
     return $q;
   }
 }
