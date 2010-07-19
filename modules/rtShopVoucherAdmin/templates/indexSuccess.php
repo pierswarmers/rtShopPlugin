@@ -31,6 +31,8 @@
       <th><?php echo __('Title') ?></th>
       <th><?php echo __('Code') ?></th>
       <th><?php echo __('Reduction') ?></th>
+      <th><?php echo __('Count') ?></th>
+      <th><?php echo __('Mode') ?></th>
       <th><?php echo __('Batch') ?></th>
       <th><?php echo __('Created at') ?></th>
       <th>&nbsp;</th>
@@ -42,6 +44,8 @@
       <td><a href="<?php echo url_for('rtShopVoucherAdmin/edit?id='.$rt_shop_voucher->getId()) ?>"><?php echo $rt_shop_voucher->getTitle() ?></a></td>
       <td><code><?php echo $rt_shop_voucher->getCode() ?></code></td>
       <td><?php echo $rt_shop_voucher->isPercentageOff() ? $rt_shop_voucher->getReductionValue() . '%' : format_currency($rt_shop_voucher->getReductionValue(), sfConfig::get('app_rt_currency', 'USD'), $sf_user->getCulture()) ?></td>
+      <td><?php echo $rt_shop_voucher->getCount() ?></td>
+      <td><?php echo $rt_shop_voucher->getMode() ?></td>
       <td><code><?php echo $rt_shop_voucher->getBatchReference() ? link_to($rt_shop_voucher->getBatchReference(), 'rtShopVoucherAdmin/batchShow?id='.$rt_shop_voucher->getBatchReference()) : '--' ?></code></td>
       <td><?php echo $rt_shop_voucher->getCreatedAt() ?></td>
       <td>
