@@ -4,7 +4,7 @@ $links = array(
     'membership' => array('position' => 2,  'title' => 'Membership','route' => 'rt_shop_order_membership'),
     'address'    => array('position' => 3,  'title' => 'Address', 'route' => 'rt_shop_order_address'),
     'payment'    => array('position' => 4,  'title' => 'Payment', 'route' => 'rt_shop_order_payment'),
-    'reciept'    => array('position' => 5,  'title' => 'Reciept', 'route' => 'rt_shop_order_cart')
+    'receipt'    => array('position' => 5,  'title' => 'Receipt', 'route' => 'rt_shop_order_cart')
 );
 ?>
 <ol class="rt-container rt-shop-order-breadcrumb">
