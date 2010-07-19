@@ -520,11 +520,26 @@ class rtShopCartManager
        $i++;
      }
 
-     $order->setClosedProducts($products);
-     $order->setClosedShippingRate($this->getShippingCharge());
-     $order->setClosedTaxes($this->getTaxCharge());
-     $order->setClosedPromotions($this->getPromotionReduction());
-     $order->setClosedTotal($this->getTotalCharge());
+     $order->setProductsData($products);
+
+     $order->setShippingCharge($this->getShippingCharge());
+     
+     $order->setTaxCharge($this->getTaxCharge());
+     $order->setTaxComponent($this->getTaxComponent());
+     $order->setTaxMode($this->getTaxMode());
+     $order->setTaxRate($this->getTaxRate());
+
+     $order->setVoucherCode($this->getVoucherCode());
+     $order->setVoucherReduction($this->getVoucherReduction());
+     $order->setVoucherId($this->getVoucher()->getId());
+     $order->setVoucherData($this->getVoucher()->toArray());
+
+     $order->setPromotionId($this->getPromotion()->getId());
+     $order->setPromotionReduction($this->getPromotionReduction());
+     $order->setPromotionData($this->getPromotion()->toArray());
+     
+     $order->setItemsCharge($this->getItemsCharge());
+     $order->setTotalCharge($this->getTotalCharge());
    }
 
    /**

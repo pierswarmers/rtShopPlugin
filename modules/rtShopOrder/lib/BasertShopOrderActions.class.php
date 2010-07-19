@@ -496,19 +496,20 @@ class BasertShopOrderActions extends sfActions
    *
    * @param object $payment Payment object
    */
-  public function closeOrder($payment = '')
+  public function closeOrder($payment = null)
   {
     $cm = $this->getCartManager();
 
     $cm->getOrder()->setStatus(rtShopOrder::STATUS_PAID);
-    if(($cm->getTotalCharge() > 0) && is_object($payment))
+    
+    if(($cm->getTotalCharge() > 0) && !is_null($payment))
     {
       $cm->getOrder()->setPaymentType(get_class($payment));
-      $cm->getOrder()->setPaymentApproved($payment->isApproved());
       $cm->getOrder()->setPaymentTransactionId($payment->getTransactionNumber());
       $cm->getOrder()->setPaymentCharge($cm->getTotalCharge());
-      $cm->getOrder()->setPaymentResponse($payment->getLog());
+      $cm->getOrder()->setPaymentData(array('response' => $payment->getLog()));
     }
+    
     $cm->archive();
     $cm->getOrder()->save();
 
