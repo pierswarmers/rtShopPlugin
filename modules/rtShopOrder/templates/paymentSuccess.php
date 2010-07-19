@@ -8,18 +8,22 @@
       <?php include_partial('breadcrumb', array()) ?>
       <?php echo $form->renderHiddenFields(); ?>
 
+      <div class="rt-container rt-shop-payment-prefix">
+        <?php include_component('rtSnippet','snippetPanel', array('collection' => 'shop-payment-prefix','sf_cache_key' => 'shop-payment-prefix')); ?>
+      </div>
 
-      <h2><?php echo __('Voucher Details') ?></h2>
-      <table>
-        <tbody>
-          <tr>
-            <th><label for="rt_shop_order_voucher_voucher_code"><?php echo __('Voucher code') ?>:</label></th>
-            <td><?php echo $form['voucher_code']->render() ?><button class="button" id="apply-voucher"><?php echo __('Apply Voucher') ?></button><span id="voucher-message"></span></td>
-          </tr>
-        </tbody>
-      </table>
+      <?php if($rt_shop_cart_manager->getTotalCharge() > 0): ?>
+        <h2><?php echo __('Voucher Details') ?></h2>
+        <table>
+          <tbody>
+            <tr>
+              <th><label for="rt_shop_order_voucher_voucher_code"><?php echo __('Voucher code') ?>:</label></th>
+              <td><?php echo $form['voucher_code']->render() ?><button class="button" id="apply-voucher"><?php echo __('Apply Voucher') ?></button><span id="voucher-message"></span></td>
+            </tr>
+          </tbody>
+        </table>
+      <?php endif; ?>
 
-      
       <h2><?php echo __('Order Summary') ?></h2>
       <table class="rt-shop-order-summary">
         <thead>
@@ -92,7 +96,6 @@
               $('.rt-shop-cart-voucher').hide();
             }
               
-
             $(this).attr('disabled', true);
 
             $('#voucher-message').html('<span class="loading">Checking voucher, updating totals...</span>');
@@ -115,6 +118,10 @@
                   $('.rt-shop-cart-voucher').hide();
                   $('#voucher-message').html('<span class="error">Voucher could not be added!</span>');
                 }
+                if(data['total_charge'] == 0)
+                {
+                  $('.rt-shop-payment-creditcard').hide();
+                }
                 $('#rt_shop_order_voucher_voucher_code').removeAttr('disabled');
                 $('.rt-shop-total').html(data['total_charge_formatted']);
               }
@@ -122,15 +129,23 @@
           });
         });
       </script>
-      
-      <h2><?php echo __('Creditcard Details') ?></h2>
-      <table>
-        <tbody>
-          <?php echo $form_cc ?>
-        </tbody>
-      </table>
 
-      <h3><?php echo __('Total to be charged to your credit card: '); ?> <span class="order-total-charge rt-shop-total"><?php echo format_currency($rt_shop_cart_manager->getTotalCharge(), sfConfig::get('app_rt_shop_payment_currency','AUD')); ?></span></h3>
+      <span class="rt-shop-payment-creditcard" style="display:block">
+        <?php if($rt_shop_cart_manager->getTotalCharge() > 0): ?>
+          <h2><?php echo __('Creditcard Details') ?></h2>
+          <table>
+            <tbody>
+              <?php echo $form_cc ?>
+            </tbody>
+          </table>
+        <?php endif; ?>
+      </span>
+
+      <h3><?php echo __('Total to be charged to your credit card: '); ?> <span id="order-total-charge" class="rt-shop-total"><?php echo format_currency($rt_shop_cart_manager->getTotalCharge(), sfConfig::get('app_rt_shop_payment_currency','AUD')); ?></span></h3>
+
+      <div class="rt-container rt-shop-payment-suffix">
+        <?php include_component('rtSnippet','snippetPanel', array('collection' => 'shop-payment-suffix','sf_cache_key' => 'shop-payment-suffix')); ?>
+      </div>
     </div>
 
     <div class="rt-container rt-shop-order-tools">

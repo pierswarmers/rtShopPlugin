@@ -23,7 +23,7 @@
     <?php if($rt_shop_order->getVoucherCode()): ?>
       <tr>
         <th><?php echo __('Voucher code') ?>:</th>
-        <td><code><?php echo $rt_shop_order->getVoucherCode() ?></code></td>
+        <td><?php echo $rt_shop_order->getVoucherCode() ?></td>
       </tr>
     <?php endif; ?>
     <tr>
