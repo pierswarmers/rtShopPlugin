@@ -12,9 +12,17 @@ class BasertShopProductAdminActions extends sfActions
 {
   public function executeIndex(sfWebRequest $request)
   {
-    $this->rt_shop_products = Doctrine::getTable('rtShopProduct')
-      ->createQuery('a')
-      ->execute();
+    $query = Doctrine::getTable('rtShopProduct')->getQuery();
+    $query->orderBy('page.created_at DESC');
+
+    $this->pager = new sfDoctrinePager(
+      'rtShopProduct',
+      sfConfig::get('app_rt_shop_product_max_per_page', 2)
+    );
+
+    $this->pager->setQuery($query);
+    $this->pager->setPage($request->getParameter('page', 1));
+    $this->pager->init();
   }
 
   public function getrtShopProduct(sfWebRequest $request)

@@ -19,7 +19,7 @@
     </tr>
   </thead>
   <tbody>
-    <?php foreach ($rt_shop_products as $rt_shop_product): ?>
+    <?php foreach ($pager->getResults() as $rt_shop_product): ?>
     <tr>
       <td><a href="<?php echo url_for('rtShopProductAdmin/edit?id='.$rt_shop_product->getId()) ?>"><?php echo $rt_shop_product->getTitle() ?></a></td>
       <td><?php echo rt_nice_boolean($rt_shop_product->getPublished()) ?></td>
@@ -36,3 +36,5 @@
     <?php endforeach; ?>
   </tbody>
 </table>
+
+<?php include_partial('rtAdmin/pagination', array('pager' => $pager)); ?>
