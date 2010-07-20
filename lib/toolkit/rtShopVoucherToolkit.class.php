@@ -108,7 +108,7 @@ class rtShopVoucherToolkit
    *
    * @param Array $batch Batch data from form request
    */
-  public static function generateBatch($voucher, $batchsize)
+  public static function generateBatch($voucher, $batchsize, $verbose = true)
   {
     if(!is_array($voucher))
     {
@@ -118,7 +118,10 @@ class rtShopVoucherToolkit
     $table = Doctrine::getTable('rtShopPromotion');
     $sql_batch_limit = 1000;
 
-    $voucher['batch_reference'] = self::generateVoucherCode(8);
+    if($voucher['batch_reference'] == '')
+    {
+      $voucher['batch_reference'] = self::generateVoucherCode(8);
+    }
 
     $voucher['type'] = 'rtShopVoucher';
     
@@ -128,7 +131,10 @@ class rtShopVoucherToolkit
     {
       if(!array_key_exists($colname, $voucher) && !array_key_exists($colname, array('created_at' => null, 'updated_at' => null)))
       {
-        sfContext::getInstance()->getLogger()->err('{rtShopBatchVoucher} Input fieldname: '.$colname.' missing in ::generateBatch().');
+        if($verbose)
+        {
+          sfContext::getInstance()->getLogger()->err('{rtShopBatchVoucher} Input fieldname: '.$colname.' missing in ::generateBatch().');
+        }
         return false;
       }
     }
@@ -160,7 +166,10 @@ class rtShopVoucherToolkit
       unset($values);
     }
 
-    sfContext::getInstance()->getLogger()->notice('{rtShopBatchVoucher} '.$batchsize.' vouchers with reference: '.$voucher['batch_reference'].' were successfully created. Details: '.serialize($voucher));
+    if($verbose)
+    {
+      sfContext::getInstance()->getLogger()->notice('{rtShopBatchVoucher} '.$batchsize.' vouchers with reference: '.$voucher['batch_reference'].' were successfully created. Details: '.serialize($voucher));
+    }
     return $voucher['batch_reference'];
   }
 

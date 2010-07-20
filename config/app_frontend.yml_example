@@ -33,6 +33,8 @@ all:
       #processing:            processing
       #backordered:           backordered
       #paid:                  paid
+    #shop_birthday_voucher_type:        dollarOff               # Either 'percentageOff' or 'dollarOff'
+    #shop_birthday_voucher_value:       10                      # Voucher reduction value (e.g 10 = $10)
 
     #snippets:
       #Homepage:
