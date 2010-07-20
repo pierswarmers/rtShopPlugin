@@ -25,11 +25,17 @@ class BasertShopVoucherAdminActions extends sfActions
   
   public function executeIndex(sfWebRequest $request)
   {
-    $this->rt_shop_vouchers = Doctrine::getTable('rtShopVoucher')->findAll();
+    $query = Doctrine::getTable('rtShopVoucher')->getQuery();
+    $query->orderBy('p.created_at DESC');
 
-//    $this->rt_shop_batch_vouchers = Doctrine::getTable('rtShopVoucher')
-//      ->getDistinctBatchReferenceNumbers()
-//      ->fetchArray();
+    $this->pager = new sfDoctrinePager(
+      'rtShopVoucher',
+      sfConfig::get('app_rt_shop_voucher_max_per_page', 50)
+    );
+
+    $this->pager->setQuery($query);
+    $this->pager->setPage($request->getParameter('page', 1));
+    $this->pager->init();
   }
 
   public function executeNew(sfWebRequest $request)

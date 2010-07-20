@@ -39,7 +39,7 @@
     </tr>
   </thead>
   <tbody>
-    <?php foreach ($rt_shop_vouchers as $rt_shop_voucher): ?>
+    <?php foreach ($pager->getResults() as $rt_shop_voucher): ?>
     <tr>
       <td><a href="<?php echo url_for('rtShopVoucherAdmin/edit?id='.$rt_shop_voucher->getId()) ?>"><?php echo $rt_shop_voucher->getTitle() ?></a></td>
       <td><code><?php echo $rt_shop_voucher->getCode() ?></code></td>
@@ -58,3 +58,5 @@
     <?php endforeach; ?>
   </tbody>
 </table>
+
+<?php include_partial('rtAdmin/pagination', array('pager' => $pager)); ?>
