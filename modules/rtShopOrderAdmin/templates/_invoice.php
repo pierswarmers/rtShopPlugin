@@ -1,6 +1,6 @@
 <?php use_helper('I18N', 'Number', 'rtAdmin') ?>
-<?php $billing_address = $rt_shop_order->getBillingAddressArray(); ?>
-<?php $shipping_address = $rt_shop_order->getShippingAddressArray(); ?>
+<?php $addresses = $rt_shop_order->getAddressInfoArray(); ?>
+<?php $shipping = (count($addresses) == 2) ? 1 : 0; ?>
 <table>
   <tbody>
     <tr>
@@ -36,7 +36,6 @@
     </tr>
   </tbody>
 </table>
-
 <table>
   <thead>
     <tr>
@@ -44,30 +43,37 @@
       <th><?php echo __('Shipping Address') ?></th>
     </tr>
   </thead>
+  <?php if(count($addresses) > 0): ?>
   <tbody>
     <tr>
-      <td style="width:50%"><?php if(count($billing_address) > 0): ?><?php echo $billing_address[0]['first_name'] . " " . $billing_address[0]['last_name'] ?><br/>
-        <?php echo $billing_address[0]['address_1'] ?><br/>
-        <?php echo ($billing_address[0]['address_2'] != '') ? $billing_address[0]['address_2'].'<br/>' : '' ?>
-        <?php echo $billing_address[0]['town'] . " " . $billing_address[0]['postcode'] . " " . $billing_address[0]['state'] ?><br/>
-        <?php echo $billing_address[0]['country'] ?><br/>
-        <?php echo $billing_address[0]['phone'] ?><?php endif; ?></td>
-      <td style="width:50%"><?php if(count($shipping_address) > 0): ?>
-        <?php echo $shipping_address[0]['first_name'] . " " . $shipping_address[0]['last_name'] ?><br/>
-        <?php echo $shipping_address[0]['address_1'] ?><br/>
-        <?php echo ($shipping_address[0]['address_2'] != '') ? $shipping_address[0]['address_2'].'<br/>' : '' ?>
-        <?php echo $shipping_address[0]['town'] . " " . $shipping_address[0]['postcode'] . " " . $shipping_address[0]['state'] ?><br/>
-        <?php echo $shipping_address[0]['country'] ?><br/>
-        <?php echo $billing_address[0]['phone'] ?>
-      <?php elseif(count($billing_address) > 0): ?>
-        <?php echo $billing_address[0]['first_name'] . " " . $billing_address[0]['last_name'] ?><br/>
-        <?php echo $billing_address[0]['address_1'] ?><br/>
-        <?php echo ($billing_address[0]['address_2'] != '') ? $billing_address[0]['address_2'].'<br/>' : '' ?>
-        <?php echo $billing_address[0]['town'] . " " . $billing_address[0]['postcode'] . " " . $billing_address[0]['state'] ?><br/>
-        <?php echo $billing_address[0]['country'] ?><br/>
-        <?php echo $billing_address[0]['phone'] ?>
-      <?php endif; ?></td>
+      <td style="width:50%"><?php echo $addresses[0]['first_name'] . " " . $addresses[0]['last_name'] ?><br/>
+        <?php echo $addresses[0]['address_1'] ?><br/>
+        <?php echo ($addresses[0]['address_2'] != '') ? $addresses[0]['address_2'].'<br/>' : '' ?>
+        <?php echo $addresses[0]['town'] . " " . $addresses[0]['postcode'] . " " . $addresses[0]['state'] ?><br/>
+        <?php echo $addresses[0]['country'] ?></td>
+      <td style="width:50%"><?php echo $addresses[$shipping]['first_name'] . " " . $addresses[$shipping]['last_name'] ?><br/>
+        <?php echo $addresses[$shipping]['address_1'] ?><br/>
+        <?php echo ($addresses[$shipping]['address_2'] != '') ? $addresses[$shipping]['address_2'].'<br/>' : '' ?>
+        <?php echo $addresses[$shipping]['town'] . " " . $addresses[$shipping]['postcode'] . " " . $addresses[$shipping]['state'] ?><br/>
+        <?php echo $addresses[$shipping]['country'] ?></td>
+    </tr>
+    <tr>
+      <td><?php if($addresses[0]['phone'] != ''): ?>
+          <?php echo __('Phone') ?>: <?php echo $addresses[0]['phone'] ?>
+        <?php endif; ?></td>
+      <td><?php if($addresses[$shipping]['phone'] != ''): ?>
+        <?php echo __('Phone') ?>: <?php echo $addresses[$shipping]['phone'] ?>
+        <?php endif; ?></td>
+    </tr>
+    <tr>
+      <td><?php if($addresses[0]['instructions'] != ''): ?>
+          <?php echo __('Instructions') ?>: <?php echo $addresses[0]['instructions'] ?>
+        <?php endif; ?></td>
+      <td><?php if($addresses[$shipping]['instructions'] != ''): ?>
+        <?php echo __('Instructions') ?>: <?php echo $addresses[$shipping]['instructions'] ?>
+        <?php endif; ?></td>
     </tr>
   </tbody>
+  <?php endif; ?>
 </table>
 <?php include_partial('rtShopOrderAdmin/archive', array('rt_shop_order' => $rt_shop_order)) ?>
