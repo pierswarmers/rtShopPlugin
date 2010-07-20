@@ -17,7 +17,7 @@
 
 class rtShopCreateBirthdayVouchersTask extends sfDoctrineBaseTask
 {
-  private $_debug_verbose = true;
+  private $_debug_verbose = false;
   private $_birthday_vouchers = 0;
 
   /**
@@ -151,19 +151,18 @@ EOF;
     $voucher = $q->fetchArray();
     
     $this->_birthday_vouchers = count($users);
+    if(sfConfig::get('app_rt_shop_birthday_voucher_type') === 'percentageOff')
+    {
+      $formatted_value = sfConfig::get('app_rt_shop_birthday_voucher_value').'%';
+    }
+    else
+    {
+      $formatted_value = format_currency(sfConfig::get('app_rt_shop_birthday_voucher_value'), sfConfig::get('app_rt_currency', 'AUD'));
+    }
     if ($this->_debug_verbose) {
       $this->log('----------------------------------------------');
       $this->log('--- Create vouchers for birthday specified ---');
       $this->log('----------------------------------------------');
-
-      if(sfConfig::get('app_rt_shop_birthday_voucher_type') === 'percentageOff')
-      {
-        $formatted_value = sfConfig::get('app_rt_shop_birthday_voucher_value').'%';
-      }
-      else
-      {
-        $formatted_value = format_currency(sfConfig::get('app_rt_shop_birthday_voucher_value'), sfConfig::get('app_rt_currency', 'AUD'));
-      }
 
       if (count($users) > 0)
       {
