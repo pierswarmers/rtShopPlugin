@@ -1,3 +1,17 @@
+rtShopOrderToStock:
+  columns:
+    quantity:                 { type: integer, default: 5 }
+    stock_id:
+      type: integer
+      primary: true
+    order_id:
+      type: integer
+      primary: true
+  relations:
+    rtShopOrder:              { onDelete: CASCADE, local: order_id, foreign: id }
+    rtShopStock:              { onDelete: CASCADE, local: stock_id, foreign: id }
+
+
 rtShopOrder:
   actAs:
     Timestampable:
@@ -10,7 +24,7 @@ rtShopOrder:
         type:                timestamp
         format:              Y-m-d H:i:s
     rtSearchTemplate:
-      fields:                [voucher_code, email, notes_admin, notes_user, reference, payment_transaction_id, extended_search_data]
+      fields:                [voucher_code, email_address, notes_admin, notes_user, reference, payment_transaction_id, extended_search_data]
   columns:
 
     # base values

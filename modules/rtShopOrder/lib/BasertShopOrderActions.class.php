@@ -251,9 +251,9 @@ class BasertShopOrderActions extends sfActions
     {
       $user = $this->getUser()->getGuardUser();
 
-      if(is_null($this->getOrder()->getEmail()))
+      if(is_null($this->getOrder()->getEmailAddress()))
       {
-        $this->getOrder()->setEmail($user->getEmailAddress());
+        $this->getOrder()->setEmailAddress($user->getEmailAddress());
       }
     }
 
@@ -467,7 +467,7 @@ class BasertShopOrderActions extends sfActions
 
         $cc_array = $this->FormatCcInfoArray($this->form_cc->getValues());
         $address = $cm->getOrder()->getBillingAddressArray();
-        $customer_array = $this->FormatCustomerInfoArray($address[0], $cm->getOrder()->getEmail());
+        $customer_array = $this->FormatCustomerInfoArray($address[0], $cm->getOrder()->getEmailAddress());
 
         $payment = rtShopPaymentToolkit::getPaymentObject(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
 
@@ -542,7 +542,7 @@ class BasertShopOrderActions extends sfActions
     $message = Swift_Message::newInstance()
             ->setContentType('text/html')
             ->setFrom(sfConfig::get('app_rt_shop_order_admin_email', 'from@noreply.com'))
-            ->setTo($cm->getOrder()->getEmail())
+            ->setTo($cm->getOrder()->getEmailAddress())
             ->setSubject(sprintf('Order confirmation: #%s', $order_reference))
             ->setBody($this->getPartial('rtShopOrderAdmin/email_invoice', array('rt_shop_order' => $cm->getOrder())));
 

@@ -10,7 +10,7 @@
       <h2><?php echo __('Your Email Address') ?></h2>
       <table class="rt-admin-toggle-panel-content">
         <tbody>
-          <?php  echo render_form_row($form['email']) ?>
+          <?php  echo render_form_row($form['email_address']) ?>
         </tbody>
       </table>
 

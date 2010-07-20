@@ -21,9 +21,9 @@
     <?php foreach ($rt_shop_orders as $rt_shop_order): ?>
       <tr>
         <td><a href="<?php echo url_for('rtShopOrderAdmin/show?id='.$rt_shop_order->getId()) ?>"><code><?php echo $rt_shop_order->getReference() ?></code></a></td>
-        <td><?php echo format_currency($rt_shop_order->getClosedTotal(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
+        <td><?php echo format_currency($rt_shop_order->getTotalCharge(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
         <td><?php echo strtoupper($rt_shop_order->getStatus()) ?></td>
-        <td><?php echo $rt_shop_order->getEmail(); ?></td>
+        <td><?php echo $rt_shop_order->getEmailAddress(); ?></td>
         <td><?php echo $rt_shop_order->getCreatedAt() ?></td>
         <td>
         <ul class="rt-admin-tools">

@@ -5,7 +5,7 @@
   <tbody>
     <tr>
       <th style="width:25%"><?php echo __('Order reference') ?>:</th>
-      <td style="width:25%"><?php echo "#".$rt_shop_order->getReference() ?></td>
+      <td style="width:25%"><?php echo $rt_shop_order->getReference() ?></td>
       <td style="width:50%" rowspan="7"><?php echo nl2br(sfConfig::get('app_rt_company_address','')) ?></td>
     </tr>
     <tr>
@@ -32,7 +32,7 @@
     </tr>
     <tr>
       <th><?php echo __('Email') ?>:</th>
-      <td><?php echo mail_to($rt_shop_order->getEmail()) ?></td>
+      <td><?php echo mail_to($rt_shop_order->getEmailAddress()) ?></td>
     </tr>
   </tbody>
 </table>
@@ -70,11 +70,4 @@
     </tr>
   </tbody>
 </table>
-<table>
-  <thead>
-    <tr>
-      <th colspan="5"><?php echo sprintf(__('Products ordered [%s]'), count($rt_shop_order->getClosedProducts())); ?></th>
-    </tr>
-  </thead>
-  <?php include_partial('rtShopOrderAdmin/archive', array('rt_shop_order' => $rt_shop_order)) ?>
-</table>
+<?php include_partial('rtShopOrderAdmin/archive', array('rt_shop_order' => $rt_shop_order)) ?>

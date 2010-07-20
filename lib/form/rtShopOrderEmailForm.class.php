@@ -25,7 +25,7 @@ class rtShopOrderEmailForm extends BasertShopOrderForm
 
     $this->widgetSchema->setFormFormatterName('table');
 
-    $this->useFields(array('id','email'));
+    $this->useFields(array('id','email_address'));
 //
 //    $billing_address = new rtAddress;
 //    $billing_address->setType('billing');
@@ -57,9 +57,9 @@ class rtShopOrderEmailForm extends BasertShopOrderForm
 //    $order_id = sfContext::getInstance()->getUser()->getAttribute('rt_shop_frontend_order_id');
 //    $order = Doctrine::getTable('rtShopOrder')->find($order_id);
 
-    $this->widgetSchema->setLabel('email',"Email Address");
-    $this->widgetSchema['email'] = new sfWidgetFormInput(array(), array('class'=>'text'));
-    $this->setValidator('email', new sfValidatorEmail(array('max_length' => 255, 'required' => true)));
+    $this->widgetSchema->setLabel('email_address',"Email Address");
+    $this->widgetSchema['email_address'] = new sfWidgetFormInput(array(), array('class'=>'text'));
+    $this->setValidator('email_address', new sfValidatorEmail(array('max_length' => 255, 'required' => true)));
 
     $this->widgetSchema->setNameFormat('rt_shop_order[%s]');
     $this->errorSchema = new sfValidatorErrorSchema($this->validatorSchema);

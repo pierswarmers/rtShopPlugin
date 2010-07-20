@@ -449,17 +449,7 @@ class rtShopCartManager
    */
   public function getVoucher()
   {
-    //$voucher = Doctrine::getTable('rtShopVoucher')->findByCode(($this->getVoucherCode()) ? $this->getVoucherCode() : '');
-    $voucher = Doctrine_Query::create()->from('rtShopVoucher v')
-             ->addWhere('v.code = ?', ($this->getVoucherCode()) ? $this->getVoucherCode() : '')
-             ->execute();
-
-    if($voucher)
-    {
-      return $voucher;
-    }
-
-    return false;
+    return Doctrine::getTable('rtShopVoucher')->findOneByCode(($this->getVoucherCode()) ? $this->getVoucherCode() : '');
   }
 
   /**
@@ -531,9 +521,12 @@ class rtShopCartManager
 
      $order->setVoucherCode($this->getVoucherCode());
      $order->setVoucherReduction($this->getVoucherReduction());
-     $order->setVoucherId($this->getVoucher()->getId());
-     $order->setVoucherData($this->getVoucher()->toArray());
-
+     $voucher = $this->getVoucher();
+     if($voucher)
+     {
+       $order->setVoucherId($this->getVoucher()->getId());
+       $order->setVoucherData($this->getVoucher()->toArray());
+     }
      $order->setPromotionId($this->getPromotion()->getId());
      $order->setPromotionReduction($this->getPromotionReduction());
      $order->setPromotionData($this->getPromotion()->toArray());
@@ -562,68 +555,31 @@ class rtShopCartManager
       }
     }
   }
-
- /**
-  * Adjust voucher count
-  */
-  public function adjustVoucherCount()
-  {
-    if($this->getVoucherCode() != '')
-    {
-      $array = $this->getVoucher()->getData();
-      $voucher = $array[0];
-
-      $count_before = $voucher->getCount();
-      if($voucher && $voucher->getCount() > 0)
-      {
-        $voucher->adjustCountBy(1);
-        $voucher->save();
-
-        sfContext::getInstance()->getLogger()->info(sprintf('{rtShopCartManager} Adjust voucher #%s by count = 1. Count before = %s. Count after = %s',$this->getVoucherCode(),$count_before,$voucher->getCount()));
-      }
-    }
-  }
-
- /**
-  * Adjust voucher value
-  */
-  public function adjustVoucherValue()
-  {
-    $array = $this->getVoucher()->getData();
-    $voucher = $array[0];
-
-    if($voucher && $voucher->getReductionType() == 'dollarOff')
-    {
-      $value_before = $voucher->getReductionValue();
-      $voucher->adjustReductionValueBy($this->getTotalCharge());
-      $voucher->save();
-      
-      sfContext::getInstance()->getLogger()->info(sprintf('{rtShopCartManager} Adjust voucher #%s by value = %s. Value before = %s. Value after = %s',$this->getVoucherCode(),$this->getTotalCharge(),$value_before,$voucher->getReductionValue()));
-    }
-  }
-
+  
   /**
    * Adjust voucher details such as count and value
    */
   public function adjustVoucherDetails()
   {
-    if($this->getVoucher())
+    $voucher = $this->getVoucher();
+    if($voucher)
     {
-      $array = $this->getVoucher()->getData();
+      $value_before = $voucher->getReductionValue();
+      $count_before = $voucher->getCount();
 
-      if(count($this->getVoucher()->getData()) > 0)
-      {
-        $voucher = $array[0];
+      $voucher->adjustReductionValueBy($this->getPreTotalCharge());
+      $voucher->adjustCountBy(1);
+      $voucher->save();
 
-        $value_before = $voucher->getReductionValue();
-        $count_before = $voucher->getCount();
-
-        $voucher->adjustReductionValueBy($this->getPreTotalCharge());
-        $voucher->adjustCountBy(1);
-        $voucher->save();
-
-        sfContext::getInstance()->getLogger()->info(sprintf('{rtShopCartManager} Adjust %s voucher #%s (Type: %s) || Value before = %s. Value after = %s || Count before = %s. Count after = %s',$voucher->getMode(),$this->getVoucherCode(),$voucher->getReductionType(),$value_before,$voucher->getReductionValue(),$count_before,$voucher->getCount()));
-      }
+      sfContext::getInstance()->getLogger()->info(
+              sprintf('{rtShopCartManager} Voucher (#%s): Value %s to %s, Count %s to %s',
+                      $this->getVoucherCode(),
+                      $value_before,
+                      $voucher->getReductionValue(),
+                      $count_before,
+                      $voucher->getCount()
+              )
+      );
     }
   }
 
