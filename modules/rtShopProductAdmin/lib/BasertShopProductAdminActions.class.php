@@ -17,7 +17,7 @@ class BasertShopProductAdminActions extends sfActions
 
     $this->pager = new sfDoctrinePager(
       'rtShopProduct',
-      sfConfig::get('app_rt_shop_product_max_per_page', 2)
+      sfConfig::get('app_rt_shop_product_max_per_page', 50)
     );
 
     $this->pager->setQuery($query);
