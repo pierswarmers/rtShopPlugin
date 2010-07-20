@@ -524,13 +524,17 @@ class rtShopCartManager
      $voucher = $this->getVoucher();
      if($voucher)
      {
-       $order->setVoucherId($this->getVoucher()->getId());
-       $order->setVoucherData($this->getVoucher()->toArray());
+       $order->setVoucherId($voucher->getId());
+       $order->setVoucherData($voucher->toArray());
      }
-     $order->setPromotionId($this->getPromotion()->getId());
-     $order->setPromotionReduction($this->getPromotionReduction());
-     $order->setPromotionData($this->getPromotion()->toArray());
      
+     $promotion = $this->getPromotion();
+     $order->setPromotionReduction($this->getPromotionReduction());
+     if($promotion)
+     {
+       $order->setPromotionId($promotion->getId());
+       $order->setPromotionData($promotion->toArray());
+     }
      $order->setItemsCharge($this->getItemsCharge());
      $order->setTotalCharge($this->getTotalCharge());
    }
