@@ -50,12 +50,12 @@
         <?php echo $addresses[0]['address_1'] ?><br/>
         <?php echo ($addresses[0]['address_2'] != '') ? $addresses[0]['address_2'].'<br/>' : '' ?>
         <?php echo $addresses[0]['town'] . " " . $addresses[0]['postcode'] . " " . $addresses[0]['state'] ?><br/>
-        <?php echo $addresses[0]['country'] ?></td>
+        <?php echo format_country($addresses[0]['country']) ?></td>
       <td style="width:50%"><?php echo $addresses[$shipping]['first_name'] . " " . $addresses[$shipping]['last_name'] ?><br/>
         <?php echo $addresses[$shipping]['address_1'] ?><br/>
         <?php echo ($addresses[$shipping]['address_2'] != '') ? $addresses[$shipping]['address_2'].'<br/>' : '' ?>
         <?php echo $addresses[$shipping]['town'] . " " . $addresses[$shipping]['postcode'] . " " . $addresses[$shipping]['state'] ?><br/>
-        <?php echo $addresses[$shipping]['country'] ?></td>
+        <?php echo format_country($addresses[$shipping]['country']) ?></td>
     </tr>
     <tr>
       <td><?php if($addresses[0]['phone'] != ''): ?>
