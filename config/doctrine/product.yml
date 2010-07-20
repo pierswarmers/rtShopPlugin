@@ -4,9 +4,9 @@ rtShopProduct:
       fields:      [title, content, description, sku, stock_skus, tags_as_string]
   columns:
     sku:                      { type: string(255) }
-    is_featured:              { type: boolean, default: 0 }
-    backorder_allowed:        { type: boolean, default: 0 }
-    is_taxable:               { type: boolean, default: 1 }
+    is_featured:              { type: boolean, default: false }
+    backorder_allowed:        { type: boolean, default: false }
+    is_taxable:               { type: boolean, default: true }
   inheritance:
     type:              concrete
     extends:           rtPage
