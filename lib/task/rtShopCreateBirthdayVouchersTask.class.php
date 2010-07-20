@@ -158,7 +158,7 @@ EOF;
 
       if(sfConfig::get('app_rt_shop_birthday_voucher_type') === 'percentageOff')
       {
-        $formatted_value = '%'.sfConfig::get('app_rt_shop_birthday_voucher_value');
+        $formatted_value = sfConfig::get('app_rt_shop_birthday_voucher_value').'%';
       }
       else
       {
