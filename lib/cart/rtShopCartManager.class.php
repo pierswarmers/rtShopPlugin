@@ -175,8 +175,7 @@ class rtShopCartManager
   {
     $class = sfConfig::get('app_rt_shop_shipping_class','rtShopShipping');
     $shipping = new $class($this);
-    $result = $shipping->getShippingInfo();
-    return $result['charge'];
+    return $shipping->getShippingCharge();
   }
 
   /**

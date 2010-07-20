@@ -33,33 +33,34 @@ class rtShopShipping
     $this->_cart_manager = $cm;
 	}
 
-  public function getShippingInfo()
+  /**
+   * Returns the shipping charge.
+   *
+   * @return float
+   */
+  public function getShippingCharge()
   {
     $address = $this->getAddress();
-    $response = array('charge' => 0);
+    
+    $shipping_charge = 0.0;
 
     if(!$address || !isset($address['country']) || is_null($address['country']) || $address['country'] == '')
     {
-      return false;
+      return $shipping_charge;
     }
 
-    if(!isset($address['country']) || is_null($address['country']) || $address['country'] == '')
+    $charges_config = sfConfig::get('app_rt_shop_shipping_charges', array());
+
+    if(isset($charges_config[$address['country']]))
     {
-      return false;
+      $shipping_charge = $charges_config[$address['country']];
     }
-
-    $shipping_charges = sfConfig::get('app_rt_shop_shipping_charges', array());
-
-    if(isset($shipping_charges[$address['country']]))
+    elseif(isset($charges_config['default']))
     {
-      $response['charge'] = $shipping_charges[$address['country']];
-    }
-    elseif(isset($shipping_charges['default']))
-    {
-      $response['charge'] = $shipping_charges['default'];
+      $shipping_charge = $charges_config['default'];
     }
 
-    return $response;
+    return $shipping_charge;
   }
 
 
