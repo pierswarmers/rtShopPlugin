@@ -17,7 +17,7 @@
     </tr>
   </thead>
   <tbody>
-    <?php foreach ($rt_shop_attributes as $rt_shop_attribute): ?>
+    <?php foreach ($pager->getResults() as $rt_shop_attribute): ?>
     <tr>
       <td><a href="<?php echo url_for('rtShopAttributeAdmin/edit?id='.$rt_shop_attribute->getId()) ?>"><?php echo $rt_shop_attribute->getTitle() ?></a></td>
       <td><?php echo $rt_shop_attribute->getDisplayTitle() ?></td>
@@ -31,3 +31,5 @@
     <?php endforeach; ?>
   </tbody>
 </table>
+
+<?php include_partial('rtAdmin/pagination', array('pager' => $pager)); ?>
