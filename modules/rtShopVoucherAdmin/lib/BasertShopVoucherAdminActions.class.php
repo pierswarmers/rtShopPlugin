@@ -30,7 +30,7 @@ class BasertShopVoucherAdminActions extends sfActions
 
     $this->pager = new sfDoctrinePager(
       'rtShopVoucher',
-      sfConfig::get('app_rt_shop_voucher_max_per_page', 50)
+      sfConfig::get('app_rt_admin_pagination_limit', 50)
     );
 
     $this->pager->setQuery($query);

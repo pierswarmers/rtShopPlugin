@@ -9,15 +9,17 @@ all:
       #Faxnumber
       #Email address
     #email_signature:                  'Shop name'               # Signature for order confirmation mail
+    #admin_pagination_limit:            50                       # List of entries per page in the admin listings
+    #snippet_max_per_page:              50                       # List of entries per page in the snippet listing
     #shop_order_admin_email:           'konny@wranglers.com.au'  # Shop administrator email address
     #shop_default_country:              AU                       # Country where shipping is handled in
     #shop_payment_currency:             AUD                      # Currency acronym (e.g AU = Australian Dollar)
     #shop_payment_class:                "rtShopEwayPayment"      # Name of payment class
     #shop_shipping_class:               "rtShopShipping"         # Name of shipping class
     #shop_shipping_charges:
-      #default:                         30                      # Default shipping charge
-      #AU:                               9                      # Domestic shipping rate applicable to order (i.e 8 = $8)
-      #NZ:                              15                      # International shipping rate applicable to order (i.e 15 = $15)
+      #default:                         30                       # Default shipping charge
+      #AU:                               9                       # Domestic shipping rate applicable to order (i.e 8 = $8)
+      #NZ:                              15                       # International shipping rate applicable to order (i.e 15 = $15)
     #shop_tax_rate:                     10                       # Tax rate in % (e.g 5 = 5%)
     #shop_tax_mode:                     exclusive                # Either 'inclusive' or 'exclusive'
     #shop_payment_methods:
@@ -56,9 +58,9 @@ all:
         #column-left: Left column on content pages (column-left)
 
   eway:
-    customer_id:            87654321                       # eWay customer ID [required] (e.g 87654321 default for testing)
+    customer_id:            87654321                        # eWay customer ID [required] (e.g 87654321 default for testing)
     #payment_method:         REAL_TIME_CVN                  # eWay payment method
-    api_error_codes:        [06,22,40,92,96]               # eWay error codes
+    api_error_codes:        [06,22,40,92,96]                # eWay error codes
     #use_live:               false                          # Switch between testing and live status
     #cc_mandatory_fields:                                   # Mandatory fields for customer, credit card details
       #CardHoldersName:      CardHoldersName
