@@ -10,6 +10,7 @@ all:
       #Email address
     #email_signature:                  'Shop name'               # Signature for order confirmation mail
     #admin_pagination_limit:            50                       # List of entries per page in the admin listings
+    #admin_pagination_per_page_multiple: 2                       # Show more multiplier for pagination
     #snippet_max_per_page:              50                       # List of entries per page in the snippet listing
     #shop_order_admin_email:           'konny@wranglers.com.au'  # Shop administrator email address
     #shop_default_country:              AU                       # Country where shipping is handled in
