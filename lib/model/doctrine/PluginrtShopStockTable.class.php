@@ -102,7 +102,7 @@ class PluginrtShopStockTable extends Doctrine_Table
    * @param Doctrine_Query $query
    * @return Doctrine_Query
    */
-  private function getQuery(Doctrine_Query $query = null)
+  public function getQuery(Doctrine_Query $query = null)
   {
     if (is_null($query))
     {

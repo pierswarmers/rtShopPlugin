@@ -20,10 +20,16 @@ class BasertShopProductAdminActions extends sfActions
   public function executeStockReport(sfWebRequest $request)
   {
     $this->stocks = Doctrine::getTable('rtShopStock')->findAll(Doctrine_Core::HYDRATE_ARRAY);
-//
+
 //    $query = Doctrine::getTable('rtShopStock')->getQuery();
 //
+//    $query = new Doctrine_Query;
+//
 //    $query->leftJoin('s.rtShopProduct p');
+//
+//    $query->andWhere('p.id = s.product_id');
+//
+//    $this->stocks = $query->execute(array(), Doctrine_Core::HYDRATE_ARRAY);
   }
 
   public function executeIndex(sfWebRequest $request)
