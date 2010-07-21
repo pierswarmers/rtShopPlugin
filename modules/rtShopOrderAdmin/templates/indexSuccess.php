@@ -20,7 +20,7 @@
     </tr>
   </thead>
   <tbody>
-    <?php foreach ($rt_shop_orders as $rt_shop_order): ?>
+    <?php foreach ($pager->getResults() as $rt_shop_order): ?>
       <tr>
         <td><a href="<?php echo url_for('rtShopOrderAdmin/show?id='.$rt_shop_order->getId()) ?>"><code><?php echo $rt_shop_order->getReference() ?></code></a></td>
         <td><?php echo format_currency($rt_shop_order->getTotalCharge(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
@@ -38,3 +38,5 @@
     <?php endforeach; ?>
   </tbody>
 </table>
+
+<?php include_partial('rtAdmin/pagination', array('pager' => $pager)); ?>

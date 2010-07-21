@@ -19,9 +19,18 @@ class BasertShopOrderAdminActions extends sfActions
 {
   public function executeIndex(sfWebRequest $request)
   {
-    $this->rt_shop_orders = Doctrine::getTable('rtShopOrder')
-      ->getPaidRestrictionQuery()
-      ->execute();
+    $query = Doctrine::getTable('rtShopOrder')->getQuery();
+    $query->andWhere('o.status = ?', rtShopOrder::STATUS_PAID);
+    $query->orderBy('o.created_at DESC');
+
+    $this->pager = new sfDoctrinePager(
+      'rtShopOrder',
+      sfConfig::get('app_rt_admin_pagination_limit', 50)
+    );
+
+    $this->pager->setQuery($query);
+    $this->pager->setPage($request->getParameter('page', 1));
+    $this->pager->init();
   }
 
   public function executeNew(sfWebRequest $request)
