@@ -34,7 +34,7 @@ class PluginrtShopPromotionProductTable extends rtShopPromotionTable
    * @param Doctrine_Query $q An optional query object
    * @return Array            Found promotions
    */
-  public public function findAvailable($quantity, $date = null, Doctrine_Query $q = null)
+  public function findAvailable($quantity, $date = null, Doctrine_Query $q = null)
   {
     $q = $this->getQuery($q);
     $q = $this->getDateRestrictionQuery($date, $q);
