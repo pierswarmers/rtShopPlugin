@@ -19,7 +19,7 @@
     </tr>
   </thead>
   <tbody>
-    <?php foreach ($rt_shop_promotions as $rt_shop_promotion): ?>
+    <?php foreach ($pager->getResults() as $rt_shop_promotion): ?>
       <tr>
         <td><a href="<?php echo url_for('rtShopPromotionAdmin/edit?id='.$rt_shop_promotion->getId()) ?>"><?php echo $rt_shop_promotion->getTitle() ?></a></td>
         <td><?php echo $rt_shop_promotion->getType() == 'rtShopPromotionCart' ? __('Cart') : __('Product')  ?></td>
@@ -35,3 +35,5 @@
     <?php endforeach; ?>
   </tbody>
 </table>
+
+<?php include_partial('rtAdmin/pagination', array('pager' => $pager)); ?>

@@ -25,11 +25,18 @@ class BasertShopPromotionAdminActions extends sfActions
 
   public function executeIndex(sfWebRequest $request)
   {
-    $this->rt_shop_promotions = Doctrine::getTable('rtShopPromotion')
-      ->createQuery('p')
-      // Include all promotions appart from vouchures.
-      ->andWhere('p.type != "rtShopVoucher"')
-      ->execute();
+    $query = Doctrine::getTable('rtShopPromotion')->getQuery();
+    $query->andWhere('p.type != "rtShopVoucher"');
+    $query->orderBy('p.created_at DESC');
+
+    $this->pager = new sfDoctrinePager(
+      'rtShopPromotion',
+      sfConfig::get('app_rt_admin_pagination_limit', 50)
+    );
+
+    $this->pager->setQuery($query);
+    $this->pager->setPage($request->getParameter('page', 1));
+    $this->pager->init();
   }
 
   public function executeNew(sfWebRequest $request)
