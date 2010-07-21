@@ -34,7 +34,7 @@ class PluginrtShopPromotionTable extends Doctrine_Table
    * @param Doctrine_Query $q An optional query object
    * @return Array            Found promotions
    */
-  public public function findAvailable($total, $date = null, Doctrine_Query $q = null)
+  public function findAvailable($total, $date = null, Doctrine_Query $q = null)
   {
     $q = $this->getQuery($q);
     $q = $this->getDateRestrictionQuery($date, $q);
@@ -50,7 +50,7 @@ class PluginrtShopPromotionTable extends Doctrine_Table
    * @param Doctrine_Query $q An optional query object
    * @return Array            Found promotions
    */
-  public public function findNearlyAvailable($total, $date = null, Doctrine_Query $q = null)
+  public function findNearlyAvailable($total, $date = null, Doctrine_Query $q = null)
   {
     $q = $this->getQuery($q);
     $q = $this->getDateRestrictionQuery($date, $q);
