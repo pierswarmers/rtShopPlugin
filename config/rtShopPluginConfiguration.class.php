@@ -58,6 +58,11 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
     );
 
     $routing->prependRoute(
+      'rt_shop_stock_report_download',
+       new sfRoute('/rtShopProductAdmin/stockReport/stock_report.:sf_format', array('module' => 'rtShopProductAdmin', 'action' => 'stockReport'))
+    );
+
+    $routing->prependRoute(
       'rt_shop_promotion_product_correction',
        new sfRoute('/rtShopPromotionProductAdmin/:action/id/:id', array('module' => 'rtShopPromotionAdmin'))
     );
