@@ -17,19 +17,80 @@
  */
 class BasertShopProductAdminActions extends sfActions
 {
+  /**
+   * Create stock report
+   * 
+   * Formats are: web, csv, xml and json
+   *
+   * @param sfWebRequest $request
+   */
   public function executeStockReport(sfWebRequest $request)
   {
-    $this->stocks = Doctrine::getTable('rtShopStock')->findAll(Doctrine_Core::HYDRATE_ARRAY);
+    $q = Doctrine_Query::create()->from('rtShopStock s');
+    $q->select('p.title,
+                p.sku,
+                s.sku,
+                s.quantity,
+                s.id,
+                s.product_id,
+                s.price_retail,
+                s.price_promotion,
+                s.price_wholesale,
+                s.length,
+                s.width,
+                s.height,
+                s.weight')
+      ->leftJoin('s.rtShopProduct p')
+      ->andWhere('p.id = s.product_id')
+      ->orderBy('p.sku, s.sku');
+    $stocks = $q->execute(array(), Doctrine_Core::HYDRATE_SCALAR);
 
-//    $query = Doctrine::getTable('rtShopStock')->getQuery();
-//
-//    $query = new Doctrine_Query;
-//
-//    $query->leftJoin('s.rtShopProduct p');
-//
-//    $query->andWhere('p.id = s.product_id');
-//
-//    $this->stocks = $query->execute(array(), Doctrine_Core::HYDRATE_ARRAY);
+    $this->key_order = array('p_title','p_sku','s_sku','s_quantity','s_id','s_product_id','s_price_retail','s_price_promotion','s_price_wholesale','s_length','s_width','s_height','s_weight');
+    $this->stocks = array();
+    $i=0;
+    foreach($stocks as $stock)
+    {
+      foreach($this->key_order as $key => $value)
+      {
+        if($value === 'p_title')
+        {
+          $this->stocks[$i][$value] = preg_replace('/[\$,]/', '', $stock[$value]);
+        }
+        else
+        {
+          $this->stocks[$i][$value] = $stock[$value];
+        }
+      }
+      $i++;
+    }
+
+    // CSV header
+    if($this->getRequest()->getParameter('sf_format') === 'csv')
+    {
+      $response = $this->getResponse();
+      $response->setHttpHeader('Last-Modified', date('r'));
+      $response->setContentType("application/octet-stream");
+      $response->setHttpHeader('Cache-Control','no-store, no-cache');
+      if (strstr($_SERVER['HTTP_USER_AGENT'], "MSIE"))
+      {
+        $response->setHttpHeader('Content-Disposition','inline; filename="stock_report.csv"');
+      }
+      else
+      {
+        $response->setHttpHeader('Content-Disposition','attachment; filename="stock_report.csv"');
+      }
+      
+      $this->setLayout(false);
+    }
+
+    // Pager
+    $this->pager = new sfDoctrinePager(
+      'rtShopStock',
+      $this->getCountPerPage($request)
+    );
+    $this->pager->setQuery($q);
+    $this->pager->setPage($request->getParameter('page', 1));
+    $this->pager->init();
   }
 
   public function executeIndex(sfWebRequest $request)
