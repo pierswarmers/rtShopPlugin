@@ -29,7 +29,8 @@ class rtShopVoucherToolkit
     $code = md5(mt_rand().microtime());
     $code = substr($code, 0, $length);
     $code = strtoupper($code);
-    
+    $code = 'V'.substr($code, 0, -1);
+
     return $code;
   }
 
