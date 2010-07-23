@@ -169,7 +169,7 @@ class BasertShopVoucherAdminActions extends sfActions
       $this->redirect('rtShopVoucherAdmin/index');
     }
 
-    $fields = 'v.code,v.title,v.batch_reference,v.reduction_type,v.reduction_value,v.count,v.mode,v.total_from,v.total_to,v.date_from,v.date_to';
+    $fields = 'v.code,v.title,v.batch_reference,v.reduction_type,v.reduction_value,v.count,v.mode,v.total_from,v.total_to,v.date_from,v.date_to,v.created_at,v.updated_at';
     $fieldnames = preg_replace('/[\$.]/', '_', $fields);
     $this->key_order = explode(',', $fieldnames);
     $q = Doctrine_Query::create()
