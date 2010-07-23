@@ -15,7 +15,10 @@ abstract class PluginrtShopVoucherForm extends BasertShopVoucherForm
     parent::setup();
 
     unset(
-      $this['type']
+      $this['type'],
+      $this['batch_reference'],
+      $this['created_at'],
+      $this['updated_at']
     );
 
     $this->setWidget('mode', new sfWidgetFormChoice(array('choices' => array('Single' => 'Single user voucher', 'Group' => 'Group / multi-user voucher'))));
