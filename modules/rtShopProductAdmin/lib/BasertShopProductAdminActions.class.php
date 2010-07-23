@@ -86,11 +86,22 @@ class BasertShopProductAdminActions extends sfActions
     // Pager
     $this->pager = new sfDoctrinePager(
       'rtShopStock',
-      $this->getCountPerPage($request)
+      $this->getReportCountPerPage($request)
     );
     $this->pager->setQuery($q);
     $this->pager->setPage($request->getParameter('page', 1));
     $this->pager->init();
+  }
+
+  private function getReportCountPerPage(sfWebRequest $request)
+  {
+    $count = sfConfig::get('app_rt_admin_report_pagination_limit', 200);
+    if($request->hasParameter('show_more'))
+    {
+      $count = sfConfig::get('app_rt_admin_pagination_per_page_multiple', 2) * $count;
+    }
+
+    return $count;
   }
 
   public function executeIndex(sfWebRequest $request)

@@ -1,4 +1,4 @@
-<?php use_helper('I18N', 'rtAdmin') ?>
+<?php use_helper('I18N', 'rtAdmin', 'Number') ?>
 
 <h1><?php echo __('Stock Report') ?></h1>
 
@@ -36,15 +36,15 @@
 <table>
   <thead>
     <tr>
-      <th><?php echo __('Product title') ?></th>
-      <th><?php echo __('Product sku') ?></th>
-      <th><?php echo __('Stock sku') ?></th>
+      <th><?php echo __('Product Title') ?></th>
+      <th><?php echo __('Product SKU') ?></th>
+      <th><?php echo __('Stock SKU') ?></th>
       <th><?php echo __('Quantity') ?></th>
       <th><?php echo __('Stock Id') ?></th>
       <th><?php echo __('Product Id') ?></th>
-      <th><?php echo __('Price retail') ?></th>
-      <th><?php echo __('Price promotion') ?></th>
-      <th><?php echo __('Price wholesale') ?></th>
+      <th><?php echo __('Price Retail') ?></th>
+      <th><?php echo __('Price Promotion') ?></th>
+      <th><?php echo __('Price Wholesale') ?></th>
       <th><?php echo __('Length') ?></th>
       <th><?php echo __('Width') ?></th>
       <th><?php echo __('Height') ?></th>
@@ -54,9 +54,19 @@
   <tbody>
     <?php foreach($stocks as $stock): ?>
       <tr>
-        <?php foreach($keys as $key => $value): ?>
-          <td><?php echo ($value == 'p_sku' || $value == 's_sku') ? '<code>' : ''; ?><?php echo $stock[$value] ?><?php echo ($value == 'p_sku' || $value == 's_sku') ? '</code>' : ''; ?></td>
-        <?php endforeach; ?>
+        <td><?php echo $stock['p_title'] ?></td>
+        <td><code><?php echo $stock['p_sku'] ?></code></td>
+        <td><code><?php echo link_to($stock['s_sku'],'rtShopProductAdmin/stock?id='.$stock['s_product_id']) ?></code></td>
+        <td><?php echo $stock['s_quantity'] ?></td>
+        <td><?php echo $stock['s_id'] ?></td>
+        <td><?php echo $stock['s_product_id'] ?></td>
+        <td><?php echo format_currency($stock['s_price_retail'], sfConfig::get('app_rt_currency', 'AUD')) ?></td>
+        <td><?php echo format_currency($stock['s_price_promotion'], sfConfig::get('app_rt_currency', 'AUD')) ?></td>
+        <td><?php echo format_currency($stock['s_price_wholesale'], sfConfig::get('app_rt_currency', 'AUD')) ?></td>
+        <td><?php echo $stock['s_length'] ?></td>
+        <td><?php echo $stock['s_width'] ?></td>
+        <td><?php echo $stock['s_height'] ?></td>
+        <td><?php echo $stock['s_weight'] ?></td>
       </tr>
     <?php endforeach; ?>
   </tbody>
