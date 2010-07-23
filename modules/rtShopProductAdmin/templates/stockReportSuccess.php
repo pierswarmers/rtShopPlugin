@@ -58,7 +58,7 @@
       <tr>
         <td><?php echo $stock['p_title'] ?></td>
         <td><code><?php echo $stock['p_sku'] ?></code></td>
-        <td><code><?php echo link_to($stock['s_sku'],'rtShopProductAdmin/stock?id='.$stock['s_product_id']) ?></code></td>
+        <td><code><?php echo link_to($stock['s_sku'] === '' ? 'N/A' : $stock['s_sku'],'rtShopProductAdmin/stock?id='.$stock['s_product_id']) ?></code></td>
         <td><?php echo $stock['s_quantity'] ?></td>
         <td><?php echo $stock['s_id'] ?></td>
         <td><?php echo $stock['s_product_id'] ?></td>
