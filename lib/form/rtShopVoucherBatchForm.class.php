@@ -25,5 +25,6 @@ class rtShopVoucherBatchForm extends BasertShopVoucherForm
     $this->setDefault('batchsize', 1);
     $this->widgetSchema->setLabel('batchsize',"Batch size");
     $this->widgetSchema->setHelp('batchsize', 'The total number of unique vouchers to be created.');
+    $this->setDefault('mode', 'Single');
   }
 }
