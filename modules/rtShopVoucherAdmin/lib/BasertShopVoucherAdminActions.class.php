@@ -158,59 +158,125 @@ class BasertShopVoucherAdminActions extends sfActions
   }
 
   /**
-   * Create CSV file based on batch reference
-   *
-   * @param sfWebRequest $request
-   * @return void
+   * Create batch reports as CSV, XML and JSON formats
+   * 
+   * @param sfWebRequest $request 
    */
-  public function executeBatchDownload(sfWebRequest $request)
+  public function executeBatchReport(sfWebRequest $request)
   {
     if(!$request->hasParameter('id'))
     {
       $this->redirect('rtShopVoucherAdmin/index');
     }
 
+    $fields = 'v.code,v.title,v.batch_reference,v.reduction_type,v.reduction_value,v.count,v.mode,v.total_from,v.total_to,v.date_from,v.date_to';
+    $fieldnames = preg_replace('/[\$.]/', '_', $fields);
+    $this->key_order = explode(',', $fieldnames);
     $q = Doctrine_Query::create()
-            ->select('v.code')
+            ->select($fields)
             ->from('rtShopVoucher v')
-            ->addWhere('v.batch_reference = ?', $request->getParameter('id'));
-    $vouchers = $q->fetchArray();
+            ->addWhere('v.batch_reference = ?', $request->getParameter('id'))
+            ->orderBy('v.count ASC');
+    $vouchers = $q->execute(array(), Doctrine_Core::HYDRATE_SCALAR);
 
-    if(!$vouchers)
+    $this->vouchers = array();
+    $i=0;
+    foreach($vouchers as $voucher)
+    {
+      foreach($this->key_order as $key => $value)
+      {
+        if($value === 'v_title')
+        {
+          $this->vouchers[$i][$value] = preg_replace('/[^a-zA-Z0-9_ - . $]/s', '', $voucher[$value]);
+        }
+        else
+        {
+          $this->vouchers[$i][$value] = $voucher[$value];
+        }
+      }
+      $i++;
+    }
+
+    if(!$this->vouchers)
     {
       $this->getUser()->setFlash('error','No vouchers with this reference found.');
       $this->redirect('rtShopVoucherAdmin/index');
     }
 
-    $list = array();
-    foreach($vouchers as $key => $value)
+    // CSV header
+    if($this->getRequest()->getParameter('sf_format') === 'csv')
     {
-      $list[] = $value['code'];
-    }
+      $response = $this->getResponse();
+      $response->setHttpHeader('Last-Modified', date('r'));
+      $response->setContentType("application/octet-stream");
+      $response->setHttpHeader('Cache-Control','no-store, no-cache');
+      if (strstr($_SERVER['HTTP_USER_AGENT'], "MSIE"))
+      {
+        $response->setHttpHeader('Content-Disposition','inline; filename="batch_report.csv"');
+      }
+      else
+      {
+        $response->setHttpHeader('Content-Disposition','attachment; filename="batch_report.csv"');
+      }
 
-    $this->list = $list;
-
-    $reference = $request->getParameter('id');
-    sfConfig::set('sf_web_debug', false);
-    $response = $this->getResponse();
-    $response->setHttpHeader('Last-Modified', date('r'));
-    //$response->setContentType("text/csv");
-    $response->setContentType("application/octet-stream");
-    $response->setHttpHeader('Content-Length', strlen(implode("\r\n", $list)));
-    $response->setHttpHeader('Cache-Control','no-store, no-cache');
-    if (strstr($_SERVER['HTTP_USER_AGENT'], "MSIE"))
-    {
-      $response->setHttpHeader('Content-Disposition','inline; filename="'.$reference.'.csv"');
+      $this->setLayout(false);
     }
-    else
-    {
-      $response->setHttpHeader('Content-Disposition','attachment; filename="'.$reference.'.csv"');
-    }
-    $response->setContent(implode("\r\n", $list));
-
-    $this->setLayout(false);
-    return sfView::NONE;
   }
+
+  /**
+   * Create CSV file based on batch reference
+   *
+   * @param sfWebRequest $request
+   * @return void
+   */
+//  public function executeBatchDownload(sfWebRequest $request)
+//  {
+//    if(!$request->hasParameter('id'))
+//    {
+//      $this->redirect('rtShopVoucherAdmin/index');
+//    }
+//
+//    $q = Doctrine_Query::create()
+//            ->select('v.code')
+//            ->from('rtShopVoucher v')
+//            ->addWhere('v.batch_reference = ?', $request->getParameter('id'));
+//    $vouchers = $q->fetchArray();
+//
+//    if(!$vouchers)
+//    {
+//      $this->getUser()->setFlash('error','No vouchers with this reference found.');
+//      $this->redirect('rtShopVoucherAdmin/index');
+//    }
+//
+//    $list = array();
+//    foreach($vouchers as $key => $value)
+//    {
+//      $list[] = $value['code'];
+//    }
+//
+//    $this->list = $list;
+//
+//    $reference = $request->getParameter('id');
+//    sfConfig::set('sf_web_debug', false);
+//    $response = $this->getResponse();
+//    $response->setHttpHeader('Last-Modified', date('r'));
+//    //$response->setContentType("text/csv");
+//    $response->setContentType("application/octet-stream");
+//    $response->setHttpHeader('Content-Length', strlen(implode("\r\n", $list)));
+//    $response->setHttpHeader('Cache-Control','no-store, no-cache');
+//    if (strstr($_SERVER['HTTP_USER_AGENT'], "MSIE"))
+//    {
+//      $response->setHttpHeader('Content-Disposition','inline; filename="'.$reference.'.csv"');
+//    }
+//    else
+//    {
+//      $response->setHttpHeader('Content-Disposition','attachment; filename="'.$reference.'.csv"');
+//    }
+//    $response->setContent(implode("\r\n", $list));
+//
+//    $this->setLayout(false);
+//    return sfView::NONE;
+//  }
 
   /**
    * Process batch create form
