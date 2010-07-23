@@ -3,8 +3,24 @@
 <h1><?php echo __('Listing Products') ?></h1>
 
 <?php slot('rt-tools') ?>
-<?php include_partial('rtAdmin/standard_modal_tools', array('object' => new rtShopProduct))?>
+<ul id="rtPrimaryTools">
+  <li><button class="create"><?php echo __('Create new product') ?></button></li>
+  <li><button class="reports"><?php echo __('View stock report') ?></button></li>
+</ul>
+<script type="text/javascript">
+	$(function() {
+    $("#rtPrimaryTools .create").button({
+      icons: { primary: 'ui-icon-transfer-e-w' }
+    }).click(function(){ document.location.href='<?php echo url_for('rtShopProductAdmin/new') ?>'; });
+
+    $("#rtPrimaryTools .reports").button({
+      icons: { primary: 'ui-icon-transfer-e-w' }
+    }).click(function(){ document.location.href='<?php echo url_for('rtShopProductAdmin/stockReport') ?>'; });
+	});
+</script>
 <?php end_slot(); ?>
+
+
 
 <?php include_partial('rtAdmin/flashes') ?>
 

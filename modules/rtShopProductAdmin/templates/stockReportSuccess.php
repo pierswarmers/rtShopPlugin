@@ -4,9 +4,11 @@
 
 <?php slot('rt-tools') ?>
 <ul id="rtPrimaryTools">
-  <li><button class="download-csv"><?php echo __('Download batch as CSV') ?></button></li>
-  <li><button class="download-xml"><?php echo __('Download batch as XML') ?></button></li>
-  <li><button class="download-json"><?php echo __('Download batch as JSON') ?></button></li>
+  <li class="button-group">
+    <button class="download-csv"><?php echo __('Download CSV') ?></button>
+    <button class="download-xml"><?php echo __('XML') ?></button>
+    <button class="download-json"><?php echo __('JSON') ?></button>
+  </li>
   <li><button class="cancel"><?php echo __('Cancel/List') ?></button></li>
 </ul>
 <script type="text/javascript">
@@ -16,16 +18,16 @@
     }).click(function(){ document.location.href='<?php echo url_for('@rt_shop_stock_report_download?sf_format=csv') ?>'; });
 
     $("#rtPrimaryTools .download-xml").button({
-      icons: { primary: 'ui-icon-transfer-e-w' }
     }).click(function(){ document.location.href='<?php echo url_for('@rt_shop_stock_report_download?sf_format=xml') ?>'; });
 
     $("#rtPrimaryTools .download-json").button({
-      icons: { primary: 'ui-icon-transfer-e-w' }
     }).click(function(){ document.location.href='<?php echo url_for('@rt_shop_stock_report_download?sf_format=json') ?>'; });
 
     $("#rtPrimaryTools .cancel").button({
       icons: { primary: 'ui-icon-cancel' }
     }).click(function(){ document.location.href='<?php echo url_for('rtShopProductAdmin/index') ?>'; });
+
+    $('.button-group').buttonset();
 
 	});
 </script>
