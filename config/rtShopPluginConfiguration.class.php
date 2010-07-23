@@ -53,8 +53,8 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
     );
 
     $routing->prependRoute(
-      'rt_shop_vouchure_download',
-       new sfRoute('/rtShopVoucherAdmin/download/:id.:sf_format', array('module' => 'rtShopVoucherAdmin', 'action' => 'BatchDownload'))
+      'rt_shop_voucher_report_download',
+       new sfRoute('/rtShopVoucherAdmin/voucherReport/voucher_report.:sf_format', array('module' => 'rtShopVoucherAdmin', 'action' => 'batchReport'))
     );
 
     $routing->prependRoute(
