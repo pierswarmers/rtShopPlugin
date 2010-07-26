@@ -76,6 +76,44 @@ class BasertShopOrderAdminActions extends sfActions
     $this->form = new rtShopOrderForm($rt_shop_order);
   }
 
+  /**
+   * Create order report as XML format
+   *
+   * @param sfWebRequest $request
+   */
+  public function executeOrderReport(sfWebRequest $request)
+  {
+    $q = Doctrine_Query::create()->from('rtShopOrder o');
+    $q->select('o.*');
+    if($request->hasParameter('from') && $request->hasParameter('to'))
+    {
+      $q->andWhere('o.created_at >= ?', $request->getParameter('from'));
+      $q->andWhere('o.created_at <= ?', $request->getParameter('to'));
+    }
+    $q->andWhere('o.status = ?', rtShopOrder::STATUS_PAID);
+    $q->orderBy('o.created_at');
+    $this->orders = $q->execute(array(), Doctrine_Core::HYDRATE_SCALAR);
+
+    // Pager
+    $this->pager = new sfDoctrinePager(
+      'rtShopOrder',
+      $this->getCountPerPage($request)
+    );
+    $this->pager->setQuery($q);
+    $this->pager->setPage($request->getParameter('page', 1));
+    $this->pager->init();
+  }
+
+  /**
+   * Create order report schema file (XSD)
+   *
+   * @param sfWebRequest $request
+   */
+  public function executeOrderXsd(sfWebRequest $request)
+  {
+
+  }
+
   public function executeUpdate(sfWebRequest $request)
   {
     $this->forward404Unless($request->isMethod(sfRequest::POST) || $request->isMethod(sfRequest::PUT));
