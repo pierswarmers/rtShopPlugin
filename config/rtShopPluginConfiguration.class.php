@@ -63,6 +63,16 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
     );
 
     $routing->prependRoute(
+      'rt_shop_order_report_download',
+       new sfRoute('/rtShopOrderAdmin/orderReport/order_report.:sf_format', array('module' => 'rtShopOrderAdmin', 'action' => 'orderReport'))
+    );
+
+    $routing->prependRoute(
+      'rt_shop_order_xsd_download',
+       new sfRoute('/rtShopOrderAdmin/orderReport/order_xsd.:sf_format', array('module' => 'rtShopOrderAdmin', 'action' => 'orderXsd'))
+    );
+
+    $routing->prependRoute(
       'rt_shop_promotion_product_correction',
        new sfRoute('/rtShopPromotionProductAdmin/:action/id/:id', array('module' => 'rtShopPromotionAdmin'))
     );
@@ -85,6 +95,5 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
     $routing->prependRoute('rt_shop_order_update', new sfRoute('/order/update', array('module' => 'rtShopOrder', 'action' => 'update')));
     $routing->prependRoute('rt_shop_order_stock_delete', new sfRoute('/order/delete-stock', array('module' => 'rtShopOrder', 'action' => 'deleteStock', 'act' => 'cart')));
     $routing->prependRoute('rt_shop_order_receipt', new sfRoute('/order/receipt', array('module' => 'rtShopOrder', 'action' => 'receipt')));
-    //$routing->prependRoute('rt_shop_order_invoice', new sfRoute('/order/invoice', array('module' => 'rtShopOrder', 'action' => 'invoice')));
   }
 }
