@@ -98,6 +98,66 @@ class BasertShopOrderAdminActions extends sfActions
     $this->redirect('rtShopOrderAdmin/index');
   }
 
+  private function getGraphOrderSummary($month)
+  {
+    $query = Doctrine::getTable('rtShopOrder')->getQuery();
+
+    $query->select('day(o.created_at), month(o.created_at), count(o.id), sum(o.total_charge)')
+          ->andWhere('o.status = ?', rtShopOrder::STATUS_PAID)
+          ->andWhere('MONTH(o.created_at) = ?', $month)
+          ->groupBy('DAY(o.created_at)');
+
+    $raw_data = $query->execute(array(), Doctrine_Core::HYDRATE_SCALAR);
+
+    $data = array();
+
+    // form better keys
+    foreach($raw_data as $item)
+    {
+      $data[$item['o_month'].'-'.$item['o_day']] = $item;
+    }
+
+    $raw_data = $data;
+    $data = array();
+    
+    for($i=1; $i<=31; $i++)
+    {
+      if(date('n') == $month && date('j') < $i)
+      {
+        continue;
+      }
+      $key = $month.'-'.$i;
+
+      if(!isset($raw_data[$key]))
+      {
+        $data[$key]['o_count'] = 0;
+        $data[$key]['o_sum'] = 0;
+        $data[$key]['o_day'] = $i;
+        $data[$key]['o_month'] = $month;
+      }
+      else
+      {
+        $data[$key] = $raw_data[$key];
+      }
+    }
+
+    return $data;
+  }
+
+  public function executeGraph(sfWebRequest $request)
+  {
+    $span_back_in_months = 3;
+
+    $orders_by_month = array();
+
+    $orders_by_month[] = $this->getGraphOrderSummary(date('n'));
+    $orders_by_month[] = $this->getGraphOrderSummary(date('n') - 1);
+    $orders_by_month[] = $this->getGraphOrderSummary(date('n') - 2);
+    $orders_by_month[] = $this->getGraphOrderSummary(date('n') - 3);
+
+    $this->orders_by_month = $orders_by_month;
+  }
+
   protected function processForm(sfWebRequest $request, sfForm $form)
   {
     $form->bind($request->getParameter($form->getName()), $request->getFiles($form->getName()));
