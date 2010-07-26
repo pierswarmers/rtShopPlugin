@@ -1,6 +1,6 @@
 <?php $orders = $sf_data->getRaw('orders') ?>
 <?xml version="1.0"?>
-<orderReport xmlns="http://www.reditype.com" xmlns:xsi="<?php echo url_for('@rt_shop_order_xsd_download?sf_format=xml',true) ?>" xsi:schemaLocation="http://www.reditype.com orderXsd.xml" elementFormDefault="qualified">
+<orderReport xmlns="http://www.reditype.com">
   <?php foreach($orders as $order): ?>
     <order>
       <id><?php echo $order['o_id'] ?></id>

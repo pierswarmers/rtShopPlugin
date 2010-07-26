@@ -104,12 +104,6 @@ class BasertShopOrderAdminActions extends sfActions
     $this->pager->init();
   }
 
-  public function executeValidateXml(sfWebRequest $request)
-  {
-    $xml = file_get_contents('http://localhost:9092/frontend_dev.php/rtShopOrderAdmin/orderReport/order_report.xml');
-    exit;
-  }
-
   /**
    * Create order report schema file (XSD)
    *
