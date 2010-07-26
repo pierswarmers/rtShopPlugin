@@ -54,7 +54,7 @@
     </tr>
   </thead>
   <tbody>
-    <?php foreach($stocks as $stock): ?>
+    <?php foreach($pager->getResults() as $stock): ?>
       <tr>
         <td><?php echo $stock['p_title'] ?></td>
         <td><code><?php echo $stock['p_sku'] ?></code></td>
