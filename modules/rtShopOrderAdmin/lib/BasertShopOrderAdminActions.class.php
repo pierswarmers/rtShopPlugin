@@ -83,8 +83,15 @@ class BasertShopOrderAdminActions extends sfActions
    */
   public function executeOrderReport(sfWebRequest $request)
   {
+    $fields = 'o.reference,o.status,o.id,o.is_wholesale,o.email_address,o.user_id,o.shipping_charge,o.tax_charge,o.tax_component,o.tax_mode,o.tax_rate,o.promotion_reduction,o.promotion_id,o.voucher_reduction,o.voucher_id,o.voucher_code,o.items_charge,o.total_charge,o.payment_transaction_id,o.payment_type,o.payment_charge,o.created_at,o.updated_at';
+    if($this->getRequest()->getParameter('sf_format') != 'csv')
+    {
+      $fields .= ',o.promotion_data,o.voucher_data,o.products_data,o.payment_data';
+    }
+    $fieldnames = preg_replace('/[\$.]/', '_', $fields);
+    $this->key_order = explode(',', $fieldnames);
     $q = Doctrine_Query::create()->from('rtShopOrder o');
-    $q->select('o.*');
+    $q->select($fields);
     if($request->hasParameter('from') && $request->hasParameter('to'))
     {
       $q->andWhere('o.created_at >= ?', $request->getParameter('from'));
@@ -93,6 +100,25 @@ class BasertShopOrderAdminActions extends sfActions
     $q->andWhere('o.status = ?', rtShopOrder::STATUS_PAID);
     $q->orderBy('o.created_at');
     $this->orders = $q->execute(array(), Doctrine_Core::HYDRATE_SCALAR);
+
+    // CSV header
+    if($this->getRequest()->getParameter('sf_format') === 'csv')
+    {
+      $response = $this->getResponse();
+      $response->setHttpHeader('Last-Modified', date('r'));
+      $response->setContentType("application/octet-stream");
+      $response->setHttpHeader('Cache-Control','no-store, no-cache');
+      if (strstr($_SERVER['HTTP_USER_AGENT'], "MSIE"))
+      {
+        $response->setHttpHeader('Content-Disposition','inline; filename="order_report.csv"');
+      }
+      else
+      {
+        $response->setHttpHeader('Content-Disposition','attachment; filename="order_report.csv"');
+      }
+
+      $this->setLayout(false);
+    }
 
     // Pager
     $this->pager = new sfDoctrinePager(

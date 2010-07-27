@@ -5,15 +5,23 @@
 <?php slot('rt-tools') ?>
 <ul id="rtPrimaryTools">
   <li class="button-group">
-    <button class="download-xml"><?php echo __('Download XML') ?></button>
+    <button class="download-csv"><?php echo __('Download CSV') ?></button>
+    <button class="download-xml"><?php echo __('XML') ?></button>
+    <button class="download-json"><?php echo __('JSON') ?></button>
   </li>
   <li><button class="cancel"><?php echo __('Cancel/List') ?></button></li>
 </ul>
 <script type="text/javascript">
 	$(function() {
-    $("#rtPrimaryTools .download-xml").button({
+    $("#rtPrimaryTools .download-csv").button({
       icons: { primary: 'ui-icon-transfer-e-w' }
+    }).click(function(){ document.location.href='<?php echo url_for('@rt_shop_order_report_download?sf_format=csv') ?>'; });
+
+    $("#rtPrimaryTools .download-xml").button({
     }).click(function(){ document.location.href='<?php echo url_for('@rt_shop_order_report_download?sf_format=xml') ?>'; });
+
+    $("#rtPrimaryTools .download-json").button({
+    }).click(function(){ document.location.href='<?php echo url_for('@rt_shop_order_report_download?sf_format=json') ?>'; });
 
     $("#rtPrimaryTools .cancel").button({
       icons: { primary: 'ui-icon-cancel' }
@@ -55,7 +63,7 @@
   <tbody>
     <?php foreach($pager->getResults() as $order): ?>
       <tr>
-        <td><code><?php echo $order['o_reference'] ?></code></td>
+        <td><code><?php echo link_to($order['o_reference'],'@rt_shop_order_show?id='.$order['o_id']) ?></code></td>
         <td><?php echo strtoupper($order['o_status']) ?></td>
         <td><?php echo format_currency($order['o_items_charge'], 'AUD') ?></td>
         <td><?php echo format_currency($order['o_shipping_charge'], 'AUD') ?></td>
