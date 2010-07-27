@@ -16,7 +16,7 @@
 </script>
 <?php end_slot(); ?>
 
-<h1><?php echo __('Quartely - Sales Analysis') ?></h1>
+<h1><?php echo __('Quarterly - Sales Analysis') ?></h1>
 
 <script type="text/javascript" charset="utf-8">
     window.onload = function () {
@@ -83,7 +83,7 @@
     };
 </script>
 
-<h2><?php echo __('Total Actual Income Recieved - Quartery Summary') ?></h2>
+<h2><?php echo __('Total Actual Income Received - Quartery Summary') ?></h2>
 
 <div id="graph-income-total" class="rt-graph-holder" style="height:300px; width: 780px"></div>
 
