@@ -3,6 +3,19 @@
 <?php use_javascript('/rtCorePlugin/vendor/raphael/g.line.min.js') ?>
 <?php use_helper('I18N', 'rtAdmin') ?>
 
+<?php slot('rt-tools') ?>
+<ul id="rtPrimaryTools">
+  <li><button class="cancel"><?php echo __('Cancel/List') ?></button></li>
+</ul>
+<script type="text/javascript">
+	$(function() {
+    $("#rtPrimaryTools .cancel").button({
+      icons: { primary: 'ui-icon-cancel' }
+    }).click(function(){ document.location.href='<?php echo url_for('rtShopOrderAdmin/index') ?>'; });
+	});
+</script>
+<?php end_slot(); ?>
+
 <h1><?php echo __('Quartely - Sales Analysis') ?></h1>
 
 <script type="text/javascript" charset="utf-8">
