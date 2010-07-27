@@ -96,8 +96,6 @@
       <items_charge><?php echo $order['o_items_charge'] ?></items_charge>
       <total_charge><?php echo $order['o_total_charge'] ?></total_charge>
       <payment></payment>
-      <notes_user><?php echo $order['o_notes_user'] ?></notes_user>
-      <notes_admin><?php echo $order['o_notes_admin'] ?></notes_admin>
       <created_at><?php echo $order['o_items_charge'] ?></created_at>
       <updated_at><?php echo $order['o_total_charge'] ?></updated_at>
     </order>
