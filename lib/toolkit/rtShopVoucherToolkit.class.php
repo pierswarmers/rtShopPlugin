@@ -128,6 +128,17 @@ class rtShopVoucherToolkit
     
     $values = array();
     $columns = array('date_from','date_to','reduction_type','reduction_value','title','type','batch_reference','count','mode','total_from','total_to','created_at','updated_at','code');
+
+    // Add total_from, total_to fields only if set
+    if($voucher['total_from'] == '' || $voucher['total_from'] == NULL)
+    {
+      unset($columns[9]);
+    }
+    if($voucher['total_to'] == '' || $voucher['total_to'] == NULL)
+    {
+      unset($columns[10]);
+    }
+
     foreach($columns as $key => $colname)
     {
       if(!array_key_exists($colname, $voucher) && !array_key_exists($colname, array('created_at' => null, 'updated_at' => null)))
@@ -140,6 +151,16 @@ class rtShopVoucherToolkit
       }
     }
     $rows = array($voucher['date_from'],$voucher['date_to'],$voucher['reduction_type'],$voucher['reduction_value'],$voucher['title'],$voucher['type'],$voucher['batch_reference'],$voucher['count'],$voucher['mode'],$voucher['total_from'],$voucher['total_to'],date('Y-m-d H:i:s'),date('Y-m-d H:i:s'));
+
+    // Add total_from, total_to fields only if set
+    if($voucher['total_from'] == '' || $voucher['total_from'] == NULL)
+    {
+      unset($rows[9]);
+    }
+    if($voucher['total_to'] == '' || $voucher['total_to'] == NULL)
+    {
+      unset($rows[10]);
+    }
 
     // How many main loops
     // (e.g 25 / 10 = 2.5)
