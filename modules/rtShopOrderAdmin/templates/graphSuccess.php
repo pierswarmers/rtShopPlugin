@@ -16,7 +16,7 @@
 </script>
 <?php end_slot(); ?>
 
-<h1><?php echo __('Quarterly - Sales Analysis') ?></h1>
+<h1><?php echo __('Quarterly Summary - Sales Order Analysis') ?></h1>
 
 <script type="text/javascript" charset="utf-8">
     window.onload = function () {
@@ -39,7 +39,7 @@
 //        lines[0][0].attr({stroke: "#CCC"});
 
         r.g.text(330, 270, "<?php echo __('Day') ?>").attr({"font-weight": "bold", "font-size": "12px"});
-        r.g.text(20, 130, "<?php echo __('Total Income') ?>").attr({"font-weight": "bold", "font-size": "12px", rotation: 270});
+        r.g.text(20, 130, "<?php echo __('Total Income') . ' (' . sfConfig::get('app_rt_currency', 'AUD') . ')' ?>").attr({"font-weight": "bold", "font-size": "12px", rotation: 270});
 
 
         var l1 = r.path("M675 190L685 190").attr({"stroke-width": 3, stroke: "#1751A7"});
@@ -58,6 +58,7 @@
         // Graph 2.
 
         var r2 = Raphael("graph-order-count");
+        r2.g.txtattr.font = "10px 'Fontin Sans', Fontin-Sans, sans-serif";
         var lines2 = r2.g.linechart(50, 0, 620, 250,
         [<?php $comma_0=''; foreach($orders_by_month as $month): ?><?php echo $comma_0 ?>[<?php $comma_1=''; foreach($month as $data): ?><?php echo $comma_1 ?><?php echo $data['o_day'] ?><?php $comma_1=', '; endforeach; ?>]<?php $comma_0=', '; endforeach; ?>],
         [<?php $comma_0=''; foreach($orders_by_month as $month): ?><?php echo $comma_0 ?>[<?php $comma_1=''; foreach($month as $data): ?><?php echo $comma_1 ?><?php echo $data['o_count'] ?><?php $comma_1=', '; endforeach; ?>]<?php $comma_0=', '; endforeach; ?>],
@@ -83,10 +84,10 @@
     };
 </script>
 
-<h2><?php echo __('Total Actual Income Received - Quartery Summary') ?></h2>
+<h2><?php echo __('Total Actual Income Received Per Day') ?></h2>
 
 <div id="graph-income-total" class="rt-graph-holder" style="height:300px; width: 780px"></div>
 
-<h2><?php echo __('Total Orders - Quartery Summary') ?></h2>
+<h2><?php echo __('Total Orders Recieved Per Day') ?></h2>
 
 <div id="graph-order-count" class="rt-graph-holder" style="height:300px; width: 780px"></div>
