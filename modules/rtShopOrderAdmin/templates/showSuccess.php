@@ -1,6 +1,6 @@
 <?php use_helper('I18N', 'Number', 'rtAdmin') ?>
 
-<h1><?php echo __('Show Shop Order') ?></h1>
+<h1><?php echo __('Order Invoice') ?></h1>
 
 <?php slot('rt-tools') ?>
 <ul id="rtPrimaryTools">
