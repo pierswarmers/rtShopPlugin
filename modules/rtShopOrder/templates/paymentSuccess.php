@@ -59,7 +59,7 @@
           <?php endif; ?>
 
           <tr class="rt-shop-cart-voucher" <?php echo ($rt_shop_cart_manager->getVoucherReduction() > 0) ? "" : "style=\"display:none\""; ?>>
-            <th colspan="4"><?php echo __('Voucher') ?> (<span class="rt-shop-voucher-title"><?php echo ($rt_shop_cart_manager->getVoucher() != false) ? $rt_shop_cart_manager->getVoucher()->getRawValue()->get(0)->getTitle() : ""; ?></span>):</th>
+            <th colspan="4"><?php echo __('Voucher') ?> (<span class="rt-shop-voucher-title"><?php echo ($rt_shop_cart_manager->getVoucher() != false) ? $rt_shop_cart_manager->getVoucher()->getTitle() : ""; ?></span>):</th>
             <td>-<span class="rt-shop-voucher-reduction"><?php echo format_currency($rt_shop_cart_manager->getVoucherReduction(), sfConfig::get('app_rt_currency', 'AUD')); ?></span></td>
           </tr>
 
@@ -132,7 +132,7 @@
 
       <span class="rt-shop-payment-creditcard" style="display:block">
         <?php if($rt_shop_cart_manager->getTotalCharge() > 0): ?>
-          <h2><?php echo __('Creditcard Details') ?></h2>
+          <h2><?php echo __('Credit Card Details') ?></h2>
           <table>
             <tbody>
               <?php echo $form_cc ?>
