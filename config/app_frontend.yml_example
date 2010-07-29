@@ -1,7 +1,19 @@
 # default values
 all:
   #rt:
-    #company_address: |
+    #title: digital Wranglers
+    #template_dir: ""
+
+    # Time / Date
+    # See: http://php.net/manual/en/timezones.php
+    #default_timezone: Australia/Sydney
+
+    # Multi-Site
+    #enable_multi_site: false
+
+    #blog_max_per_page:                   2
+    #blog_per_page_multiple:              2
+    #address: |
       #Company name
       #Number Streetname, Town
       #City, Country
@@ -37,8 +49,9 @@ all:
       #processing:            processing
       #backordered:           backordered
       #paid:                  paid
-    #shop_birthday_voucher_type:          dollarOff               # Either 'percentageOff' or 'dollarOff'
-    #shop_birthday_voucher_value:         10                      # Voucher reduction value (e.g 10 = $10)
+    #shop_birthday_voucher:
+      #reduction_type:                  dollarOff               # Either 'percentageOff' or 'dollarOff'
+      #reduction_value:                 10                      # Voucher reduction value (e.g 10 = $10)
 
     #snippets:
       #Homepage:
