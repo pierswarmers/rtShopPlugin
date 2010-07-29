@@ -1,5 +1,5 @@
 <?php use_helper('I18N') ?>
-<?php echo __('Hi') . ' ' . $user->getFirstName() ?>,
+<?php echo __('Hi') . ' ' . $user['first_name'] ?>,
 
 <?php echo __('Happy Birthday!!') ?>
 

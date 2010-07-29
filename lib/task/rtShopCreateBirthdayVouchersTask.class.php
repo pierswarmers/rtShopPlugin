@@ -18,11 +18,7 @@
 class rtShopCreateBirthdayVouchersTask extends sfDoctrineBaseTask
 {
   private $_debug_verbose = true;
-  private $_birthday_vouchers = 0;
-  private $_formatted_value = '';
   private $_batch_reference = '';
-  private $_range_from;
-  private $_range_to;
 
   /**
    * Configure
@@ -31,8 +27,8 @@ class rtShopCreateBirthdayVouchersTask extends sfDoctrineBaseTask
   protected function configure()
   {
     $this->addArguments(array(
-      new sfCommandArgument('day', sfCommandArgument::REQUIRED, 'Startdate of birthday range for which vouchers have to be generated'),
-      new sfCommandArgument('month', sfCommandArgument::REQUIRED, 'Enddate of birthday range for which vouchers have to be generated'),
+      new sfCommandArgument('day', sfCommandArgument::OPTIONAL, 'Startdate of birthday range for which vouchers have to be generated'),
+      new sfCommandArgument('month', sfCommandArgument::OPTIONAL, 'Enddate of birthday range for which vouchers have to be generated'),
     ));
 
     $this->addOptions(array(
@@ -51,16 +47,15 @@ Configure in app.yml:
 
 all:
   rt:
-    shop_birthday_voucher_type:    dollarOff   # Either 'percentageOff' or 'dollarOff'
-    shop_birthday_voucher_value:   10          # Voucher reduction value (e.g 10 = $10)
+    shop_birthday_voucher:
+      reduction_type:                  dollarOff               # Either 'percentageOff' or 'dollarOff'
+      reduction_value:                 10                      # Voucher reduction value (e.g 10 = $10)
 
 To generate vouchers for a specific birthday use:
 
-[./symfony rt:shop-create-birthday-vouchers yyyy-mm-dd]
+[./symfony rt:shop-create-birthday-vouchers day month]
 
-To generate vouchers for a range of birthdays use:
-
-[./symfony rt:shop-create-birthday-vouchers yyyy-mm-dd yyyy-mm-dd]
+Note: If [day] and [month] is not specified than the current date is used!
 
 Vouchers are then generated and an email sent to the users with the birthdays specified.
 Another email is sent to the shop administrator with the details of the created vouchers.
@@ -80,11 +75,15 @@ EOF;
     $configuration->loadHelpers('Partial');
     $this->configuration->loadHelpers('Number','I18N','Partial');
 
+    // If no day/month set use current date
+    $day = is_null($arguments['day']) ? date("j",strtotime(date("Y-m-d H:i:s"))) : $arguments['day'];
+    $month = is_null($arguments['month']) ? date("n",strtotime(date("Y-m-d H:i:s"))) : $arguments['month'];
+
     if (!sfConfig::has('app_rt_shop_birthday_voucher'))
     {
-      throw new sfCommandException('app_rt_shop_birthday_voucherhas to be set');
+      throw new sfCommandException('app_rt_shop_birthday_voucher has to be set');
     }
-
+    
     $config = sfConfig::get('app_rt_shop_birthday_voucher');
 
     $config['title'] = isset($config['title']) ? $config['title'] : 'Birthday Voucher';
@@ -94,12 +93,11 @@ EOF;
     // Database actions
     $databaseManager = new sfDatabaseManager($this->configuration);
 
-    $q = Doctrine_Query::create()->from('rtGuardUser u');
-    $q->andWhere('DAY(u.date_of_birth) = ?', $arguments['day']);
-    $q->andWhere('MONTH(u.date_of_birth) = ?', $arguments['month']);
-
-    $users = $q->execute();
-
+    $q = Doctrine_Query::create()->from('rtGuardUser u')
+          ->andWhere('DAY(u.date_of_birth) = ?', $day)
+          ->andWhere('MONTH(u.date_of_birth) = ?', $month);
+    $users = $q->fetchArray();
+    
     $this->_batch_reference = rtShopVoucherToolkit::generateVoucherCode();
     $voucher_details = array('date_from' => NULL,
                     'date_to' => isset($config['date_to']) ? $config['date_to'] : NULL,
@@ -129,27 +127,22 @@ EOF;
       $this->log('--------------------------------');
       $this->log('--- Create birthday vouchers ---');
       $this->log('--------------------------------');
-      
       $i = 0;
       foreach ($users as $user) {
-        $this->logSection('shop-create-birthday-voucher', sprintf('Date of birth: [%s] // Code: [%s] // Last_name: [%s]',$user->getDateOfBirth(),$voucher[$i]['code'],$user->getLastName()));
+        $this->logSection('shop-create-birthday-voucher', sprintf('Date of birth: [%s] // Code: [%s] // Last_name: [%s]',$user['date_of_birth'],$voucher[$i]['code'],$user['last_name']));
         
-        if($user->getEmailAddress() != '')
+        if($user['email_address'] != '')
         {
-          // Send mail to user
           $this->notifyUser($user, $voucher[$i]['code'], $config);
         }
         $i++;
       }
-
       $this->logSection('shop-create-birthday-voucher', sprintf('Total created birthday vouchers: [%s]',count($users)));
     }
     else
     {
       $this->logSection('shop-create-birthday-voucher', 'No users in chosen birthday range');
     }
-    // Send mail to administrator
-
     $this->notifyAdministrator($users, $config);
   }
 
@@ -158,12 +151,14 @@ EOF;
    *
    * @param sfGuardUser $user
    */
-  protected function notifyUser(sfGuardUser $user, $code, $config)
+  protected function notifyUser($user, $code, $config)
   {
     $vars = array('user' => $user);
+    
     $vars['code'] = $code;
     $vars['value'] =  $this->getFormattedReduction($config);
-
+    $vars['voucher_config'] =  $config;
+    
     $message_html = get_partial('rtShopVoucherAdmin/email_birthdayvoucher_user_html', $vars);
     $message_html = get_partial('rtEmail/layout_html', array('content' => $message_html));
 
@@ -174,7 +169,7 @@ EOF;
 
     $message = Swift_Message::newInstance()
             ->setFrom($from)
-            ->setTo($user->getEmailAddress())
+            ->setTo($user['email_address'])
             ->setSubject(sprintf('Birthday voucher: Code: #%s', $code.' with a value of: '. $this->getFormattedReduction($config)))
             ->setBody($message_html, 'text/html')
             ->addPart($message_plain, 'text/plain');
@@ -198,6 +193,7 @@ EOF;
     
     $vars['batch_reference'] = $this->_batch_reference;
     $vars['value'] = $this->getFormattedReduction($config);
+    $vars['voucher_config'] =  $config;
 
     $message_html = get_partial('rtShopVoucherAdmin/email_birthdayvoucher_admin_html', $vars);
     $message_html = get_partial('rtEmail/layout_html', array('content' => $message_html));
