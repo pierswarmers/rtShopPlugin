@@ -17,4 +17,4 @@
 
 <?php end_slot(); ?>
 
-<?php include_partial('rtShopOrderAdmin/invoice', array('rt_shop_order' => $rt_shop_order)) ?>
+<?php include_partial('rtShopOrderAdmin/invoice_html', array('rt_shop_order' => $rt_shop_order)) ?>
