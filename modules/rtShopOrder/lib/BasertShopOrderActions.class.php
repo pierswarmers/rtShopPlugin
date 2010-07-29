@@ -204,7 +204,6 @@ class BasertShopOrderActions extends sfActions
     {
       $this->getUser()->setFlash('notice', 'You are registered and signed in!');
       $this->generateVouchure();
-      $this->getUser()->setAttribute('registration_success', false);
     }
 
     // Is this user already logged in? If yes, redirect forwards...
@@ -697,12 +696,20 @@ class BasertShopOrderActions extends sfActions
 
   private function generateVouchure()
   {
+    if(!$this->getUser()->isAuthenticated())
+    {
+      return;
+    }
+    
     if(sfConfig::get('app_rt_shop_registration_voucher', false))
     {
       $config = sfConfig::get('app_rt_shop_registration_voucher');
+      
+      $config['title'] = isset($config['title']) ? $config['title'] : 'Welcome Voucher';
+
       $voucher = new rtShopVoucher;
       $voucher->setCount(1);
-      $voucher->setTitle(isset($config['title']) ? $config['title'] : 'Welcome Gift Voucher');
+      $voucher->setTitle($config['title']);
       $voucher->setReductionType(isset($config['reduction_type']) ? $config['reduction_type'] : 'dollarOff');
       $voucher->setReductionValue(isset($config['reduction_value']) ? $config['reduction_value'] : '0');
       $voucher->setStackable(isset($config['stackable']) ? $config['stackable'] : false);
@@ -728,9 +735,55 @@ class BasertShopOrderActions extends sfActions
       $user = $this->getUser()->getGuardUser();
       $voucher->setComment(sprintf('Created for: %s %s (%s)', $user->getFirstName(), $user->getLastName(), $user->getEmailAddress()));
       $voucher->save();
+      $this->getUser()->setAttribute('registration_success', false);
       $this->getCartManager()->setVoucherCode($voucher->getCode());
       $this->getCartManager()->getOrder()->save();
       $this->getUser()->setAttribute('rt_shop_vouchure_code', $voucher->getCode());
+      $this->notifyUserOfgenerateVouchure($user, $voucher, $config);
     }
+  }
+
+  /**
+   * Notify the user of the activated voucher.
+   *
+   * @param sfGuardUser $user
+   * @param rtShopVoucher $voucher
+   * @param array $config
+   */
+  private function notifyUserOfgenerateVouchure(sfGuardUser $user, rtShopVoucher $voucher, $config = null)
+  {
+    $vars = array('user' => $user, 'voucher' => $voucher);
+
+    if(is_null($config))
+    {
+      $config = array();
+    }
+
+    $config['title'] = isset($config['title']) ? $config['title'] : 'Welcome Voucher';
+    
+    $message_html = $this->getPartial('rtShopOrder/email_voucher_success_html', $vars);
+    $message_html = $this->getPartial('rtEmail/layout_html', array('content' => $message_html));
+
+    $message_plain = $this->getPartial('rtShopOrder/email_voucher_success_plain', $vars);
+    $message_plain = $this->getPartial('rtEmail/layout_plain', array('content' => html_entity_decode($message_plain)));
+
+    $message = Swift_Message::newInstance()
+            ->setFrom($this->getAdminEmail())
+            ->setTo($user->getEmailAddress())
+            ->setSubject($config['title'])
+            ->setBody($message_html, 'text/html')
+            ->addPart($message_plain, 'text/plain');
+
+    $this->getMailer()->send($message);
+  }
+
+  /**
+   * Get the admin email address.
+   *
+   * @return string
+   */
+  private function getAdminEmail()
+  {
+    return sfConfig::get('app_rt_registration_admin_email', sfConfig::get('app_rt_admin_email'));
   }
 }
