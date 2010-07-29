@@ -17,8 +17,12 @@
 
 class rtShopCreateBirthdayVouchersTask extends sfDoctrineBaseTask
 {
-  private $_debug_verbose = false;
+  private $_debug_verbose = true;
   private $_birthday_vouchers = 0;
+  private $_formatted_value = '';
+  private $_batch_reference = '';
+  private $_range_from;
+  private $_range_to;
 
   /**
    * Configure
@@ -74,11 +78,13 @@ EOF;
     $configuration = ProjectConfiguration::getApplicationConfiguration ('frontend', 'dev', false);
     sfContext::createInstance($configuration);
     $configuration->loadHelpers('Partial');
-    $this->configuration->loadHelpers('Number','I18N');
+    $this->configuration->loadHelpers('Number','I18N','Partial');
 
     $range_from = $arguments['birthday-range-start'];
+    $this->_range_from = $range_from;
     $range_to = $arguments['birthday-range-end'];
-
+    $this->_range_to = $range_to;
+    
     if($range_from == NULL && $range_to == NULL)
     {
       throw new sfCommandException('At least one date has to be defined. Format: yyyy-mm-dd (e.g. 2010-07-01)');
@@ -124,14 +130,14 @@ EOF;
     }
     $users = $q->execute();
 
-    $batch_reference = rtShopVoucherToolkit::generateVoucherCode();
+    $this->_batch_reference = rtShopVoucherToolkit::generateVoucherCode();
     $voucher_details = array('date_from' => NULL,
                     'date_to' => NULL,
                     'reduction_type' => sfConfig::has('app_rt_shop_birthday_voucher_type'),
                     'reduction_value' => sfConfig::has('app_rt_shop_birthday_voucher_value'),
                     'title' => $voucher_title,
                     'type' => 'rtShopVoucher',
-                    'batch_reference' => $batch_reference,
+                    'batch_reference' => $this->_batch_reference,
                     'count' => 1,
                     'mode' => 'Single',
                     'total_from' => NULL,
@@ -147,94 +153,111 @@ EOF;
 
     $q = Doctrine_Query::create()
          ->from('rtShopVoucher v')
-         ->andWhere('v.batch_reference = ?', $batch_reference);
+         ->andWhere('v.batch_reference = ?', $this->_batch_reference);
     $voucher = $q->fetchArray();
     
     $this->_birthday_vouchers = count($users);
     if(sfConfig::get('app_rt_shop_birthday_voucher_type') === 'percentageOff')
     {
-      $formatted_value = sfConfig::get('app_rt_shop_birthday_voucher_value').'%';
+      $this->_formatted_value = sfConfig::get('app_rt_shop_birthday_voucher_value').'%';
     }
     else
     {
-      $formatted_value = format_currency(sfConfig::get('app_rt_shop_birthday_voucher_value'), sfConfig::get('app_rt_currency', 'AUD'));
+      $this->_formatted_value = format_currency(sfConfig::get('app_rt_shop_birthday_voucher_value'), sfConfig::get('app_rt_currency', 'AUD'));
     }
-    if ($this->_debug_verbose) {
-      $this->log('----------------------------------------------');
-      $this->log('--- Create vouchers for birthday specified ---');
-      $this->log('----------------------------------------------');
 
-      if (count($users) > 0)
-      {
-        $i = 0;
-        foreach ($users as $user) {
-          $this->logSection('shop-create-birthday-voucher', sprintf('Date of birth: [%s] // Code: [%s] // Last_name: [%s]',$user->getDateOfBirth(),$voucher[$i]['code'],$user->getLastName()));
-          if($user->getEmailAddress() != '')
-          {
-            $subject = sprintf('Birthday present: Voucher code: #%s', $voucher[$i]['code'].' ['.$formatted_value.']');
-            $body = 'Happy Birthday!'."<br/><br/>".'Voucher code: #'.$voucher[$i]['code'].' with a value of '.$formatted_value;
-            $this->sendSwiftMail(sfConfig::get('app_rt_shop_order_admin_email', 'from@noreply.com'),$user->getEmailAddress(),$subject,$body,$voucher[$i]['code']);
-          }
-          $i++;
-        }
-        $this->logSection('shop-create-birthday-voucher', sprintf('Total created birthday vouchers: [%s]',$this->_birthday_vouchers));
-      } else {
-        $this->logSection('shop-create-birthday-voucher', 'No users in chosen birthday range');
-      }
-    } else {
-      if (count($users) > 0)
-      {
-        $i = 0;
-        foreach ($users as $user) {
-          if($user->getEmailAddress() != '')
-          {
-            $subject = sprintf('Birthday present: Voucher code: #%s', $voucher[$i]['code'].' ['.$formatted_value.']');
-            $body = 'Happy Birthday!'."<br/><br/>".'Voucher code: #'.$voucher[$i]['code'].' with a value of '.$formatted_value;
-            $this->sendSwiftMail(sfConfig::get('app_rt_shop_order_admin_email', 'from@noreply.com'),$user->getEmailAddress(),$subject,$body,$voucher[$i]['code']);
-          }
-          $i++;
-        }
-      }
-    }
-    // Send email to admin
     if (count($users) > 0)
     {
-      $admin_address = sfConfig::get('app_rt_shop_order_admin_email', 'from@noreply.com');
-      $subject = sprintf('Vouchers Generation: Birthday %s %s',$range_from,($range_to != NULL) ? 'to '.$range_to : '');
-      $body = 'Vouchers created: '.count($users)."<br/>";
-      $body .= 'Batch reference: #'.$batch_reference."<br/>";
-      if($range_to == NULL)
-      {
-        $body .= 'For birthday: '.$range_from."<br/>";
+      if ($this->_debug_verbose) {
+        $this->log('--------------------------------');
+        $this->log('--- Create birthday vouchers ---');
+        $this->log('--------------------------------');
       }
-      else
-      {
-        $body .= 'For birthday range: '.$range_from.' to '.$range_to."<br/>";
+      $i = 0;
+      foreach ($users as $user) {
+        if ($this->_debug_verbose) {
+          $this->logSection('shop-create-birthday-voucher', sprintf('Date of birth: [%s] // Code: [%s] // Last_name: [%s]',$user->getDateOfBirth(),$voucher[$i]['code'],$user->getLastName()));
+        }
+        if($user->getEmailAddress() != '')
+        {
+          // Send mail to user
+          $this->notifyUser($user, $voucher[$i]['code']);
+        }
+        $i++;
       }
-      $body .= 'Voucher value: '.$formatted_value."<br/>";
-      $body .= 'Date created: '.date("Y-m-d");
-      $this->sendSwiftMail($admin_address,$admin_address,$subject,$body,$voucher[$i]['code']);
+      if ($this->_debug_verbose) {
+        $this->logSection('shop-create-birthday-voucher', sprintf('Total created birthday vouchers: [%s]',$this->_birthday_vouchers));
+      }
+    }
+    else {
+      if ($this->_debug_verbose) {
+        $this->logSection('shop-create-birthday-voucher', 'No users in chosen birthday range');
+      }
+    }
+    // Send mail to administrator
+    if(sfConfig::get('app_rt_shop_order_admin_email'))
+    {
+      $this->notifyAdministrator($users);
     }
   }
 
   /**
-   * Send email
+   * Notify the user about birthday voucher
    *
-   * @param object $from From address
-   * @param string $to To address
-   * @param string $subject Email subject
-   * @param string $body Email body content
-   * @param string $code Voucher code
+   * @param sfGuardUser $user
    */
-  protected function sendSwiftMail($from,$to,$subject,$body,$code)
+  protected function notifyUser(sfGuardUser $user, $code)
   {
+    $vars = array('user' => $user);
+    $vars['code'] = $code;
+    $vars['value'] = $this->_formatted_value;
+
+    $message_html = get_partial('rtShopVoucherAdmin/email_birthdayvoucher_user_html', $vars);
+    $message_html = get_partial('rtEmail/layout_html', array('content' => $message_html));
+
+    $message_plain = get_partial('rtShopVoucherAdmin/email_birthdayvoucher_user_plain', $vars);
+    $message_plain = get_partial('rtEmail/layout_plain', array('content' => html_entity_decode($message_plain)));
+
+    $from = sfConfig::get('app_rt_shop_order_admin_email', 'from@noreply.com');
+
     $message = Swift_Message::newInstance()
-      ->setContentType('text/html')
-      ->setFrom($from)
-      ->setTo($to)
-      ->setSubject($subject)
-      ->setBody($body);
-      //->setBody($this->getPartial('rtShopOrderAdmin/email_invoice', array('rt_shop_order' => $cm->getOrder())));
+            ->setFrom($from)
+            ->setTo($user->getEmailAddress())
+            ->setSubject(sprintf('Birthday voucher: Code: #%s', $code.' with a value of: '.$this->_formatted_value))
+            ->setBody($message_html, 'text/html')
+            ->addPart($message_plain, 'text/plain');
+
+    $this->getMailer()->send($message);
+  }
+
+  /**
+   * Notify the administrator about birthday vouchers
+   *
+   * @param sfGuardUser $user
+   */
+  protected function notifyAdministrator($users)
+  {
+    $vars = array('users' => $users);
+    $vars['range_from'] = $this->_range_from;
+    $vars['range_to'] = $this->_range_to;
+    $vars['batch_reference'] = $this->_batch_reference;
+    $vars['value'] = $this->_formatted_value;
+
+    $message_html = get_partial('rtShopVoucherAdmin/email_birthdayvoucher_admin_html', $vars);
+    $message_html = get_partial('rtEmail/layout_html', array('content' => $message_html));
+
+    $message_plain = get_partial('rtShopVoucherAdmin/email_birthdayvoucher_admin_plain', $vars);
+    $message_plain = get_partial('rtEmail/layout_plain', array('content' => html_entity_decode($message_plain)));
+
+    $admin_address = sfConfig::get('app_rt_shop_order_admin_email', 'from@noreply.com');
+
+    $message = Swift_Message::newInstance()
+            ->setFrom($admin_address)
+            ->setTo($admin_address)
+            ->setSubject(sprintf('Birthday vouchers generation: Birthday %s %s',$this->_range_from,($this->_range_to != NULL) ? 'to '.$this->_range_to : ''))
+            ->setBody($message_html, 'text/html')
+            ->addPart($message_plain, 'text/plain');
+
     $this->getMailer()->send($message);
   }
 
