@@ -158,6 +158,7 @@ EOF;
     $vars['code'] = $code;
     $vars['value'] =  $this->getFormattedReduction($config);
     $vars['voucher_config'] =  $config;
+    $vars['formatted_reduction'] = $this->getFormattedReduction($config);
     
     $message_html = get_partial('rtShopVoucherAdmin/email_birthdayvoucher_user_html', $vars);
     $message_html = get_partial('rtEmail/layout_html', array('content' => $message_html));
@@ -170,7 +171,7 @@ EOF;
     $message = Swift_Message::newInstance()
             ->setFrom($from)
             ->setTo($user['email_address'])
-            ->setSubject(sprintf('Birthday voucher: Code: #%s', $code.' with a value of: '. $this->getFormattedReduction($config)))
+            ->setSubject(sprintf('Happy Birthday %s! Here\'s your %s off voucher - #%s', $user['first_name'],  $this->getFormattedReduction($config), $code))
             ->setBody($message_html, 'text/html')
             ->addPart($message_plain, 'text/plain');
 
