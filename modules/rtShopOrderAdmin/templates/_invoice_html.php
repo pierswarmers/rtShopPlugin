@@ -6,7 +6,7 @@
     <tr>
       <th style="width:25%"><?php echo __('Order reference') ?>:</th>
       <td style="width:25%"><?php echo $rt_shop_order->getReference() ?></td>
-      <td style="width:50%" rowspan="<?php echo $rt_shop_order->getVoucherCode() ? '7' : '6' ?>"><?php echo nl2br(sfConfig::get('app_rt_company_address','')) ?></td>
+      <td style="width:50%" rowspan="<?php echo $rt_shop_order->getVoucherCode() ? '7' : '6' ?>"><?php echo nl2br(sfConfig::get('app_rt_address','')) ?></td>
     </tr>
     <tr>
       <th><?php echo __('Payment transaction ID') ?>:</th>

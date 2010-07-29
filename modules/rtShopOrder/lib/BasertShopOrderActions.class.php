@@ -538,13 +538,19 @@ class BasertShopOrderActions extends sfActions
 
     $order_reference = $cm->getOrder()->getReference();
 
+    // Multipart mail content
+    $invoice_html = $this->getPartial('rtShopOrderAdmin/invoice_html', array('rt_shop_order' => $cm->getOrder()));
+    $message_html = $this->getPartial('rtEmail/layout_html', array('content' => $invoice_html));
+    $message_plain = $this->getPartial('rtShopOrderAdmin/invoice_plain', array('rt_shop_order' => $cm->getOrder()));
+    
     //Send confirmation mail to customer
     $message = Swift_Message::newInstance()
             ->setContentType('text/html')
             ->setFrom(sfConfig::get('app_rt_shop_order_admin_email', 'from@noreply.com'))
             ->setTo($cm->getOrder()->getEmailAddress())
             ->setSubject(sprintf('Order confirmation: #%s', $order_reference))
-            ->setBody($this->getPartial('rtShopOrderAdmin/email_invoice', array('rt_shop_order' => $cm->getOrder())));
+            ->setBody($message_html,'text/html')
+            ->addPart($message_plain, 'text/plain');;
 
     if(sfConfig::get('app_rt_shop_order_admin_email'))
     {
