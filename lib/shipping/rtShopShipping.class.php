@@ -71,14 +71,14 @@ class rtShopShipping
    */
   public function getAddress()
   {
-    $address = $this->getCartManager()->getOrder()->getShippingAddressArray();
+    $address = $this->getCartManager()->getShippingAddress();
 
     if(count($address) == 0)
     {
-      $address = $this->getCartManager()->getOrder()->getBillingAddressArray();
+      $address = $this->getCartManager()->getBillingAddress();
     }
 
-    return isset($address[0]) ? $address[0] : false;
+    return $address;
   }
 
   /**

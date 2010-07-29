@@ -185,7 +185,7 @@ class rtShopCartManager
    */
   public function getShippingAddress()
   {
-    return $this->getOrder()->getShippingAddressArray();
+    return $this->getOrder()->getShippingAddress();
   }
 
   /**
@@ -195,7 +195,7 @@ class rtShopCartManager
    */
   public function getBillingAddress()
   {
-    return $this->getOrder()->getBillingAddressArray();
+    return $this->getOrder()->getBillingAddress();
   }
 
   /**

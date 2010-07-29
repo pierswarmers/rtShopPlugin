@@ -150,7 +150,7 @@ abstract class PluginrtShopOrder extends BasertShopOrder
    *
    * @return Array Shipping Address as array
    */
-  public function getShippingAddressArray()
+  public function getShippingAddress()
   {
     if(is_null($this->_address_shipping))
     {
@@ -159,7 +159,7 @@ abstract class PluginrtShopOrder extends BasertShopOrder
         ->andWhere('a.model = ?', 'rtShopOrder')
         ->andWhere('a.model_id = ?', $this->getId())
         ->andWhere('a.type = ?', 'shipping');
-      $this->_address_shipping = $q->fetchArray();
+      $this->_address_shipping = $q->fetchOne();
     }
 
     return $this->_address_shipping;
@@ -170,7 +170,7 @@ abstract class PluginrtShopOrder extends BasertShopOrder
    *
    * @return Array Billing Address as array
    */
-  public function getBillingAddressArray()
+  public function getBillingAddress()
   {
     if(is_null($this->_address_billing))
     {
@@ -179,7 +179,7 @@ abstract class PluginrtShopOrder extends BasertShopOrder
         ->andWhere('a.model = ?', 'rtShopOrder')
         ->andWhere('a.model_id = ?', $this->getId())
         ->andWhere('a.type = ?', 'billing');
-      $this->_address_billing = $q->fetchArray();
+      $this->_address_billing = $q->fetchOne();
     }
 
     return $this->_address_billing;

@@ -467,7 +467,7 @@ class BasertShopOrderActions extends sfActions
 
         $cc_array = $this->FormatCcInfoArray($this->form_cc->getValues());
         $address = $cm->getOrder()->getBillingAddressArray();
-        $customer_array = $this->FormatCustomerInfoArray($address[0], $cm->getOrder()->getEmailAddress());
+        $customer_array = $this->FormatCustomerInfoArray($address, $cm->getOrder()->getEmailAddress());
 
         $payment = rtShopPaymentToolkit::getPaymentObject(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
 
