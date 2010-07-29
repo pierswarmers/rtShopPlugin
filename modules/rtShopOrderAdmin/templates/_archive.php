@@ -37,7 +37,7 @@
       </tr>
     <?php endif; ?>
 
-    <?php if(is_numeric($rt_shop_order->getPromotionId())): ?>
+    <?php if($rt_shop_order->getPromotionReduction() > 0): ?>
     <?php $promotion = $rt_shop_order->getPromotionData(); ?>
       <tr>
         <td colspan="4"><?php echo __('Promotion'); ?> (<?php echo $promotion['title'] ?>):</td>
@@ -45,7 +45,7 @@
       </tr>
     <?php endif; ?>
 
-    <?php if(is_numeric($rt_shop_order->getVoucherId())): ?>
+    <?php if($rt_shop_order->getVoucherReduction() > 0): ?>
     <?php $voucher = $rt_shop_order->getVoucherData(); ?>
       <tr>
         <td colspan="4"><?php echo __('Voucher'); ?> (<?php echo $voucher['title'] ?>):</td>
