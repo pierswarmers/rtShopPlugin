@@ -200,10 +200,11 @@ class BasertShopOrderActions extends sfActions
     // Are there items in the cart? If no, redirect backwards...
     $this->redirectIf($this->getCartManager()->isEmpty(), 'rt_shop_order_cart');
 
-    if($this->getUser()->getFlash('registration_success'))
+    if($this->getUser()->getAttribute('registration_success', false))
     {
       $this->getUser()->setFlash('notice', 'You are registered and signed in!');
       $this->generateVouchure();
+      $this->getUser()->setAttribute('registration_success', false);
     }
 
     // Is this user already logged in? If yes, redirect forwards...
@@ -696,16 +697,39 @@ class BasertShopOrderActions extends sfActions
 
   private function generateVouchure()
   {
-    if(sfConfig::get('app_rt_shop_registration_voucher_reduction_value', false))
+    if(sfConfig::get('app_rt_shop_registration_voucher', false))
     {
+      $config = sfConfig::get('app_rt_shop_registration_voucher');
       $voucher = new rtShopVoucher;
       $voucher->setCount(1);
-      $voucher->setTitle(sfConfig::get('app_rt_shop_registration_voucher_title', 'Welcome Gift Voucher'));
-      $voucher->setReductionType(sfConfig::get('app_rt_shop_registration_voucher_reduction_type', 'dollarOff'));
-      $voucher->setReductionValue(sfConfig::get('app_rt_shop_registration_voucher_reduction_value'));
+      $voucher->setTitle(isset($config['title']) ? $config['title'] : 'Welcome Gift Voucher');
+      $voucher->setReductionType(isset($config['reduction_type']) ? $config['reduction_type'] : 'dollarOff');
+      $voucher->setReductionValue(isset($config['reduction_value']) ? $config['reduction_value'] : '0');
+      $voucher->setStackable(isset($config['stackable']) ? $config['stackable'] : false);
+
+      if(isset($config['date_from']))
+      {
+        $voucher->setDateFrom($config['date_from']);
+      }
+      if(isset($config['date_to']))
+      {
+        $voucher->setDateTo($config['date_to']);
+      }
+
+      if(isset($config['total_from']))
+      {
+        $voucher->setTotalFrom($config['total_from']);
+      }
+      if(isset($config['total_to']))
+      {
+        $voucher->setTotalTo($config['total_to']);
+      }
+      
       $user = $this->getUser()->getGuardUser();
       $voucher->setComment(sprintf('Created for: %s %s (%s)', $user->getFirstName(), $user->getLastName(), $user->getEmailAddress()));
       $voucher->save();
+      $this->getCartManager()->setVoucherCode($voucher->getCode());
+      $this->getCartManager()->getOrder()->save();
       $this->getUser()->setAttribute('rt_shop_vouchure_code', $voucher->getCode());
     }
   }
