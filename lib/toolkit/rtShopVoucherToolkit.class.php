@@ -129,6 +129,16 @@ class rtShopVoucherToolkit
     $values = array();
     $columns = array('date_from','date_to','reduction_type','reduction_value','title','type','batch_reference','count','mode','total_from','total_to','created_at','updated_at','code');
 
+    // Add date_from, date_to fields only if set
+    if($voucher['date_from'] == '' || $voucher['date_from'] == NULL)
+    {
+      unset($columns[0]);
+    }
+    if($voucher['date_to'] == '' || $voucher['date_to'] == NULL)
+    {
+      unset($columns[1]);
+    }
+
     // Add total_from, total_to fields only if set
     if($voucher['total_from'] == '' || $voucher['total_from'] == NULL)
     {
@@ -151,6 +161,16 @@ class rtShopVoucherToolkit
       }
     }
     $rows = array($voucher['date_from'],$voucher['date_to'],$voucher['reduction_type'],$voucher['reduction_value'],$voucher['title'],$voucher['type'],$voucher['batch_reference'],$voucher['count'],$voucher['mode'],$voucher['total_from'],$voucher['total_to'],date('Y-m-d H:i:s'),date('Y-m-d H:i:s'));
+
+    // Add date_from, date_to fields only if set
+    if($voucher['date_from'] == '' || $voucher['date_from'] == NULL)
+    {
+      unset($rows[0]);
+    }
+    if($voucher['date_to'] == '' || $voucher['date_to'] == NULL)
+    {
+      unset($rows[1]);
+    }
 
     // Add total_from, total_to fields only if set
     if($voucher['total_from'] == '' || $voucher['total_from'] == NULL)
