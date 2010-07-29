@@ -31,8 +31,8 @@ class rtShopCreateBirthdayVouchersTask extends sfDoctrineBaseTask
   protected function configure()
   {
     $this->addArguments(array(
-      new sfCommandArgument('birthday-range-start', sfCommandArgument::OPTIONAL, 'Startdate of birthday range for which vouchers have to be generated'),
-      new sfCommandArgument('birthday-range-end', sfCommandArgument::OPTIONAL, 'Enddate of birthday range for which vouchers have to be generated'),
+      new sfCommandArgument('day', sfCommandArgument::REQUIRED, 'Startdate of birthday range for which vouchers have to be generated'),
+      new sfCommandArgument('month', sfCommandArgument::REQUIRED, 'Enddate of birthday range for which vouchers have to be generated'),
     ));
 
     $this->addOptions(array(
@@ -80,125 +80,77 @@ EOF;
     $configuration->loadHelpers('Partial');
     $this->configuration->loadHelpers('Number','I18N','Partial');
 
-    $range_from = $arguments['birthday-range-start'];
-    $this->_range_from = $range_from;
-    $range_to = $arguments['birthday-range-end'];
-    $this->_range_to = $range_to;
-    
-    if($range_from == NULL && $range_to == NULL)
+    if (!sfConfig::has('app_rt_shop_birthday_voucher'))
     {
-      throw new sfCommandException('At least one date has to be defined. Format: yyyy-mm-dd (e.g. 2010-07-01)');
+      throw new sfCommandException('app_rt_shop_birthday_voucherhas to be set');
     }
 
-    $date_pattern = '/^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9])?$/';
-    if (!preg_match($date_pattern, $range_from))
-    {
-      throw new sfCommandException(sprintf('Range start: Invalid datetime pattern "%s". Format: yyyy-mm-dd (e.g. 2010-07-01)', $range_from));
-    }
+    $config = sfConfig::get('app_rt_shop_birthday_voucher');
 
-    if($range_to != NULL)
-    {
-      if (!preg_match($date_pattern, $range_to))
-      {
-        throw new sfCommandException(sprintf('Range end: Invalid datetime pattern "%s". Format: yyyy-mm-dd (e.g. 2010-07-01)', $range_to));
-      }
-    }
-
-    if (!sfConfig::has('app_rt_shop_birthday_voucher_type'))
-    {
-      throw new sfCommandException('app_rt_shop_birthday_voucher_type has to be set');
-    }
-
-    if (!sfConfig::has('app_rt_shop_birthday_voucher_value'))
-    {
-      throw new sfCommandException('app_rt_shop_birthday_voucher_value has to be set');
-    }
+    $config['title'] = isset($config['title']) ? $config['title'] : 'Birthday Voucher';
+    $config['reduction_type'] = isset($config['reduction_type']) ? $config['reduction_type'] : 'percentageOff';
+    $config['reduction_value'] = isset($config['reduction_value']) ? $config['reduction_value'] : '0';
 
     // Database actions
     $databaseManager = new sfDatabaseManager($this->configuration);
-    if($range_to == NULL)
-    {
-      $voucher_title = 'Birthday voucher. Date of birth:' . $range_from;
-      $q = Doctrine_Query::create()->from('rtGuardUser u');
-      $q->andWhere('DAY(u.date_of_birth) = ?', date("j",strtotime($range_from)));
-      $q->andWhere('MONTH(u.date_of_birth) = ?', date("n",strtotime($range_from)));
-    }
-    else
-    {
-      $voucher_title = 'Birthday voucher. Range => From:' . $range_from . ' to' . $range_to;
-      $q = Doctrine::getTable('rtGuardUser')->getBirthdayRestrictionQuery($range_from,$range_to);
-    }
+
+    $q = Doctrine_Query::create()->from('rtGuardUser u');
+    $q->andWhere('DAY(u.date_of_birth) = ?', $arguments['day']);
+    $q->andWhere('MONTH(u.date_of_birth) = ?', $arguments['month']);
+
     $users = $q->execute();
 
     $this->_batch_reference = rtShopVoucherToolkit::generateVoucherCode();
     $voucher_details = array('date_from' => NULL,
-                    'date_to' => NULL,
-                    'reduction_type' => sfConfig::has('app_rt_shop_birthday_voucher_type'),
-                    'reduction_value' => sfConfig::has('app_rt_shop_birthday_voucher_value'),
-                    'title' => $voucher_title,
+                    'date_to' => isset($config['date_to']) ? $config['date_to'] : NULL,
+                    'reduction_type' =>  $config['reduction_type'],
+                    'reduction_value' =>  $config['reduction_value'],
+                    'title' =>  $config['title'],
                     'type' => 'rtShopVoucher',
                     'batch_reference' => $this->_batch_reference,
                     'count' => 1,
                     'mode' => 'Single',
-                    'total_from' => NULL,
-                    'total_to' => NULL,
+                    'total_from' =>  isset($config['total_from']) ? $config['total_from'] : NULL,
+                    'total_to' =>  isset($config['total_to']) ? $config['total_to'] : NULL,
                     'created_at' => date("Y-m-d H:i:s"),
                     'updated_at' => date("Y-m-d H:i:s"),
                     'code' => '');
 
-    if(!$this->createBatchVouchers($voucher_details, count($users)))
-    {
-      throw new sfCommandException('Batch vouchers could not be created');
-    }
+    $this->createBatchVouchers($voucher_details, count($users));
 
     $q = Doctrine_Query::create()
          ->from('rtShopVoucher v')
          ->andWhere('v.batch_reference = ?', $this->_batch_reference);
-    $voucher = $q->fetchArray();
     
-    $this->_birthday_vouchers = count($users);
-    if(sfConfig::get('app_rt_shop_birthday_voucher_type') === 'percentageOff')
-    {
-      $this->_formatted_value = sfConfig::get('app_rt_shop_birthday_voucher_value').'%';
-    }
-    else
-    {
-      $this->_formatted_value = format_currency(sfConfig::get('app_rt_shop_birthday_voucher_value'), sfConfig::get('app_rt_currency', 'AUD'));
-    }
+    $voucher = $q->fetchArray();
 
     if (count($users) > 0)
     {
-      if ($this->_debug_verbose) {
-        $this->log('--------------------------------');
-        $this->log('--- Create birthday vouchers ---');
-        $this->log('--------------------------------');
-      }
+      $this->log('--------------------------------');
+      $this->log('--- Create birthday vouchers ---');
+      $this->log('--------------------------------');
+      
       $i = 0;
       foreach ($users as $user) {
-        if ($this->_debug_verbose) {
-          $this->logSection('shop-create-birthday-voucher', sprintf('Date of birth: [%s] // Code: [%s] // Last_name: [%s]',$user->getDateOfBirth(),$voucher[$i]['code'],$user->getLastName()));
-        }
+        $this->logSection('shop-create-birthday-voucher', sprintf('Date of birth: [%s] // Code: [%s] // Last_name: [%s]',$user->getDateOfBirth(),$voucher[$i]['code'],$user->getLastName()));
+        
         if($user->getEmailAddress() != '')
         {
           // Send mail to user
-          $this->notifyUser($user, $voucher[$i]['code']);
+          $this->notifyUser($user, $voucher[$i]['code'], $config);
         }
         $i++;
       }
-      if ($this->_debug_verbose) {
-        $this->logSection('shop-create-birthday-voucher', sprintf('Total created birthday vouchers: [%s]',$this->_birthday_vouchers));
-      }
+
+      $this->logSection('shop-create-birthday-voucher', sprintf('Total created birthday vouchers: [%s]',count($users)));
     }
-    else {
-      if ($this->_debug_verbose) {
-        $this->logSection('shop-create-birthday-voucher', 'No users in chosen birthday range');
-      }
+    else
+    {
+      $this->logSection('shop-create-birthday-voucher', 'No users in chosen birthday range');
     }
     // Send mail to administrator
-    if(sfConfig::get('app_rt_shop_order_admin_email'))
-    {
-      $this->notifyAdministrator($users);
-    }
+
+    $this->notifyAdministrator($users, $config);
   }
 
   /**
@@ -206,11 +158,11 @@ EOF;
    *
    * @param sfGuardUser $user
    */
-  protected function notifyUser(sfGuardUser $user, $code)
+  protected function notifyUser(sfGuardUser $user, $code, $config)
   {
     $vars = array('user' => $user);
     $vars['code'] = $code;
-    $vars['value'] = $this->_formatted_value;
+    $vars['value'] =  $this->getFormattedReduction($config);
 
     $message_html = get_partial('rtShopVoucherAdmin/email_birthdayvoucher_user_html', $vars);
     $message_html = get_partial('rtEmail/layout_html', array('content' => $message_html));
@@ -223,7 +175,7 @@ EOF;
     $message = Swift_Message::newInstance()
             ->setFrom($from)
             ->setTo($user->getEmailAddress())
-            ->setSubject(sprintf('Birthday voucher: Code: #%s', $code.' with a value of: '.$this->_formatted_value))
+            ->setSubject(sprintf('Birthday voucher: Code: #%s', $code.' with a value of: '. $this->getFormattedReduction($config)))
             ->setBody($message_html, 'text/html')
             ->addPart($message_plain, 'text/plain');
 
@@ -235,13 +187,17 @@ EOF;
    *
    * @param sfGuardUser $user
    */
-  protected function notifyAdministrator($users)
+  protected function notifyAdministrator($users, $config)
   {
+    if(!sfConfig::has('app_rt_shop_order_admin_email'))
+    {
+      return;
+    }
+
     $vars = array('users' => $users);
-    $vars['range_from'] = $this->_range_from;
-    $vars['range_to'] = $this->_range_to;
+    
     $vars['batch_reference'] = $this->_batch_reference;
-    $vars['value'] = $this->_formatted_value;
+    $vars['value'] = $this->getFormattedReduction($config);
 
     $message_html = get_partial('rtShopVoucherAdmin/email_birthdayvoucher_admin_html', $vars);
     $message_html = get_partial('rtEmail/layout_html', array('content' => $message_html));
@@ -254,7 +210,7 @@ EOF;
     $message = Swift_Message::newInstance()
             ->setFrom($admin_address)
             ->setTo($admin_address)
-            ->setSubject(sprintf('Birthday vouchers generation: Birthday %s %s',$this->_range_from,($this->_range_to != NULL) ? 'to '.$this->_range_to : ''))
+            ->setSubject('Birthday Vouchers Sent')
             ->setBody($message_html, 'text/html')
             ->addPart($message_plain, 'text/plain');
 
@@ -272,9 +228,20 @@ EOF;
   {
     try {
       rtShopVoucherToolkit::generateBatch($values,$batchsize,false);
-      return true;
     } catch (Exception $e) {
-      return false;
+      throw new sfCommandException('generateBatch() failed.');
+    }
+  }
+
+  private function getFormattedReduction($config)
+  {
+    if($config['reduction_type'] === 'percentageOff')
+    {
+      return $config['reduction_value'].'%';
+    }
+    else
+    {
+      return format_currency($config['reduction_value'], sfConfig::get('app_rt_currency', 'AUD'));
     }
   }
 }
