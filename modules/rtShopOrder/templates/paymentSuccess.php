@@ -83,53 +83,6 @@
         </tfoot>
       </table>
 
-      <script type="text/javascript">
-        $(function() {
-
-          $('#apply-voucher').click(function(){ return false;});
-          
-          $('#rt_shop_order_voucher_voucher_code').blur(function() {
-
-            $('span.loading, span.success, span.error').hide();
-            
-            if($(this).attr('value') == '') {
-              $('.rt-shop-cart-voucher').hide();
-            }
-              
-            $(this).attr('disabled', true);
-
-            $('#voucher-message').html('<span class="loading">Checking voucher, updating totals...</span>');
-
-            $.ajax({
-              type: "POST",
-              url: '<?php echo url_for('rt_shop_order_check_voucher', array('sf_format'=>'json')) ?>',
-              data: ({
-                code : $(this).attr('value')
-              }),
-              dataType: "json",
-              success: function(data) {
-                $('span.loading, span.success, span.error').hide();
-                if(data['id'] != '') {
-                  $('#voucher-message').html('<span class="success">'+data['title']+'</span>');
-                  $('.rt-shop-voucher-title').html(data['title']);
-                  $('.rt-shop-voucher-reduction').html(data['reduction_formatted']);
-                  $('.rt-shop-cart-voucher').show();
-                } else if(data['error'] != '') {
-                  $('.rt-shop-cart-voucher').hide();
-                  $('#voucher-message').html('<span class="error">Voucher could not be added!</span>');
-                }
-                if(data['total_charge'] == 0)
-                {
-                  $('.rt-shop-payment-creditcard').hide();
-                }
-                $('#rt_shop_order_voucher_voucher_code').removeAttr('disabled');
-                $('.rt-shop-total').html(data['total_charge_formatted']);
-              }
-            });
-          });
-        });
-      </script>
-
       <?php include_partial('rtShopOrder/addresses', array('rt_shop_cart_manager' => $rt_shop_cart_manager)) ?>
 
       <span class="rt-shop-payment-creditcard" style="display:block">
@@ -151,7 +104,58 @@
     </div>
 
     <div class="rt-container rt-shop-order-tools">
-      <button type="submit" class="rt_shop_payment_actions_submit button"><?php echo __('Place your order') ?></button>
+      <button type="submit" id="rt-submit-order" class="rt_shop_payment_actions_submit button"><?php echo __('Place your order') ?></button>
     </div>
   </form>
 </div>
+
+<script type="text/javascript">
+  $(function() {
+
+    $('#rt-submit-order').click(function(){ 
+      $(this).attr("disabled",true).html("<?php echo __('Processing your order, please be patient') ?>...").addClass("disabled");;
+    });
+
+    $('#apply-voucher').click(function(){ return false;});
+
+    $('#rt_shop_order_voucher_voucher_code').blur(function() {
+
+      $('span.loading, span.success, span.error').hide();
+
+      if($(this).attr('value') == '') {
+        $('.rt-shop-cart-voucher').hide();
+      }
+
+      $(this).attr('disabled', true);
+
+      $('#voucher-message').html('<span class="loading">Checking voucher, updating totals...</span>');
+
+      $.ajax({
+        type: "POST",
+        url: '<?php echo url_for('rt_shop_order_check_voucher', array('sf_format'=>'json')) ?>',
+        data: ({
+          code : $(this).attr('value')
+        }),
+        dataType: "json",
+        success: function(data) {
+          $('span.loading, span.success, span.error').hide();
+          if(data['id'] != '') {
+            $('#voucher-message').html('<span class="success">'+data['title']+'</span>');
+            $('.rt-shop-voucher-title').html(data['title']);
+            $('.rt-shop-voucher-reduction').html(data['reduction_formatted']);
+            $('.rt-shop-cart-voucher').show();
+          } else if(data['error'] != '') {
+            $('.rt-shop-cart-voucher').hide();
+            $('#voucher-message').html('<span class="error">Voucher could not be added!</span>');
+          }
+          if(data['total_charge'] == 0)
+          {
+            $('.rt-shop-payment-creditcard').hide();
+          }
+          $('#rt_shop_order_voucher_voucher_code').removeAttr('disabled');
+          $('.rt-shop-total').html(data['total_charge_formatted']);
+        }
+      });
+    });
+  });
+</script>
