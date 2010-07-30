@@ -18,7 +18,7 @@
           <tbody>
             <tr>
               <th><label for="rt_shop_order_voucher_voucher_code"><?php echo __('Voucher code') ?>:</label></th>
-              <td><?php echo $form['voucher_code']->render() ?><button class="button" id="apply-voucher"><?php echo __('Apply Voucher') ?></button><span id="voucher-message"></span></td>
+              <td><?php echo $form['voucher_code']->renderError() ?><?php echo $form['voucher_code']->render() ?><button class="button" id="apply-voucher"><?php echo __('Apply Voucher') ?></button><span id="voucher-message"></span></td>
             </tr>
           </tbody>
         </table>
