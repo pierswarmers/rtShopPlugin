@@ -75,6 +75,8 @@ all:
     #shop_birthday_voucher:
       #reduction_type:                    dollarOff               # Either 'percentageOff' or 'dollarOff'
       #reduction_value:                   10                      # Voucher reduction value (e.g 10 = $10)
+      #date_to:                           '2010-10-10 23:59:59'   # Date when vucher expires
+      #expires_in:                        7                       # Overwrites the set date_to field with date of voucher created + expires_in [days]
 
     #snippets:
       #Homepage:
