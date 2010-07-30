@@ -97,10 +97,20 @@ EOF;
           ->andWhere('DAY(u.date_of_birth) = ?', $day)
           ->andWhere('MONTH(u.date_of_birth) = ?', $month);
     $users = $q->fetchArray();
-    
+
+    // Set expiry date for vouchers
+    if(isset($config['expires_in']))
+    {
+      $expiry_date = date('Y-m-d H:i:s',strtotime(sprintf("+%s days",$config['expires_in'])));
+    }
+    else
+    {
+      $expiry_date = isset($config['date_to']) ? $config['date_to'] : NULL;
+    }
+
     $this->_batch_reference = rtShopVoucherToolkit::generateVoucherCode();
     $voucher_details = array('date_from' => NULL,
-                    'date_to' => isset($config['date_to']) ? $config['date_to'] : NULL,
+                    'date_to' => $expiry_date,
                     'reduction_type' =>  $config['reduction_type'],
                     'reduction_value' =>  $config['reduction_value'],
                     'title' =>  $config['title'],
