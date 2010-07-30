@@ -3,7 +3,7 @@
 <div class="rt-shop-order rt-payment rt-primary-container">
   <h1><?php echo __(sfConfig::get('app_rt_shop_payment_title', 'Payment')) ?></h1>
 
-  <form action="<?php echo url_for('@rt_shop_order_payment') ?>" method="post">
+  <form action="<?php echo url_for('@rt_shop_order_payment') ?>" method="post" id="rt-shop-order-payment-form">
     <div class="rt-container">
       <?php include_partial('breadcrumb', array()) ?>
       <?php echo $form->renderHiddenFields(); ?>
@@ -113,7 +113,8 @@
   $(function() {
 
     $('#rt-submit-order').click(function(){ 
-      $(this).attr("disabled",true).html("<?php echo __('Processing your order, please be patient') ?>...").addClass("disabled");;
+      $(this).attr("disabled",true).html("<?php echo __('Processing your order, please be patient') ?>...").addClass("disabled");
+      $('#rt-shop-order-payment-form').submit();
     });
 
     $('#apply-voucher').click(function(){ return false;});
