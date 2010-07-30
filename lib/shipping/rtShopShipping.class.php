@@ -73,7 +73,7 @@ class rtShopShipping
   {
     $address = $this->getCartManager()->getShippingAddress();
 
-    if(count($address) == 0)
+    if(!$address)
     {
       $address = $this->getCartManager()->getBillingAddress();
     }
