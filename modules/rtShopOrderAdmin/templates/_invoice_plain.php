@@ -2,7 +2,7 @@
 ------------------------------------------------------------
 <?php echo strtoupper(__('Shop Details')) ?><?php echo "\r\n" ?>
 ------------------------------------------------------------
-<?php echo sfConfig::get('app_rt_invoice_company_address_html',sfConfig::get('app_rt_email_signature_html','')) ?>
+<?php echo sfConfig::get('app_rt_invoice_company_address_plain',sfConfig::get('app_rt_email_signature_plain','')) ?>
 
 ------------------------------------------------------------
 <?php echo strtoupper(__('Order Details')) ?><?php echo "\r\n" ?>
