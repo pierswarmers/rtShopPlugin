@@ -130,6 +130,8 @@
         });
       </script>
 
+      <?php include_partial('rtShopOrder/addresses', array('rt_shop_cart_manager' => $rt_shop_cart_manager)) ?>
+
       <span class="rt-shop-payment-creditcard" style="display:block">
         <?php if($rt_shop_cart_manager->getTotalCharge() > 0): ?>
           <h2><?php echo __('Credit Card Details') ?></h2>
