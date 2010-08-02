@@ -1,0 +1,5 @@
+<?php $admin_cred = sfConfig::get('app_rt_shop_voucher_admin_credential', 'admin_shop_voucher') . "\n" ?>
+
+all:
+  is_secure: true
+  credentials: <?php echo $admin_cred ?>
