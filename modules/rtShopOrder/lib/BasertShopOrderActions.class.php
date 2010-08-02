@@ -683,7 +683,7 @@ class BasertShopOrderActions extends sfActions
    */
   private function updateUserAddressInfo(rtGuardUser $user, $type, rtAddress $new_address)
   {
-    $address = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($user, 'shipping');
+    $address = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($user, $type);
     if(!$address)
     {
       $address = $new_address->copy(false);
