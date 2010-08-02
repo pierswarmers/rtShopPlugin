@@ -19,7 +19,7 @@
     <tbody>
       <?php echo $form->renderGlobalErrors() ?>
       <?php echo render_form_row($form['title']); ?>
-      <?php echo render_form_row($form['type']); ?>
+      <?php //echo render_form_row($form['type']); ?>
       <?php echo render_form_row($form['reduction_type']); ?>
       <?php echo render_form_row($form['reduction_value']); ?>
     </tbody>
