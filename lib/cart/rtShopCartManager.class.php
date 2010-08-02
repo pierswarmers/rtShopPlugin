@@ -160,7 +160,7 @@ class rtShopCartManager
   public function getPreTotalCharge($filter = null)
   {
     $filter = is_null($filter) ? self::FILTER_STACKABLE : $filter;
-    
+
     $charge = $this->getItemsCharge($filter);
 
     if($charge == 0.0)
@@ -237,13 +237,13 @@ class rtShopCartManager
       if ($promotion->getReductionType() == rtShopPromotion::REDUCTION_TYPE_PERCENTAGE)
       {
           $percentage = $promotion->getReductionValue()/100;
-          $total = $total - ($total * $percentage);
+          $total = $total * $percentage;
       }
       else
       {
         if($total > $promotion->getReductionValue())
         {
-          $total = $total - $promotion->getReductionValue();
+          $total = $promotion->getReductionValue();
         }
       }
     }
@@ -264,7 +264,7 @@ class rtShopCartManager
     {
       $filter = $this->getVoucher()->getStackable() ? self::FILTER_STACKABLE : self::FILTER_NON_STACKABLE;
     }
-    
+
     $charge = $this->getPreTotalCharge($filter);
     
 		if(is_null($this->getVoucherCode()))
@@ -686,7 +686,9 @@ class rtShopCartManager
     $string .= sprintf('->getShippingCharge() = %s, ',      $this->getShippingCharge());
     $string .= sprintf('->getTaxCharge() = %s, ',           $this->getTaxCharge());
     $string .= sprintf('->getTaxComponent() = %s, ',        $this->getTaxComponent());
-
+    $string .= sprintf('->getPreTotalCharge = %s, ',        $this->getPreTotalCharge());
+    $string .= sprintf('->getTotalCharge = %s, ',           $this->getTotalCharge());
+    
     return $string;
   }
 }
