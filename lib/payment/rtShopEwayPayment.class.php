@@ -225,7 +225,16 @@ class rtShopEwayPayment implements rtShopPaymentInterface
    * @return Message
    */
 	public function getResponseMessage(){
-    return $this->_response_message;
+    $string = 'Payment failed: ';
+    if($this->getResponseCode() === '05')
+    {
+      $string .= 'Your credit card information seems to be incorrect.';
+    }
+    else
+    {
+      $string .= $this->_response_message;
+    }
+    return $string;
 	}
   
   /**
