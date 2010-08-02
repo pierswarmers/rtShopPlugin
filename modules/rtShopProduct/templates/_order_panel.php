@@ -9,7 +9,7 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
 
 ?>
 <?php if($rt_shop_product->isPurchasable()): ?>
-<form method="post" class="rt-shop-product-order-panel" action="<?php echo url_for('@rt_shop_order_add_to_bag', $rt_shop_product); ?>">
+  <form action="<?php echo url_for('@rt_shop_order_add_to_bag') ?>" method="post" class="rt-shop-product-order-panel">
 
   <input type="hidden" name="rt-shop-product-id" value="<?php echo $rt_shop_product->getId(); ?>" />
   
