@@ -22,6 +22,9 @@ class rtShopCartManager
 					$_promotion,
           $_is_wholesale;
 
+  const FILTER_NON_STACKABLE = 'NONSTACKABLE';
+  const FILTER_STACKABLE = 'STACKABLE';
+
   /**
    * Construct the cart manager - initialising the user and order objects.
    *
@@ -49,16 +52,27 @@ class rtShopCartManager
   /**
    * Return the item charges, with tax if running in exclusive tax mode.
    *
+   * @param string $filter
    * @return float
    */
-  public function getItemsCharge()
+  public function getItemsCharge($filter = null)
   {
     $charge = 0.0;
     $column = $this->isWholesale() ? 'price_wholesale' : 'price_retail';
     
     foreach ($this->getStockInfoArray() as $stock)
     {
-      $price = $stock['price_promotion'] > 0 ? $stock['price_promotion'] : $stock[$column];
+      $price = 0;
+      
+      if($filter == self::FILTER_STACKABLE)
+      {
+        $price = $stock['price_promotion'] > 0 ? $stock['price_promotion'] : $stock[$column];
+      }
+      elseif($stock['price_promotion'] == 0)
+      {
+        $price = $stock[$column];
+      }
+
       $charge += $stock['rtShopOrderToStock'][0]['quantity'] * $price;
     }
 
@@ -139,20 +153,26 @@ class rtShopCartManager
 
   /**
    * Gets the total charge value, before vouchers are applied.
-   * 
+   *
+   * @param string $filter
    * @return float
    */
-  public function getPreTotalCharge()
+  public function getPreTotalCharge($filter = null)
   {
-    $charge = $this->getItemsCharge();
+    $filter = is_null($filter) ? self::FILTER_STACKABLE : $filter;
+    
+    $charge = $this->getItemsCharge($filter);
 
     if($charge == 0.0)
     {
       return 0.0;
     }
 
-    // promotion reductions
-    $charge -= $this->getPromotionReduction();
+    if($filter == self::FILTER_STACKABLE)
+    {
+      // promotion reductions
+      $charge -= $this->getPromotionReduction();
+    }
 
     // sales tax for exclusive mode
     if(!$this->isTaxModeInclusive())
@@ -205,7 +225,30 @@ class rtShopCartManager
    */
   public function getPromotionReduction()
   {
-    return (float) $this->getItemsCharge() - rtShopPromotionToolkit::applyPromotion($this->getItemsCharge());
+    $promotion = $this->getPromotion();
+
+    $total = 0.0;
+
+    if($promotion)
+    {
+      $filter = $promotion->getStackable() ? self::FILTER_STACKABLE : self::FILTER_NON_STACKABLE;
+      $total = $this->getItemsCharge($filter);
+
+      if ($promotion->getReductionType() == rtShopPromotion::REDUCTION_TYPE_PERCENTAGE)
+      {
+          $percentage = $promotion->getReductionValue()/100;
+          $total = $total - ($total * $percentage);
+      }
+      else
+      {
+        if($total > $promotion->getReductionValue())
+        {
+          $total = $total - $promotion->getReductionValue();
+        }
+      }
+    }
+
+    return (float) $total;
   }
 
   /**
@@ -215,7 +258,14 @@ class rtShopCartManager
    */
   public function getVoucherReduction()
   {
-    $charge = $this->getPreTotalCharge();
+    $filter = self::FILTER_STACKABLE;
+
+    if($this->getVoucher())
+    {
+      $filter = $this->getVoucher()->getStackable() ? self::FILTER_STACKABLE : self::FILTER_NON_STACKABLE;
+    }
+    
+    $charge = $this->getPreTotalCharge($filter);
     
 		if(is_null($this->getVoucherCode()))
 		{
