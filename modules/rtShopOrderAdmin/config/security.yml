@@ -1,4 +1,4 @@
-<?php $admin_cred = sfConfig::get('app_rt_shop_attribute_admin_credential', 'admin_shop_attribute') . "\n" ?>
+<?php $admin_cred = sfConfig::get('app_rt_shop_order_admin_credential', 'admin_shop_order') . "\n" ?>
 
 all:
   is_secure: true
