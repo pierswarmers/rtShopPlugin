@@ -29,13 +29,13 @@ Product display
 .rt-shop-product-details { float:right; width:380px; }
 .rt-shop-product-price {font-size:120%;font-weight:bold;}
 .rt-shop-item-quantity input {width:50px; margin:0;}
-.selectionGroup strong, .rt-shop-item-quantity label {display:block;position:relative; top:0.4em;float:left;width:80px; padding:0;margin:0; }
+.selectionGroup strong, .rt-shop-item-quantity label {display:block;position:relative; top:0.4em;float:left;width:100px; padding:0;margin:0; }
 /*
 
 UI overide
 
 */
-.ui-buttonset {float:left;margin:0;width:400px;}
+.ui-buttonset {float:left;margin:0;width:370px;}
 .ui-buttonset label { border:2px solid #FFF;-moz-border-radius:5px; -webkit-border-radius:5px; background-repeat: no-repeat; }
 .ui-buttonset label.image-swatch {background-repeat:no-repeat !important;}
 .ui-buttonset label.image-swatch span {background-color:#E6E6E6;margin:0 0 0 30px;padding-left:6px;-webkit-border-top-left-radius:0;-webkit-border-bottom-left-radius:0;-moz-border-radius-topleft:0;-moz-border-radius-bottomleft:0;}
