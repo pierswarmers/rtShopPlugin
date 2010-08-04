@@ -22,7 +22,7 @@
     window.onload = function () {
         var r = Raphael("graph-income-total");
         r.g.txtattr.font = "10px 'Fontin Sans', Fontin-Sans, sans-serif";
-        var lines = r.g.linechart(50, 0, 620, 250,
+        var lines = r.g.linechart(50, 20, 620, 250,
         [<?php $comma_0=''; foreach($orders_by_month as $month): ?><?php echo $comma_0 ?>[<?php $comma_1=''; foreach($month as $data): ?><?php echo $comma_1 ?><?php echo $data['o_day'] ?><?php $comma_1=', '; endforeach; ?>]<?php $comma_0=', '; endforeach; ?>],
         [<?php $comma_0=''; foreach($orders_by_month as $month): ?><?php echo $comma_0 ?>[<?php $comma_1=''; foreach($month as $data): ?><?php echo $comma_1 ?><?php echo $data['o_sum'] ?><?php $comma_1=', '; endforeach; ?>]<?php $comma_0=', '; endforeach; ?>],
         {nostroke: false, axis: "0 0 1 1", symbol: "x", smooth: false});
@@ -38,7 +38,7 @@
         lines.symbols.attr({stroke: "#FFF"});
 //        lines[0][0].attr({stroke: "#CCC"});
 
-        r.g.text(330, 270, "<?php echo __('Day') ?>").attr({"font-weight": "bold", "font-size": "12px"});
+        r.g.text(330, 290, "<?php echo __('Day') ?>").attr({"font-weight": "bold", "font-size": "12px"});
         r.g.text(20, 130, "<?php echo __('Total Income') . ' (' . sfConfig::get('app_rt_currency', 'AUD') . ')' ?>").attr({"font-weight": "bold", "font-size": "12px", rotation: 270});
 
 
@@ -59,14 +59,14 @@
 
         var r2 = Raphael("graph-order-count");
         r2.g.txtattr.font = "10px 'Fontin Sans', Fontin-Sans, sans-serif";
-        var lines2 = r2.g.linechart(50, 0, 620, 250,
+        var lines2 = r2.g.linechart(50, 20, 620, 250,
         [<?php $comma_0=''; foreach($orders_by_month as $month): ?><?php echo $comma_0 ?>[<?php $comma_1=''; foreach($month as $data): ?><?php echo $comma_1 ?><?php echo $data['o_day'] ?><?php $comma_1=', '; endforeach; ?>]<?php $comma_0=', '; endforeach; ?>],
         [<?php $comma_0=''; foreach($orders_by_month as $month): ?><?php echo $comma_0 ?>[<?php $comma_1=''; foreach($month as $data): ?><?php echo $comma_1 ?><?php echo $data['o_count'] ?><?php $comma_1=', '; endforeach; ?>]<?php $comma_0=', '; endforeach; ?>],
         {nostroke: false, axis: "0 0 1 1", symbol: "x", smooth: false});
         lines2.symbols.attr({r: 3}).click(function(){alert(this)});
         lines2.symbols.attr({stroke: "#FFF"});
 
-        r2.g.text(330, 270, "<?php echo __('Day') ?>").attr({"font-weight": "bold", "font-size": "12px"});
+        r2.g.text(330, 290, "<?php echo __('Day') ?>").attr({"font-weight": "bold", "font-size": "12px"});
         r2.g.text(20, 130, "<?php echo __('Total Orders') ?>").attr({"font-weight": "bold", "font-size": "12px", rotation: 270});
 
 
