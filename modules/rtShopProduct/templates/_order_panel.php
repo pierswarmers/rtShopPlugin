@@ -18,7 +18,7 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
 
   <p class="clearfix selectionGroup">
 
-    <strong><?php echo $rt_shop_attribute->getDisplayTitle() ?>: </strong>
+    <strong><?php echo __('Select') . ' ' . $rt_shop_attribute->getDisplayTitle() ?>: </strong>
     <span class="rt-shop-option-set">
     <?php foreach ($variations as $variation): ?>
 
@@ -49,7 +49,7 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
     $title = htmlentities($variation->getTitle());
 
     ?>
-      <input name="rt-shop-variation-ids[<?php echo $i ?>]" title="<?php echo $title ?>" id="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo $class ?>" type="radio" value="<?php echo $variation->getId() ?>" />
+      <input name="rt-shop-variation-ids[<?php echo $i ?>]" title="<?php echo $title ?>" id="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo $class ?>" type="radio" value="<?php echo $variation->getId() ?>" <?php echo count($variations) == 1 ? ' checked="checked"' : '' ?>/>
       <span class="ref" style="display:none">.<?php echo implode(', .', $ref) ?></span>
       <label for="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo $available ? '' : 'unavailable' ?> <?php echo $is_image ? 'image-swatch' : '' ?>" <?php echo $image ?>><?php echo $variation->getTitle() ?></label>
     <?php endforeach; ?>
@@ -65,7 +65,7 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
 
   <?php if(sfConfig::get('app_rt_shop_ordering_enabled', true)): ?>
   <p>
-    <button type="submit" class="disabled" disabled><?php echo __('Add to Cart') ?></button>
+    <button type="submit" class="disabled" disabled><?php echo __('Please make your selection') ?></button>
     <span id="rt-shop-add-to-wishlist"><a href="#"><?php echo __('Add to wishlist') ?></a></span> |
     <span id="rt-shop-send-to-friend"><a href="<?php echo url_for('rt_shop_send_to_friend', array('product_id' => $rt_shop_product->getId())) ?>"><?php echo __('Send to a friend') ?></a></span>
   </p>
@@ -152,7 +152,11 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
         button.addClass("disabled");
       }
     }
+
+    
   }
+  
+  checkUserSelection();
   </script>
 </form>
 <?php else: ?>
