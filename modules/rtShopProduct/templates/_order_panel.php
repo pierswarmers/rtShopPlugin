@@ -118,7 +118,7 @@ use_stylesheet('/rtShopPlugin/css/main.css', 'last');
       }
     });
     $("form.rt-shop-product-order-panel").show();
-    $("form.rt-shop-product-order-panel button").attr("disabled",true);
+    //$("form.rt-shop-product-order-panel button").attr("disabled",true);
   });
 
   checkUserSelection = function() {
