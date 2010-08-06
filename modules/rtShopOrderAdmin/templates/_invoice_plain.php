@@ -1,4 +1,19 @@
-<?php use_helper('I18N', 'Number'); $addresses = $rt_shop_order->getAddressInfoArray(); $shipping = (count($addresses) == 2) ? 1 : 0; $promotion = $rt_shop_order->getPromotionData(); $voucher = $rt_shop_order->getVoucherData(); ?>
+<?php use_helper('I18N', 'Number'); ?>
+<?php
+
+$billing_address = $rt_shop_order->getBillingAddress();
+$shipping_address = $rt_shop_order->getShippingAddress();
+
+if(!$shipping_address)
+{
+  $shipping_address = $billing_address;
+}
+
+$addresses = $rt_shop_order->getAddressInfoArray();
+$promotion = $rt_shop_order->getPromotionData();
+$voucher = $rt_shop_order->getVoucherData();
+
+?>
 ------------------------------------------------------------
 <?php echo strtoupper(__('Shop Details')) ?><?php echo "\r\n" ?>
 ------------------------------------------------------------
@@ -20,30 +35,33 @@
 ------------------------------------------------------------
 <?php echo strtoupper(__('Address Details')) ?><?php echo "\r\n" ?>
 ------------------------------------------------------------
-<?php if(count($addresses) > 0): ?>
+
 ** <?php echo strtoupper(__('Billing'))." **\r\n" ?>
-<?php echo $addresses[0]['first_name'] . " " . $addresses[0]['last_name'] ?><?php echo "\r\n" ?>
-<?php echo $addresses[0]['address_1'] ?><?php echo "\r\n" ?>
-<?php echo ($addresses[0]['address_2'] != '') ? $addresses[0]['address_2'].'<?php echo "\r\n" ?>' : '' ?>
-<?php echo $addresses[0]['town'] . " " . $addresses[0]['postcode'] . " " . $addresses[0]['state'] ?><?php echo "\r\n" ?>
-<?php echo format_country($addresses[0]['country']) ?><?php echo "\r\n" ?>
-<?php if($addresses[0]['phone'] != ''): ?>
-<?php echo __('Phone') ?>: <?php echo $addresses[0]['phone'] ?><?php echo "\r\n" ?>
+<?php if($billing_address): ?>
+<?php echo $billing_address['first_name'] . " " . $billing_address['last_name'] ?><?php echo "\r\n" ?>
+<?php echo $billing_address['address_1'] ?><?php echo "\r\n" ?>
+<?php echo ($billing_address['address_2'] != '') ? $billing_address['address_2'].'<?php echo "\r\n" ?>' : '' ?>
+<?php echo $billing_address['town'] . " " . $billing_address['postcode'] . " " . $billing_address['state'] ?><?php echo "\r\n" ?>
+<?php echo format_country($billing_address['country']) ?><?php echo "\r\n" ?>
+<?php if($billing_address['phone'] != ''): ?>
+<?php echo __('Phone') ?>: <?php echo $billing_address['phone'] ?><?php echo "\r\n" ?>
 <?php endif; ?>
-<?php if($addresses[0]['instructions'] != ''): ?>
-<?php echo __('Instructions') ?>: <?php echo $addresses[0]['instructions'] ?><?php echo "\r\n" ?>
+<?php if($billing_address['instructions'] != ''): ?>
+<?php echo __('Instructions') ?>: <?php echo $billing_address['instructions'] ?><?php echo "\r\n" ?>
 <?php endif; ?>
-<?php echo "\r\n" ?>** <?php echo strtoupper(__('Shipping'))." **\r\n" ?>
-<?php echo $addresses[$shipping]['first_name'] . " " . $addresses[$shipping]['last_name'] ?><?php echo "\r\n" ?>
-<?php echo $addresses[$shipping]['address_1'] ?><?php echo "\r\n" ?>
-<?php echo ($addresses[$shipping]['address_2'] != '') ? $addresses[$shipping]['address_2'].'<?php echo "\r\n" ?>' : '' ?>
-<?php echo $addresses[$shipping]['town'] . " " . $addresses[$shipping]['postcode'] . " " . $addresses[$shipping]['state'] ?><?php echo "\r\n" ?>
-<?php echo format_country($addresses[$shipping]['country']) ?><?php echo "\r\n" ?>
-<?php if($addresses[$shipping]['phone'] != ''): ?>
-<?php echo __('Phone') ?>: <?php echo $addresses[$shipping]['phone'] ?><?php echo "\r\n" ?>
 <?php endif; ?>
-<?php if($addresses[$shipping]['instructions'] != ''): ?>
-<?php echo __('Instructions') ?>: <?php echo $addresses[$shipping]['instructions'] ?><?php echo "\r\n" ?>
+** <?php echo strtoupper(__('Shipping'))." **\r\n" ?>
+<?php if($shipping_address): ?>
+<?php echo $shipping_address['first_name'] . " " . $shipping_address['last_name'] ?><?php echo "\r\n" ?>
+<?php echo $shipping_address['address_1'] ?><?php echo "\r\n" ?>
+<?php echo ($shipping_address['address_2'] != '') ? $shipping_address['address_2'].'<?php echo "\r\n" ?>' : '' ?>
+<?php echo $shipping_address['town'] . " " . $shipping_address['postcode'] . " " . $shipping_address['state'] ?><?php echo "\r\n" ?>
+<?php echo format_country($shipping_address['country']) ?><?php echo "\r\n" ?>
+<?php if($shipping_address['phone'] != ''): ?>
+<?php echo __('Phone') ?>: <?php echo $shipping_address['phone'] ?><?php echo "\r\n" ?>
+<?php endif; ?>
+<?php if($shipping_address['instructions'] != ''): ?>
+<?php echo __('Instructions') ?>: <?php echo $shipping_address['instructions'] ?><?php echo "\r\n" ?>
 <?php endif; ?>
 <?php endif; ?>
 

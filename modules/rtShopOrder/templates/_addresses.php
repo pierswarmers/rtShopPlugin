@@ -1,5 +1,14 @@
-<?php $billing_address = $rt_shop_cart_manager->getBillingAddress(); ?>
-<?php $shipping_address = $rt_shop_cart_manager->getShippingAddress(); ?>
+<?php
+
+$billing_address = $rt_shop_cart_manager->getBillingAddress(); 
+$shipping_address = $rt_shop_cart_manager->getShippingAddress();
+
+if(!$shipping_address)
+{
+  $shipping_address = $billing_address;
+}
+
+?>
 <h2><?php echo __('Address Details') ?></h2>
 <table class="rt-shop-order-addresses">
   <thead>
@@ -27,14 +36,6 @@
         <?php echo format_country($shipping_address['country']) ?><br/>
         <?php if($shipping_address['phone'] != ''): ?><?php echo __('Phone') ?>: <?php echo $shipping_address['phone'] ?><br/><?php endif; ?>
         <?php if($shipping_address['instructions'] != ''): ?><?php echo $shipping_address['instructions'] ?><?php endif; ?>
-      <?php else: ?>
-        <?php echo $billing_address['first_name'] . " " . $billing_address['last_name'] ?><br/>
-        <?php echo $billing_address['address_1'] ?><br/>
-        <?php echo ($billing_address['address_2'] != '') ? $billing_address['address_2'].'<br/>' : '' ?>
-        <?php echo $billing_address['town'] . " " . $billing_address['postcode'] . " " . $billing_address['state'] ?><br/>
-        <?php echo format_country($billing_address['country']) ?><br/>
-        <?php if($billing_address['phone'] != ''): ?><?php echo __('Phone') ?>: <?php echo $billing_address['phone'] ?><br/><?php endif; ?>
-        <?php if($billing_address['instructions'] != ''): ?><?php echo __('Instructions') ?>: <?php echo $billing_address['instructions'] ?><?php endif; ?>
       <?php endif; ?></td>
     </tr>
   </tbody>

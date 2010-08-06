@@ -1,6 +1,15 @@
 <?php use_helper('I18N', 'Number', 'rtAdmin') ?>
-<?php $addresses = $rt_shop_order->getAddressInfoArray(); ?>
-<?php $shipping = (count($addresses) == 2) ? 1 : 0; ?>
+<?php
+
+$billing_address = $rt_shop_order->getBillingAddress();
+$shipping_address = $rt_shop_order->getShippingAddress();
+
+if(!$shipping_address)
+{
+  $shipping_address = $billing_address;
+}
+
+?>
 <table>
   <tbody>
     <tr>
@@ -43,37 +52,51 @@
       <th><?php echo __('Shipping Address') ?></th>
     </tr>
   </thead>
-  <?php if(count($addresses) > 0): ?>
   <tbody>
     <tr>
-      <td style="width:50%"><?php echo $addresses[0]['first_name'] . " " . $addresses[0]['last_name'] ?><br/>
-        <?php echo $addresses[0]['address_1'] ?><br/>
-        <?php echo ($addresses[0]['address_2'] != '') ? $addresses[0]['address_2'].'<br/>' : '' ?>
-        <?php echo $addresses[0]['town'] . " " . $addresses[0]['postcode'] . " " . $addresses[0]['state'] ?><br/>
-        <?php echo format_country($addresses[0]['country']) ?></td>
-      <td style="width:50%"><?php echo $addresses[$shipping]['first_name'] . " " . $addresses[$shipping]['last_name'] ?><br/>
-        <?php echo $addresses[$shipping]['address_1'] ?><br/>
-        <?php echo ($addresses[$shipping]['address_2'] != '') ? $addresses[$shipping]['address_2'].'<br/>' : '' ?>
-        <?php echo $addresses[$shipping]['town'] . " " . $addresses[$shipping]['postcode'] . " " . $addresses[$shipping]['state'] ?><br/>
-        <?php echo format_country($addresses[$shipping]['country']) ?></td>
+      <td style="width:50%">
+        <?php if($billing_address): ?>
+        <?php echo $billing_address['first_name'] . " " . $billing_address['last_name'] ?><br/>
+        <?php echo $billing_address['address_1'] ?><br/>
+        <?php echo ($billing_address['address_2'] != '') ? $billing_address['address_2'].'<br/>' : '' ?>
+        <?php echo $billing_address['town'] . " " . $billing_address['postcode'] . " " . $billing_address['state'] ?><br/>
+        <?php echo format_country($billing_address['country']) ?>
+        <?php endif; ?>
+      </td>
+      <td style="width:50%">
+        <?php if($shipping_address): ?>
+        <?php echo $shipping_address['first_name'] . " " . $shipping_address['last_name'] ?><br/>
+        <?php echo $shipping_address['address_1'] ?><br/>
+        <?php echo ($shipping_address['address_2'] != '') ? $shipping_address['address_2'].'<br/>' : '' ?>
+        <?php echo $shipping_address['town'] . " " . $shipping_address['postcode'] . " " . $shipping_address['state'] ?><br/>
+        <?php echo format_country($shipping_address['country']) ?>
+        <?php endif; ?>
+      </td>
     </tr>
     <tr>
-      <td><?php if($addresses[0]['phone'] != ''): ?>
-          <?php echo __('Phone') ?>: <?php echo $addresses[0]['phone'] ?>
-        <?php endif; ?></td>
-      <td><?php if($addresses[$shipping]['phone'] != ''): ?>
-        <?php echo __('Phone') ?>: <?php echo $addresses[$shipping]['phone'] ?>
-        <?php endif; ?></td>
+      <td>
+        <?php if($billing_address && $billing_address['phone'] != ''): ?>
+          <?php echo __('Phone') ?>: <?php echo $billing_address['phone'] ?>
+        <?php endif; ?>
+      </td>
+      <td>
+        <?php if($shipping_address && $shipping_address['phone'] != ''): ?>
+          <?php echo __('Phone') ?>: <?php echo $shipping_address['phone'] ?>
+        <?php endif; ?>
+      </td>
     </tr>
     <tr>
-      <td><?php if($addresses[0]['instructions'] != ''): ?>
-          <?php echo __('Instructions') ?>: <?php echo $addresses[0]['instructions'] ?>
-        <?php endif; ?></td>
-      <td><?php if($addresses[$shipping]['instructions'] != ''): ?>
-        <?php echo __('Instructions') ?>: <?php echo $addresses[$shipping]['instructions'] ?>
-        <?php endif; ?></td>
+      <td>
+        <?php if($billing_address && $billing_address['instructions'] != ''): ?>
+          <?php echo __('Instructions') ?>: <?php echo $billing_address['instructions'] ?>
+        <?php endif; ?>
+      </td>
+      <td>
+        <?php if($shipping_address && $shipping_address['instructions'] != ''): ?>
+          <?php echo __('Instructions') ?>: <?php echo $shipping_address['instructions'] ?>
+        <?php endif; ?>
+      </td>
     </tr>
   </tbody>
-  <?php endif; ?>
 </table>
 <?php include_partial('rtShopOrderAdmin/archive', array('rt_shop_order' => $rt_shop_order)) ?>
