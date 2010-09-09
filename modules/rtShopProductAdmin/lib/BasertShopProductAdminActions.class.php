@@ -39,28 +39,42 @@ class BasertShopProductAdminActions extends sfActions
                 s.length,
                 s.width,
                 s.height,
-                s.weight')
+                s.weight,                
+                sv.stock_id,
+                v.title')
       ->leftJoin('s.rtShopProduct p')
       ->andWhere('p.id = s.product_id')
-      ->orderBy('p.sku, s.sku');
-    $stocks = $q->execute(array(), Doctrine_Core::HYDRATE_SCALAR);
+      ->leftJoin('s.rtShopStockToVariation sv')
+      ->leftJoin('sv.rtShopVariation v')
+      ->andWhere('sv.stock_id = s.id')
+      ->orderBy('p.sku, s.sku, v.attribute_id');
+    $stocks = $q->execute(array(), Doctrine_Core::HYDRATE_ARRAY);
 
-    $this->key_order = array('p_title','p_sku','s_sku','s_quantity','s_id','s_product_id','s_price_retail','s_price_promotion','s_price_wholesale','s_length','s_width','s_height','s_weight');
+    // Create custom array
+    $this->key_order = array('s_id', 's_sku', 's_quantity', 's_price_retail', 's_price_promotion', 's_price_wholesale', 's_length', 's_width', 's_height', 's_weight', 'p_id', 'p_sku', 'p_title', 'v_variations');
     $this->stocks = array();
     $i=0;
     foreach($stocks as $stock)
     {
-      foreach($this->key_order as $key => $value)
+      $this->stocks[$i]['s_id'] = $stock['id'];
+      $this->stocks[$i]['s_sku'] = $stock['sku'];
+      $this->stocks[$i]['s_quantity'] = $stock['quantity'];
+      $this->stocks[$i]['s_price_retail'] = $stock['price_retail'];
+      $this->stocks[$i]['s_price_promotion'] = $stock['price_promotion'];
+      $this->stocks[$i]['s_price_wholesale'] = $stock['price_wholesale'];
+      $this->stocks[$i]['s_length'] = $stock['length'];
+      $this->stocks[$i]['s_width'] = $stock['width'];
+      $this->stocks[$i]['s_height'] = $stock['height'];
+      $this->stocks[$i]['s_weight'] = $stock['weight'];
+      $this->stocks[$i]['p_id'] = $stock['rtShopProduct']['id'];
+      $this->stocks[$i]['p_sku'] = $stock['rtShopProduct']['sku'];
+      $this->stocks[$i]['p_title'] = preg_replace('/[\$,]/', '', $stock['rtShopProduct']['title']);
+      $variations = '';
+      foreach($stock['rtShopStockToVariation'] as $variation)
       {
-        if($value === 'p_title')
-        {
-          $this->stocks[$i][$value] = preg_replace('/[\$,]/', '', $stock[$value]);
-        }
-        else
-        {
-          $this->stocks[$i][$value] = $stock[$value];
-        }
+        $variations .= $variation['rtShopVariation']['title'].' / ';
       }
+      $this->stocks[$i]['v_variations'] = substr($variations, 0, -3);
       $i++;
     }
 

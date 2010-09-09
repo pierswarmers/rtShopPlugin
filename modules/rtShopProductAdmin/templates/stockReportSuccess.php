@@ -42,33 +42,30 @@
       <th><?php echo __('Product SKU') ?></th>
       <th><?php echo __('Stock SKU') ?></th>
       <th><?php echo __('Quantity') ?></th>
-      <th><?php echo __('Stock Id') ?></th>
-      <th><?php echo __('Product Id') ?></th>
       <th><?php echo __('Price Retail') ?></th>
       <th><?php echo __('Price Promotion') ?></th>
       <th><?php echo __('Price Wholesale') ?></th>
-      <th><?php echo __('Length') ?></th>
-      <th><?php echo __('Width') ?></th>
-      <th><?php echo __('Height') ?></th>
-      <th><?php echo __('Weight') ?></th>
+      <th><?php echo __('Variations') ?></th>
     </tr>
   </thead>
   <tbody>
     <?php foreach($pager->getResults() as $stock): ?>
+      <?php
+        $variations = '';
+        foreach($stock['rtShopStockToVariation'] as $variation)
+        {
+          $variations .= $variation['rtShopVariation']['title'].' / ';
+        }
+      ?>
       <tr>
-        <td><?php echo $stock['p_title'] ?></td>
-        <td><code><?php echo $stock['p_sku'] ?></code></td>
-        <td><code><?php echo link_to($stock['s_sku'] === '' ? 'N/A' : $stock['s_sku'],'rtShopProductAdmin/stock?id='.$stock['s_product_id']) ?></code></td>
-        <td><?php echo $stock['s_quantity'] ?></td>
-        <td><?php echo $stock['s_id'] ?></td>
-        <td><?php echo $stock['s_product_id'] ?></td>
-        <td><?php echo format_currency($stock['s_price_retail'], sfConfig::get('app_rt_currency', 'AUD')) ?></td>
-        <td><?php echo format_currency($stock['s_price_promotion'], sfConfig::get('app_rt_currency', 'AUD')) ?></td>
-        <td><?php echo format_currency($stock['s_price_wholesale'], sfConfig::get('app_rt_currency', 'AUD')) ?></td>
-        <td><?php echo $stock['s_length'] ?></td>
-        <td><?php echo $stock['s_width'] ?></td>
-        <td><?php echo $stock['s_height'] ?></td>
-        <td><?php echo $stock['s_weight'] ?></td>
+        <td><?php echo $stock['rtShopProduct']['title'] ?></td>
+        <td><code><?php echo $stock['rtShopProduct']['sku'] ?></code></td>
+        <td><code><?php echo link_to($stock['sku'] === '' ? 'N/A' : $stock['sku'],'rtShopProductAdmin/stock?id='.$stock['rtShopProduct']['id']) ?></code></td>
+        <td><?php echo $stock['quantity'] ?></td>
+        <td><?php echo format_currency($stock['price_retail'], sfConfig::get('app_rt_currency', 'AUD')) ?></td>
+        <td><?php echo format_currency($stock['price_promotion'], sfConfig::get('app_rt_currency', 'AUD')) ?></td>
+        <td><?php echo format_currency($stock['price_wholesale'], sfConfig::get('app_rt_currency', 'AUD')) ?></td>
+        <td><?php echo substr($variations, 0, -3) ?></td>
       </tr>
     <?php endforeach; ?>
   </tbody>
