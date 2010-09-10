@@ -66,12 +66,11 @@ all:
       #American Express:     American Express
     #shop_order_status_types:
       #cancelled:             cancelled
-      #complete:              complete
       #pending:               pending
-      #shipped:               shipped
-      #processing:            processing
-      #backordered:           backordered
       #paid:                  paid
+      #picking:               picking
+      #sending:               sending
+      #sent:                  sent
     #shop_birthday_voucher:
       #reduction_type:                    dollarOff               # Either 'percentageOff' or 'dollarOff'
       #reduction_value:                   10                      # Voucher reduction value (e.g 10 = $10)
