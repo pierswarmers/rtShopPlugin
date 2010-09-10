@@ -14,7 +14,7 @@ abstract class PluginrtShopOrderForm extends BasertShopOrderForm
   {
     parent::setup();
 
-    $status = sfConfig::get('app_rt_shop_order_status_types',array('cancelled', 'complete', 'pending', 'processing', 'shipped', 'paid', 'backordered'));
+    $status = sfConfig::get('app_rt_shop_order_status_types',array('pending', 'paid', 'picking', 'sending', 'sent'));
 
     $this->widgetSchema['status'] = new sfWidgetFormSelect(array('choices' => $status));
 

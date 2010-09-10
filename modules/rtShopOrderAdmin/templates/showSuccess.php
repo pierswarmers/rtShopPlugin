@@ -14,7 +14,12 @@
     }).click(function(){ document.location.href='<?php echo url_for('rtShopOrderAdmin/index') ?>'; });
 	});
 </script>
-
 <?php end_slot(); ?>
+
+<?php slot('rt-side') ?>
+  <?php include_partial('status_update', array('rt_shop_order' => $rt_shop_order)) ?>
+<?php end_slot(); ?>
+
+<?php include_partial('rtAdmin/flashes') ?>
 
 <?php include_partial('rtShopOrderAdmin/invoice_html', array('rt_shop_order' => $rt_shop_order)) ?>

@@ -222,6 +222,25 @@ class BasertShopOrderAdminActions extends sfActions
     $this->orders_by_month = $orders_by_month;
   }
 
+  /**
+   * Update order status
+   *
+   * @param sfWebRequest $request
+   */
+  public function executeStatusUpdate(sfWebRequest $request)
+  {
+    $this->forward404Unless($rt_shop_order = Doctrine::getTable('rtShopOrder')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_order does not exist (%s).', $request->getParameter('id')));
+
+    if($rt_shop_order->getStatus() != $request->getParameter('rt-shop-order-status'))
+    {
+      $rt_shop_order->setStatus($request->getParameter('rt-shop-order-status'));
+      $rt_shop_order->save();
+      $this->getUser()->setFlash('notice', 'Order status has been changed to '.$request->getParameter('rt-shop-order-status'));
+    }
+
+    $this->redirect('/rtShopOrderAdmin/show?id='.$request->getParameter('id'));
+  }
+
   protected function processForm(sfWebRequest $request, sfForm $form)
   {
     $form->bind($request->getParameter($form->getName()), $request->getFiles($form->getName()));

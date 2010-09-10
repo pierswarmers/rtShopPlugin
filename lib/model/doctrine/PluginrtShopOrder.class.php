@@ -13,12 +13,11 @@
 abstract class PluginrtShopOrder extends BasertShopOrder
 {
   const STATUS_CANCELLED  = 'cancelled';
-  const STATUS_COMPLETE   = 'complete';
   const STATUS_PENDING    = 'pending';
-  const STATUS_PROCESSING = 'processing';
-  const STATUS_SHIPPED    = 'shipped';
   const STATUS_PAID       = 'paid';
-  const STATUS_BACKORDER  = 'backordered';
+  const STATUS_PICKING    = 'picking';
+  const STATUS_SENDING    = 'sending';
+  const STATUS_SENT       = 'sent';
 
   private $_stock_info,
           $_price_without_tax,
