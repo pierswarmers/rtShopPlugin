@@ -38,7 +38,8 @@ rtShopOrder:
 
     # shipping
     shipping_charge:          float
-
+    shipping_code:            string(50)
+    
     # tax
     tax_charge:               float
     tax_component:            float
