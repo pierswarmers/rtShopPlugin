@@ -1,4 +1,4 @@
-<?php $status = sfConfig::get('app_rt_shop_order_status_types',array('pending', 'paid', 'picking', 'sending', 'sent')); ?>
+<?php $status = sfConfig::get('app_rt_shop_order_status_types',array('pending', 'paid', 'picking', 'dispatch', 'sent')); ?>
 <form id ="rtShopOrderStatusUpdate" action="/rtShopOrderAdmin/statusUpdate-?id=<?php echo $rt_shop_order->getId() ?>" method="post">
   <p><strong><?php echo __('Adjust order status') ?>:</strong><br/>
     <select name="rt-shop-order-status">

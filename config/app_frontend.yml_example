@@ -69,7 +69,7 @@ all:
       #pending:               pending
       #paid:                  paid
       #picking:               picking
-      #sending:               sending
+      #dispatch:              dispatch
       #sent:                  sent
     #shop_birthday_voucher:
       #reduction_type:                    dollarOff               # Either 'percentageOff' or 'dollarOff'
