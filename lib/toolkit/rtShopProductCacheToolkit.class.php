@@ -23,6 +23,8 @@ class rtShopProductCacheToolkit
 
     if ($cache)
     {
+      rtGlobalCacheToolkit::clearCache();
+      
       $cache->remove('rtShopProduct/index'); // index page
       $cache->remove('rtShopProduct/index?page=*'); // index with page
       $cache->remove('rtShopProduct/feed?format=*'); // feed

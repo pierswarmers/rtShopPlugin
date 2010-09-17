@@ -23,6 +23,8 @@ class rtShopCategoryCacheToolkit
     
     if ($cache)
     {
+      rtGlobalCacheToolkit::clearCache();
+      
       $cache->remove('rtShopCategory/index');
 
       $file_cache = new sfFileCache(
