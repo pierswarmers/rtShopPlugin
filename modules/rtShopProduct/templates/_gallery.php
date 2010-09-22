@@ -2,11 +2,8 @@
 
 use_helper('I18N');
 
-use_javascript('/rtCorePlugin/vendor/jquery/js/jquery.min.js');
-use_javascript('/rtCorePlugin/vendor/colorbox/js/jquery.colorbox-min.js');
-use_stylesheet('/rtCorePlugin/vendor/colorbox/css/colorbox.css');
-use_stylesheet('/rtCorePlugin/vendor/jquery/css/ui/jquery.ui.css');
 
+include_partial('order_panel_assets');
 ?>
 
 <div class="rt-shop-product-primary-image">
@@ -43,13 +40,3 @@ use_stylesheet('/rtCorePlugin/vendor/jquery/css/ui/jquery.ui.css');
     </div>
   <?php $i++; endforeach; ?>
 </div>
-<script type="text/javascript">
-  $(function()
-  {
-    $(".rt-shop-product-primary-image a").colorbox({preloading:false});
-    $(".rt-shop-product-image-thumbs div").click(function()
-    {
-      $(".rt-shop-product-primary-image a#" + $(this).children().children('img').attr('class')).css("display","inline").siblings('a').css("display","none");
-    });
-  });
-</script>
