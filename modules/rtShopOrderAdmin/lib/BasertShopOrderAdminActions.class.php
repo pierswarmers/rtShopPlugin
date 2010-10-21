@@ -20,7 +20,7 @@ class BasertShopOrderAdminActions extends sfActions
   public function executeIndex(sfWebRequest $request)
   {
     $query = Doctrine::getTable('rtShopOrder')->getQuery();
-    $query->andWhere('o.status = ?', rtShopOrder::STATUS_PAID);
+    $query->andWhere('o.status != ?', rtShopOrder::STATUS_PENDING);
     $query->orderBy('o.created_at DESC');
 
     $this->pager = new sfDoctrinePager(
