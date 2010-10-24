@@ -20,8 +20,9 @@ class BasertShopOrderAdminActions extends sfActions
   public function executeIndex(sfWebRequest $request)
   {
     $query = Doctrine::getTable('rtShopOrder')->getQuery();
-    $query->andWhere('o.status <> ?', rtShopOrder::STATUS_PENDING);
-    $query->orderBy('o.created_at DESC, o.status');
+
+    $query->andWhere('o.status != ?', rtShopOrder::STATUS_PENDING);
+    $query->orderBy('o.created_at DESC');
 
     $this->pager = new sfDoctrinePager(
       'rtShopOrder',
@@ -167,7 +168,7 @@ class BasertShopOrderAdminActions extends sfActions
     $query = Doctrine::getTable('rtShopOrder')->getQuery();
 
     $query->select('day(o.created_at), month(o.created_at), count(o.id), sum(o.total_charge)')
-          ->andWhere('o.status = ?', rtShopOrder::STATUS_PAID)
+          ->andWhere('o.status != ?', rtShopOrder::STATUS_PENDING)
           ->andWhere('MONTH(o.created_at) = ?', $month)
           ->groupBy('DAY(o.created_at)');
 
