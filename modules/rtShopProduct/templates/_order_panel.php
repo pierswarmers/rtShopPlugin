@@ -91,8 +91,10 @@ if($rt_shop_product->isPurchasable()):
   <?php if(sfConfig::get('app_rt_shop_ordering_enabled', true)): ?>
   <p>
     <button type="submit" class="disabled" disabled><?php echo __('Please make your selection') ?></button>
-    <span id="rt-shop-add-to-wishlist"><a href="#"><?php echo __('Add to wishlist') ?></a></span> |
-    <span id="rt-shop-send-to-friend"><a href="<?php echo url_for('rt_shop_send_to_friend', array('product_id' => $rt_shop_product->getId())) ?>"><?php echo __('Send to a friend') ?></a></span>
+    <span class="rt-shop-product-tools">
+    <span class="rt-shop-add-to-wishlist"><a href="#"><?php echo __('Add to wishlist') ?></a></span> |
+    <span class="rt-shop-send-to-friend"><a href="<?php echo url_for('rt_shop_send_to_friend', array('product_id' => $rt_shop_product->getId())) ?>"><?php echo __('Send to a friend') ?></a></span>
+    </span>
   </p>
   <?php endif; ?>
 

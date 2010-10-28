@@ -97,7 +97,7 @@ class BasertShopOrderAdminActions extends sfActions
       $q->andWhere('o.created_at >= ?', $request->getParameter('from'));
       $q->andWhere('o.created_at <= ?', $request->getParameter('to'));
     }
-    $q->andWhere('o.status = ?', rtShopOrder::STATUS_PAID);
+    $q->andWhere('o.status != ?', rtShopOrder::STATUS_PENDING);
     $q->orderBy('o.created_at');
     $this->orders = $q->execute(array(), Doctrine_Core::HYDRATE_SCALAR);
 

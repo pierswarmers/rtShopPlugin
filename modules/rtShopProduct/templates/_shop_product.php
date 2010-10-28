@@ -3,7 +3,9 @@
 use_helper('Number', 'Url', 'I18N', 'rtShopProduct');
 
 ?>
-<h1><?php echo $rt_shop_product->getTitle() ?></h1>
+<?php slot('rt-title') ?>
+<?php echo $rt_shop_product->getTitle() ?>
+<?php end_slot(); ?>
 
 <div class="rt-container">
   <div class="rt-shop-product-gallery">
@@ -19,8 +21,8 @@ use_helper('Number', 'Url', 'I18N', 'rtShopProduct');
 </div>
 
 <?php if($related_products): ?>
-<h2><?php echo __('Related Products') ?></h2>
-<div class="rt-container rt-collection clearfix">
+<div class="rt-shp-products-related rt-container rt-collection clearfix">
+  <h2><?php echo __('Related Products') ?></h2>
   <?php $i=1; foreach($related_products as $linked_rt_shop_product): ?>
     <div class="rt-list-item rt-list-item-<?php echo $i ?>">
     <?php include_component('rtShopProduct', 'shopProductMini', array('id' => $linked_rt_shop_product->getId())) ?>
