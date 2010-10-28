@@ -4,6 +4,32 @@ use_helper('I18N');
 
 
 include_partial('order_panel_assets');
+
+$config = sfConfig::get('app_rt_gallery');
+
+if(!isset($config['javascripts']))
+{
+  $config['javascripts'] = array('/rtCorePlugin/vendor/jquery/js/jquery.min.js',
+                                 '/rtCorePlugin/js/gallery.js');
+}
+
+foreach ($config['javascripts'] as $file)
+{
+  use_javascript($file);
+}
+
+if(!isset($config['stylesheets']))
+{
+  $config['stylesheets'] = array(
+      '/rtCorePlugin/css/gallery.css'
+  );
+}
+
+foreach ($config['stylesheets'] as $file)
+{
+  use_stylesheet($file);
+}
+
 ?>
 
 <div class="rt-shop-product-primary-image">

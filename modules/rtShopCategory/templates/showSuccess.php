@@ -1,25 +1,24 @@
 <?php use_helper('I18N', 'Date', 'rtText', 'rtForm', 'rtDate', 'rtSite'); ?>
+<?php slot('rt-title') ?>
+<?php echo $rt_shop_category->getTitle() ?>
+<?php end_slot(); ?>
 
-<div class="rt-shop-category rt-show rt-primary-container rt-admin-edit-tools-panel">
-  <?php echo link_to(__('Edit'), 'rtShopCategoryAdmin/edit?id='.$rt_shop_category->getId(), array('class' => 'rt-admin-edit-tools-trigger')) ?>
-  <h1><?php echo $rt_shop_category->getTitle() ?></h1>
-  <?php
+<?php echo link_to(__('Edit'), 'rtShopCategoryAdmin/edit?id='.$rt_shop_category->getId(), array('class' => 'rt-admin-edit-tools-trigger')) ?>
 
-  $content = markdown_to_html($rt_shop_category->getContent(), $rt_shop_category);
+<?php
 
-  ?>
-  <?php if(trim($content) !== ''): ?>
-  <div class="rt-container">
-    <?php echo $content; ?>
+$content = markdown_to_html($rt_shop_category->getContent(), $rt_shop_category);
+
+?>
+<?php if(trim($content) !== ''): ?>
+  <?php echo $content; ?>
+<?php endif; ?>
+<div class="rt-container rt-collection">
+  <?php $i = 1; foreach($pager as $rt_shop_product): ?>
+  <div class="rt-list-item rt-list-item-<?php echo $i ?>">
+  <?php include_partial('rtShopProduct/shopProductMini', array('rt_shop_product' => $rt_shop_product)); ?>
   </div>
-  <?php endif; ?>
-  <div class="rt-container rt-collection">
-    <?php $i = 1; foreach($pager as $rt_shop_product): ?>
-    <div class="rt-list-item rt-list-item-<?php echo $i ?>">
-    <?php include_partial('rtShopProduct/shopProductMini', array('rt_shop_product' => $rt_shop_product)); ?>
-    </div>
-    <?php $i++; endforeach; ?>
-  </div>
+  <?php $i++; endforeach; ?>
 </div>
 
 <?php include_partial('rtAdmin/pagination_public', array('pager' => $pager)); ?>
