@@ -5,7 +5,7 @@
 <?php slot('rt-tools') ?>
 <ul id="rtPrimaryTools">
   <li><button class="reports"><?php echo __('View order report') ?></button></li>
-  <li><button class="graphs-quarterly"><?php echo __('View quarterly summary') ?></button></li>
+  <li><button class="graphs-quarterly"><?php echo __('View sales charts') ?></button></li>
 </ul>
 <script type="text/javascript">
 	$(function() {
@@ -13,7 +13,7 @@
       icons: { primary: 'ui-icon-transfer-e-w' }
     }).click(function(){ document.location.href='<?php echo url_for('rtShopOrderAdmin/orderReport') ?>'; });
     $("#rtPrimaryTools .graphs-quarterly").button({
-      icons: { primary: 'ui-icon-transfer-e-w' }
+      icons: { primary: 'ui-icon-image' }
     }).click(function(){ document.location.href='<?php echo url_for('rtShopOrderAdmin/graph') ?>'; });
 	});
 </script>
