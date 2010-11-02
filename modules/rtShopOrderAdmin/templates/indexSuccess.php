@@ -17,6 +17,17 @@
     }).click(function(){ document.location.href='<?php echo url_for('rtShopOrderAdmin/graph') ?>'; });
 	});
 </script>
+<h2><?php echo __('Statistics') ?></h2>
+<dl>
+  <dt><?php echo __('Orders') ?></dt>
+  <dd><?php echo __('Total Orders') ?>: <?php echo $stats['order_total'] ?></dd>
+  <dt><?php echo __('Revenue') ?></dt>
+  <dd><?php echo __('Revenue Today') ?>: <?php echo format_currency($stats['revenue_today'], sfConfig::get('app_rt_currency', 'AUD')); ?></dd>
+  <dd><?php echo __('Revenue Current Month') ?>: <?php echo format_currency($stats['evenue_month_current'], sfConfig::get('app_rt_currency', 'AUD')); ?></dd>
+  <dd><?php echo __('Revenue Last Month') ?>: <?php echo format_currency($stats['evenue_month_last'], sfConfig::get('app_rt_currency', 'AUD')); ?></dd>
+  <dd><?php echo __('Revenue Total') ?>: <?php echo format_currency($stats['revenue_total'], sfConfig::get('app_rt_currency', 'AUD')); ?></dd>
+  <dd><?php echo __('Order Average') ?>: <?php echo format_currency($stats['order_amount_average'], sfConfig::get('app_rt_currency', 'AUD')); ?></dd>
+</dl>
 <?php end_slot(); ?>
 
 <?php include_partial('rtAdmin/flashes') ?>

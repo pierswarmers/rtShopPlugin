@@ -32,6 +32,35 @@ class BasertShopOrderAdminActions extends sfActions
     $this->pager->setQuery($query);
     $this->pager->setPage($request->getParameter('page', 1));
     $this->pager->init();
+
+    $this->stats = $this->stats();
+  }
+
+  private function stats()
+  {
+    // Dates
+    $first_next_month = date('Y-m-d H:i:s',mktime(00,00,00,(date("n")+1 <= 12) ? date("n")+1 : 1 ,1,(date("n")+1 <= 12) ? date("Y") : date("Y")+1));
+    $first_this_month = date('Y-m-d H:i:s',mktime(00,00,00,date("n"),1,date("Y")));
+    $first_last_month = date('Y-m-d H:i:s',mktime(00,00,00,(date("n") != 1) ? date("n")-1 : 12,1,(date("n") != 1) ? date("Y") : date("Y")-1));
+
+    // SQL queries
+    $con = Doctrine_Manager::getInstance()->getCurrentConnection();
+    $result_order_total           = $con->fetchAssoc("select count(*) as orders from rt_shop_order where status <> 'pending'");
+    $result_revenue_total         = $con->fetchAssoc("select sum(payment_charge) as revenue from rt_shop_order where status <> 'pending'");
+    $result_revenue_today         = $con->fetchAssoc("select sum(payment_charge) as revenue from rt_shop_order where date(created_at) = date(NOW()) and status <> 'pending'");
+    $result_revenue_month_current = $con->fetchAssoc("select sum(payment_charge) as revenue from rt_shop_order where status <> 'pending' and created_at > '".$first_this_month."' and created_at < '".$first_next_month."'");
+    $result_revenue_month_last    = $con->fetchAssoc("select sum(payment_charge) as revenue from rt_shop_order where status <> 'pending' and created_at > '".$first_last_month."' and created_at < '".$first_this_month."'");
+
+    // Create array
+    $stats = array();
+    $stats['order_total']          = $result_order_total[0]['orders'];
+    $stats['revenue_total']        = $result_revenue_total[0]['revenue'];
+    $stats['order_amount_average'] = $stats['revenue_total'] / $stats['order_total'];
+    $stats['revenue_today']        = $result_revenue_today[0]['revenue'];
+    $stats['evenue_month_current'] = $result_revenue_month_current[0]['revenue'];
+    $stats['evenue_month_last']    = $result_revenue_month_last[0]['revenue'];
+    
+    return $stats;
   }
 
   private function getCountPerPage(sfWebRequest $request)
