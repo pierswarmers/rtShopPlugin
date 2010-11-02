@@ -17,16 +17,18 @@
     }).click(function(){ document.location.href='<?php echo url_for('rtShopOrderAdmin/graph') ?>'; });
 	});
 </script>
-<h2><?php echo __('Statistics') ?></h2>
-<dl>
-  <dt><?php echo __('Orders') ?></dt>
-  <dd><?php echo __('Total Orders') ?>: <?php echo $stats['order_total'] ?></dd>
-  <dt><?php echo __('Revenue') ?></dt>
-  <dd><?php echo __('Revenue Today') ?>: <?php echo format_currency($stats['revenue_today'], sfConfig::get('app_rt_currency', 'AUD')); ?></dd>
-  <dd><?php echo __('Revenue Current Month') ?>: <?php echo format_currency($stats['evenue_month_current'], sfConfig::get('app_rt_currency', 'AUD')); ?></dd>
-  <dd><?php echo __('Revenue Last Month') ?>: <?php echo format_currency($stats['evenue_month_last'], sfConfig::get('app_rt_currency', 'AUD')); ?></dd>
-  <dd><?php echo __('Revenue Total') ?>: <?php echo format_currency($stats['revenue_total'], sfConfig::get('app_rt_currency', 'AUD')); ?></dd>
-  <dd><?php echo __('Order Average') ?>: <?php echo format_currency($stats['order_amount_average'], sfConfig::get('app_rt_currency', 'AUD')); ?></dd>
+<h2><?php echo __('Sales Summary') ?></h2>
+<dl class="rt-admin-summary-panel clearfix">
+  <dt class="rt-admin-primary"><?php echo __('Today') ?> (<?php echo $stats['today']['count'] ?>)</dt>
+  <dd class="rt-admin-primary"><?php echo format_currency($stats['today']['revenue'], sfConfig::get('app_rt_currency', 'AUD')) ?></dd>
+  <dt><?php echo __('This Month') ?> (<?php echo $stats['month_current']['count'] ?>)</dt>
+  <dd><?php echo format_currency($stats['month_current']['revenue'], sfConfig::get('app_rt_currency', 'AUD')) ?></dd>
+  <dt><?php echo __('Last Month') ?> (<?php echo $stats['month_last']['count'] ?>)</dt>
+  <dd><?php echo format_currency($stats['month_last']['revenue'], sfConfig::get('app_rt_currency', 'AUD')) ?></dd>
+  <dt><?php echo __('Total') ?> (<?php echo $stats['total']['count'] ?>)</dt>
+  <dd><?php echo format_currency($stats['total']['revenue'], sfConfig::get('app_rt_currency', 'AUD')) ?></dd>
+  <dt><?php echo __('Average Order Value') ?></dt>
+  <dd><?php echo format_currency($stats['total']['revenue']/$stats['total']['count'], sfConfig::get('app_rt_currency', 'AUD')) ?></dd>
 </dl>
 <?php end_slot(); ?>
 

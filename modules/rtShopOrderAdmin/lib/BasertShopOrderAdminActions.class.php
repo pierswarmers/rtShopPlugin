@@ -45,20 +45,21 @@ class BasertShopOrderAdminActions extends sfActions
 
     // SQL queries
     $con = Doctrine_Manager::getInstance()->getCurrentConnection();
-    $result_order_total           = $con->fetchAssoc("select count(*) as orders from rt_shop_order where status <> 'pending'");
-    $result_revenue_total         = $con->fetchAssoc("select sum(payment_charge) as revenue from rt_shop_order where status <> 'pending'");
-    $result_revenue_today         = $con->fetchAssoc("select sum(payment_charge) as revenue from rt_shop_order where date(created_at) = date(NOW()) and status <> 'pending'");
-    $result_revenue_month_current = $con->fetchAssoc("select sum(payment_charge) as revenue from rt_shop_order where status <> 'pending' and created_at > '".$first_this_month."' and created_at < '".$first_next_month."'");
-    $result_revenue_month_last    = $con->fetchAssoc("select sum(payment_charge) as revenue from rt_shop_order where status <> 'pending' and created_at > '".$first_last_month."' and created_at < '".$first_this_month."'");
+    //$result_order_total           = $con->fetchAssoc("select count(*) as orders from rt_shop_order where status <> 'pending'");
+
+
+    $result_revenue_total         = $con->fetchAssoc("select sum(payment_charge) as revenue, count(payment_charge) as count from rt_shop_order where status <> 'pending'");
+    $result_revenue_today         = $con->fetchAssoc("select sum(payment_charge) as revenue, count(payment_charge) as count from rt_shop_order where date(created_at) = date(NOW()) and status <> 'pending'");
+    $result_revenue_month_current = $con->fetchAssoc("select sum(payment_charge) as revenue, count(payment_charge) as count from rt_shop_order where status <> 'pending' and created_at > '".$first_this_month."' and created_at < '".$first_next_month."'");
+    $result_revenue_month_last    = $con->fetchAssoc("select sum(payment_charge) as revenue, count(payment_charge) as count from rt_shop_order where status <> 'pending' and created_at > '".$first_last_month."' and created_at < '".$first_this_month."'");
 
     // Create array
     $stats = array();
-    $stats['order_total']          = $result_order_total[0]['orders'];
-    $stats['revenue_total']        = $result_revenue_total[0]['revenue'];
-    $stats['order_amount_average'] = $stats['revenue_total'] / $stats['order_total'];
-    $stats['revenue_today']        = $result_revenue_today[0]['revenue'];
-    $stats['evenue_month_current'] = $result_revenue_month_current[0]['revenue'];
-    $stats['evenue_month_last']    = $result_revenue_month_last[0]['revenue'];
+    $stats['total']        = $result_revenue_total[0];
+    //$stats['order_amount_average'] = $stats['revenue_total'] / $stats['order_total'];
+    $stats['today']        = $result_revenue_today[0];
+    $stats['month_current'] = $result_revenue_month_current[0];
+    $stats['month_last']    = $result_revenue_month_last[0];
     
     return $stats;
   }
