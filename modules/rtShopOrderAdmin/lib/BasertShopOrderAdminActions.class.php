@@ -55,11 +55,17 @@ class BasertShopOrderAdminActions extends sfActions
 
     // Create array
     $stats = array();
-    $stats['total']        = $result_revenue_total[0];
-    //$stats['order_amount_average'] = $stats['revenue_total'] / $stats['order_total'];
-    $stats['today']        = $result_revenue_today[0];
-    $stats['month_current'] = $result_revenue_month_current[0];
-    $stats['month_last']    = $result_revenue_month_last[0];
+    $stats['total']            = $result_revenue_total[0] != '' ? $result_revenue_total[0] : 0.0;
+    $stats['total']['revenue'] = $stats['total']['revenue'] != null ? $stats['total']['revenue'] : 0;
+
+    $stats['today']            = $result_revenue_today[0];
+    $stats['today']['revenue'] = $stats['today']['revenue'] != null ? $stats['today']['revenue'] : 0;
+
+    $stats['month_current']    = $result_revenue_month_current[0];
+    $stats['month_current']['revenue'] = $stats['month_current']['revenue'] != null ? $stats['month_current']['revenue'] : 0;
+
+    $stats['month_last']       = $result_revenue_month_last[0];
+    $stats['month_last']['revenue'] = $stats['month_last']['revenue'] != null ? $stats['month_last']['revenue'] : 0;
     
     return $stats;
   }
