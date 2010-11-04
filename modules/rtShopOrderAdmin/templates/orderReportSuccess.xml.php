@@ -96,8 +96,8 @@
       <items_charge><?php echo $order['o_items_charge'] ?></items_charge>
       <total_charge><?php echo $order['o_total_charge'] ?></total_charge>
       <payment></payment>
-      <created_at><?php echo $order['o_items_charge'] ?></created_at>
-      <updated_at><?php echo $order['o_total_charge'] ?></updated_at>
+      <created_at><?php echo $order['o_created_at'] ?></created_at>
+      <updated_at><?php echo $order['o_updated_at'] ?></updated_at>
     </order>
   <?php endforeach; ?>
   

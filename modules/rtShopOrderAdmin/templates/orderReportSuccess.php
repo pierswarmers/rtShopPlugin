@@ -3,6 +3,15 @@
 <h1><?php echo __('Order Report') ?></h1>
 
 <?php slot('rt-tools') ?>
+<form action="<?php echo url_for('@rt_shop_order_report_download?sf_format=csv') ?>" id="orderReport" method="post">
+<?php echo $form->renderHiddenFields() ?>
+  <dl>
+    <dt><?php echo $form['date_from']->renderLabel() ?></dt>
+    <dd><?php echo $form['date_from'] ?></dd>
+    <dt><?php echo $form['date_to']->renderLabel() ?></dt>
+    <dd><?php echo $form['date_to'] ?></dd>
+  </dl>
+</form>
 <ul id="rtPrimaryTools">
   <li class="button-group">
     <button class="download-csv"><?php echo __('Download CSV') ?></button>
@@ -12,16 +21,22 @@
   <li><button class="cancel"><?php echo __('Cancel/List') ?></button></li>
 </ul>
 <script type="text/javascript">
-	$(function() {
+  $(function() {
     $("#rtPrimaryTools .download-csv").button({
       icons: { primary: 'ui-icon-transfer-e-w' }
-    }).click(function(){ document.location.href='<?php echo url_for('@rt_shop_order_report_download?sf_format=csv') ?>'; });
+    }).click(function(){
+      $('#orderReport').attr('action', '<?php echo url_for('@rt_shop_order_report_download?sf_format=csv') ?>').submit();
+    });
 
     $("#rtPrimaryTools .download-xml").button({
-    }).click(function(){ document.location.href='<?php echo url_for('@rt_shop_order_report_download?sf_format=xml') ?>'; });
+    }).click(function(){
+      $('#orderReport').attr('action', '<?php echo url_for('@rt_shop_order_report_download?sf_format=xml') ?>').submit();
+    });
 
     $("#rtPrimaryTools .download-json").button({
-    }).click(function(){ document.location.href='<?php echo url_for('@rt_shop_order_report_download?sf_format=json') ?>'; });
+    }).click(function(){
+      $('#orderReport').attr('action', '<?php echo url_for('@rt_shop_order_report_download?sf_format=json') ?>').submit();
+    });
 
     $("#rtPrimaryTools .cancel").button({
       icons: { primary: 'ui-icon-cancel' }
@@ -29,7 +44,8 @@
 
     $('.button-group').buttonset();
 
-	});
+    $('.ui-datepicker-trigger').html('&nbsp;').button({ icons: { primary: 'ui-icon-calendar' }, text: false });
+  });
 </script>
 <?php end_slot(); ?>
 

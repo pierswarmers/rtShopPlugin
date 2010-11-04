@@ -120,6 +120,7 @@ class BasertShopOrderAdminActions extends sfActions
    */
   public function executeOrderReport(sfWebRequest $request)
   {
+    $this->form = new rtShopOrderReportDateForm();
     $fields = 'o.reference,o.status,o.id,o.is_wholesale,o.email_address,o.user_id,o.shipping_charge,o.tax_charge,o.tax_component,o.tax_mode,o.tax_rate,o.promotion_reduction,o.promotion_id,o.voucher_reduction,o.voucher_id,o.voucher_code,o.items_charge,o.total_charge,o.payment_transaction_id,o.payment_type,o.payment_charge,o.created_at,o.updated_at';
     if($this->getRequest()->getParameter('sf_format') != 'csv')
     {
@@ -129,12 +130,20 @@ class BasertShopOrderAdminActions extends sfActions
     $this->key_order = explode(',', $fieldnames);
     $q = Doctrine_Query::create()->from('rtShopOrder o');
     $q->select($fields);
-    if($request->hasParameter('from') && $request->hasParameter('to'))
-    {
-      $q->andWhere('o.created_at >= ?', $request->getParameter('from'));
-      $q->andWhere('o.created_at <= ?', $request->getParameter('to'));
-    }
     $q->andWhere('o.status != ?', rtShopOrder::STATUS_PENDING);
+
+    if($request->isMethod(sfRequest::POST) || $request->isMethod(sfRequest::PUT))
+    {
+      $order_report = $request->getParameter('rt_shop_order_report');
+      if($order_report['date_from']['year'] != '' && $order_report['date_from']['month'] != '' && $order_report['date_from']['day'] != '')
+      {
+        $q->andWhere('o.created_at >= ?', sprintf('%s-%s-%s 00:00:00',$order_report['date_from']['year'],$order_report['date_from']['month'],$order_report['date_from']['day']));
+      }
+      if($order_report['date_to']['year'] != '' && $order_report['date_to']['month'] != '' && $order_report['date_to']['day'] != '')
+      {
+        $q->andWhere('o.created_at <= ?', sprintf('%s-%s-%s 00:00:00',$order_report['date_to']['year'],$order_report['date_to']['month'],$order_report['date_to']['day']));
+      }
+    }
     $q->orderBy('o.created_at');
     $this->orders = $q->execute(array(), Doctrine_Core::HYDRATE_SCALAR);
 
