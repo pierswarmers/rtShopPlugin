@@ -5,7 +5,7 @@
 <?php slot('rt-tools') ?>
 <form action="<?php echo url_for('@rt_shop_order_report_download?sf_format=csv') ?>" id="orderReport" method="post">
 <?php echo $form->renderHiddenFields() ?>
-  <dl>
+  <dl class="rt-admin-date-range">
     <dt><?php echo $form['date_from']->renderLabel() ?></dt>
     <dd><?php echo $form['date_from'] ?></dd>
     <dt><?php echo $form['date_to']->renderLabel() ?></dt>
