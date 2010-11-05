@@ -1,5 +1,5 @@
-<?php use_helper('I18N') ?>
 <?php
+use_helper('I18N');
 
 $address = $rt_shop_order->getShippingAddress();
 
@@ -7,7 +7,6 @@ if(!$address)
 {
   $address = $rt_shop_order->getBillingAddress();
 }
-
 ?>
 
 <?php slot('rt-title') ?>

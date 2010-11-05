@@ -37,8 +37,11 @@ class rtShopPaymentForm extends BasertShopOrderForm
     $options['column'] = 'code';
     $options['query'] = Doctrine::getTable('rtShopVoucher')->getValidityQuery($this->getRtShopCartManager()->getTotalCharge());
     $this->setValidator('voucher_code', new sfValidatorDoctrineChoice($options, array('invalid' => 'Couldn\'t find a valid voucher for that code.')));
+    
     $this->widgetSchema->setNameFormat('rt_shop_order_voucher[%s]');
     $this->errorSchema = new sfValidatorErrorSchema($this->validatorSchema);
+
+    $this->getWidgetSchema()->setFormFormatterName(sfConfig::get('app_rt_public_form_formatter_name', 'RtList'));
   }
 
   public function getRtShopOrder()

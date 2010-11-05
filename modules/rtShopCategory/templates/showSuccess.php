@@ -1,15 +1,10 @@
 <?php use_helper('I18N', 'Date', 'rtText', 'rtForm', 'rtDate', 'rtSite'); ?>
-<?php slot('rt-title') ?>
-<?php echo $rt_shop_category->getTitle() ?>
-<?php end_slot(); ?>
+
+<?php slot('rt-title', $rt_shop_category->getTitle()) ?>
 
 <?php echo link_to(__('Edit'), 'rtShopCategoryAdmin/edit?id='.$rt_shop_category->getId(), array('class' => 'rt-admin-edit-tools-trigger')) ?>
 
-<?php
-
-$content = markdown_to_html($rt_shop_category->getContent(), $rt_shop_category);
-
-?>
+<?php $content = markdown_to_html($rt_shop_category->getContent(), $rt_shop_category); ?>
 <?php if(trim($content) !== ''): ?>
   <?php echo $content; ?>
 <?php endif; ?>

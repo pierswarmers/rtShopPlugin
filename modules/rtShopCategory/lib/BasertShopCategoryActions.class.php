@@ -64,7 +64,8 @@ class BasertShopCategoryActions extends sfActions
 
     $query = Doctrine::getTable('rtShopProduct')->addPublishedQuery()
              ->leftJoin('page.rtShopCategories c')
-             ->andWhere('c.id = ?', $this->rt_shop_category->getId());
+             ->andWhere('c.id = ?', $this->rt_shop_category->getId())
+             ->orderBy('page.created_at DESC');
 
     $this->pager = new sfDoctrinePager('rtShopProduct', $this->getCountPerPage($request));
     $this->pager->setQuery($query);

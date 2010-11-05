@@ -5,32 +5,32 @@
 <?php end_slot(); ?>
 
 <form action="<?php echo url_for('@rt_shop_order_address') ?>" method="post">
-  <div class="rt-container">
-    <?php include_partial('breadcrumb', array()) ?>
+  <?php include_partial('breadcrumb', array()) ?>
 
-    <h2><?php echo __('Your Email Address') ?></h2>
-    <table class="rt-admin-toggle-panel-content">
-      <tbody>
-        <?php  echo render_form_row($form['email_address']) ?>
-      </tbody>
-    </table>
+  <fieldset>
+    <legend><?php echo __('Your Email Address') ?></legend>
+    <ul class="rt-form-schema">
+      <li class="rt-form-row"><?php echo $form['email_address']->renderLabel() ?><div class="rt-form-field"><?php echo $form['email_address'] ?></div></li>
+    </ul>
+  </fieldset>
 
-    <?php  echo $form->renderHiddenFields() ?>
+  <?php  echo $form->renderHiddenFields() ?>
 
-    <h2><?php echo __('Billing Address') ?></h2>
+  <fieldset>
+    <legend><?php echo __('Billing Address') ?></legend>
     <?php include_partial('address_form', array('form' => $form_billing)) ?>
+  </fieldset>
 
-    <p><label for="shipping_toggle"><?php echo __('Shipping address is the same as billing address') ?>: <input id="shipping_toggle" type="checkbox" name="shipping_toggle" <?php echo ($show_shipping) ? '' : 'checked' ?> /></label></p>
+  <p><label for="shipping_toggle"><?php echo __('Shipping address is the same as billing address') ?>: <input id="shipping_toggle" type="checkbox" name="shipping_toggle" <?php echo ($show_shipping) ? '' : 'checked' ?> /></label></p>
 
-    <div id="steer_shop_billing_address" style="<?php echo ($show_shipping) ? 'display: block' : 'display: none' ?>">
-    <h2><?php echo __('Shipping address') ?></h2>
-    <?php include_partial('address_form', array('form' => $form_shipping)) ?>
-    </div>
+  <div id="steer_shop_billing_address" style="<?php echo ($show_shipping) ? 'display: block' : 'display: none' ?>">
+    <fieldset>
+      <legend><?php echo __('Shipping Address') ?></legend>
+      <?php include_partial('address_form', array('form' => $form_shipping)) ?>
+    </fieldset>
   </div>
 
-  <div class="rt-container rt-shop-order-tools">
-    <button type="submit" class="steer_shop_address_actions_submit button"><?php echo __('Proceed to payment') ?></button>
-  </div>
+  <p class="rt-form-tools"><button><?php echo __('Proceed to payment') ?></button></p>
 </form>
 
 <script type="text/javascript">

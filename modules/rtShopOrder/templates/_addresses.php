@@ -1,5 +1,4 @@
 <?php
-
 $billing_address = $rt_shop_cart_manager->getBillingAddress(); 
 $shipping_address = $rt_shop_cart_manager->getShippingAddress();
 
@@ -7,7 +6,6 @@ if(!$shipping_address)
 {
   $shipping_address = $billing_address;
 }
-
 ?>
 <h2><?php echo __('Address Details') ?></h2>
 <table class="rt-shop-order-addresses">

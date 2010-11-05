@@ -7,7 +7,7 @@ $links = array(
     'receipt'    => array('position' => 5,  'title' => 'Receipt', 'route' => 'rt_shop_order_cart')
 );
 ?>
-<ol class="rt-container rt-shop-order-breadcrumb">
+<ol class="rt-shop-order-breadcrumb">
 <?php $class = ' class="past"'; foreach($links as $key => $link): ?>
   <?php $class = ($key === $sf_request->getParameter('action')) ? ' class="here"' : $class; ?>
   <li<?php echo $class ?>><?php echo link_to_if($sf_request->getParameter('action') !== $key && $class !== '', $link['title'],$link['route']) ?></li>

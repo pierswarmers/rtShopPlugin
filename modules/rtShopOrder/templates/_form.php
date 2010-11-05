@@ -1,5 +1,3 @@
-<table>
-  <tbody>
-    <?php echo $form ?>
-  </tbody>
-</table>
+<ul class="rt-form-schema">
+  <?php echo $form ?>
+</ul>
