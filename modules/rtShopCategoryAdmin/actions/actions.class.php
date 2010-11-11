@@ -123,6 +123,21 @@ class rtShopCategoryAdminActions extends sfActions
     $this->clearCache($this->rt_shop_category);
     $this->redirect('rtShopCategoryAdmin/edit?id='.$this->rt_shop_category->getId());
   }
+
+  public function executeToggle(sfWebRequest $request)
+  {
+    $rt_shop_category = Doctrine_Core::getTable('rtShopCategory')->find(array($request->getParameter('id')));
+    if(!$rt_shop_category)
+    {
+      $this->status = 'error';
+      return sfView::SUCCESS;
+    }
+
+    $rt_shop_category->setPublished(!$rt_shop_category->getPublished());
+    $this->status = $rt_shop_category->getPublished() ? 'activated' : 'deactivated';
+    $rt_shop_category->save();
+    $this->clearCache($rt_shop_category);
+  }
   
   protected function processForm(sfWebRequest $request, sfForm $form)
   {

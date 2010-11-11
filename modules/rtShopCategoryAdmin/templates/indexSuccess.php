@@ -8,6 +8,12 @@
 
 <?php include_partial('rtAdmin/flashes') ?>
 
+<script type="text/javascript">
+  $(function() {
+    enablePublishToggle('<?php echo url_for('rtShopCategoryAdmin/toggle') ?>');
+  });
+</script>
+
 <table>
   <thead>
     <tr>
@@ -22,7 +28,10 @@
     <?php foreach ($rt_shop_categorys as $rt_shop_category): ?>
     <tr class="rt-admin-tree rt-admin-tree-level-<?php echo $rt_shop_category->level ?>">
       <td class="rt-admin-title"><a href="<?php echo url_for('rtShopCategoryAdmin/edit?id='.$rt_shop_category->getId()) ?>"><?php echo $rt_shop_category->getTitle() ?></a></td>
-      <td><?php echo rt_nice_boolean($rt_shop_category->getPublished()) ?></td>
+      <td class="rt-admin-publish-toggle">
+        <?php echo rt_nice_boolean($rt_shop_category->getPublished()) ?>
+        <div style="display:none;"><?php echo $rt_shop_category->getId() ?></div>
+      </td>
       <td><?php echo link_to_if($rt_shop_category->version > 1, $rt_shop_category->version, 'rtShopCategoryAdmin/versions?id='.$rt_shop_category->getId()) ?></td>
       <td><?php echo $rt_shop_category->getCreatedAt() ?></td>
       <td>

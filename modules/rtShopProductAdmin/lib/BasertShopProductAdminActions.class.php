@@ -298,6 +298,21 @@ class BasertShopProductAdminActions extends sfActions
     $this->redirect('rtShopProductAdmin/edit?id='.$this->rt_shop_product->getId());
   }
 
+  public function executeToggle(sfWebRequest $request)
+  {
+    $rt_shop_product = Doctrine_Core::getTable('rtShopProduct')->find(array($request->getParameter('id')));
+    if(!$rt_shop_product)
+    {
+      $this->status = 'error';
+      return sfView::SUCCESS;
+    }
+
+    $rt_shop_product->setPublished(!$rt_shop_product->getPublished());
+    $this->status = $rt_shop_product->getPublished() ? 'activated' : 'deactivated';
+    $rt_shop_product->save();
+    $this->clearCache($rt_shop_product);
+  }
+
   protected function processForm(sfWebRequest $request, sfForm $form)
   {
     $form->bind($request->getParameter($form->getName()), $request->getFiles($form->getName()));

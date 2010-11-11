@@ -9,13 +9,15 @@
 </ul>
 <script type="text/javascript">
 	$(function() {
-    $("#rtPrimaryTools .create").button({
-      icons: { primary: 'ui-icon-transfer-e-w' }
-    }).click(function(){ document.location.href='<?php echo url_for('rtShopProductAdmin/new') ?>'; });
+      $("#rtPrimaryTools .create").button({
+        icons: { primary: 'ui-icon-transfer-e-w' }
+      }).click(function(){ document.location.href='<?php echo url_for('rtShopProductAdmin/new') ?>'; });
 
-    $("#rtPrimaryTools .reports").button({
-      icons: { primary: 'ui-icon-transfer-e-w' }
-    }).click(function(){ document.location.href='<?php echo url_for('rtShopProductAdmin/stockReport') ?>'; });
+      $("#rtPrimaryTools .reports").button({
+        icons: { primary: 'ui-icon-transfer-e-w' }
+      }).click(function(){ document.location.href='<?php echo url_for('rtShopProductAdmin/stockReport') ?>'; });
+
+      enablePublishToggle('<?php echo url_for('rtShopProductAdmin/toggle') ?>');
 	});
 </script>
 <?php end_slot(); ?>
@@ -36,7 +38,10 @@
     <?php foreach ($pager->getResults() as $rt_shop_product): ?>
     <tr>
       <td><a href="<?php echo url_for('rtShopProductAdmin/edit?id='.$rt_shop_product->getId()) ?>"><?php echo $rt_shop_product->getTitle() ?></a></td>
-      <td><?php echo rt_nice_boolean($rt_shop_product->getPublished()) ?></td>
+      <td class="rt-admin-publish-toggle">
+        <?php echo rt_nice_boolean($rt_shop_product->getPublished()) ?>
+        <div style="display:none;"><?php echo $rt_shop_product->getId() ?></div>
+      </td>
       <td><?php echo link_to_if($rt_shop_product->version > 1, $rt_shop_product->version, 'rtShopProductAdmin/versions?id='.$rt_shop_product->getId()) ?></td>
       <td><?php echo $rt_shop_product->getCreatedAt() ?></td>
       <td>
