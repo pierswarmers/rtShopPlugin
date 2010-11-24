@@ -88,7 +88,7 @@ class PluginrtShopPromotionTable extends Doctrine_Table
   {
     $q = $this->getQuery($q);
     $q->andWhere('(p.total_from <= ? OR p.total_from IS NULL)', $total);
-    $q->andWhere('(p.total_to > ? OR p.total_to IS NULL)', $total);
+    $q->andWhere('(p.total_to >= ? OR p.total_to IS NULL)', $total);
     return $q;
   }
 
