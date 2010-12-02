@@ -76,7 +76,25 @@ abstract class PluginrtShopProduct extends BasertShopProduct
    */
   public function isOnPromotion()
   {
-    return $this->getMaxPromotionPrice() > 0;
+    $status = false;
+
+    if($this->getMaxPromotionPrice() > 0)
+    {
+      $status = true;
+    }
+    elseif(count($this->getRtShopPromotions()) > 0)
+    {
+      // Check if any product promotions are available
+      foreach($this->getRtShopPromotions() as $rt_shop_promotion)
+      {
+        if($rt_shop_promotion->isAvailable())
+        {
+          $status = true;
+        }
+      }
+    }
+
+    return $status;
   }
 
   /**
@@ -246,6 +264,32 @@ abstract class PluginrtShopProduct extends BasertShopProduct
       $test = isset($stock['rtShopVariations']);
     }
     return $test;
+  }
+
+  /**
+   * Proxy method for returning product promotions
+   * 
+   * @param boolean $check_availability Default true
+   * @return Returns the current record's "rtShopPromotions" collection
+   */
+  public function getrtShopPromotionsAvailableOnly($check_availability = true)
+  {
+    $promos = $this->getRtShopPromotions();
+
+    if(!$check_availability || !$promos)
+    {
+      return $promos;
+    }
+
+    foreach($promos as $key => $promo)
+    {
+      if(!$promo->isAvailable())
+      {
+        $promos->remove($key);
+      }
+    }
+
+    return $promos;
   }
 
   /**
