@@ -25,7 +25,8 @@ class BasertShopPromotionAdminActions extends sfActions
 
   public function executeIndex(sfWebRequest $request)
   {
-    $query = Doctrine::getTable('rtShopPromotionCart')->getQuery();
+    $query = Doctrine::getTable('rtShopPromotion')->getQuery();
+    $query->andWhere('p.type != "rtShopVoucher"');
     $query->orderBy('p.created_at DESC');
 
     $this->pager = new sfDoctrinePager(
@@ -51,14 +52,14 @@ class BasertShopPromotionAdminActions extends sfActions
 
   public function executeNew(sfWebRequest $request)
   {
-    $this->form = new rtShopPromotionCartForm();
+    $this->form = new rtShopPromotionForm();
   }
 
   public function executeCreate(sfWebRequest $request)
   {
     $this->forward404Unless($request->isMethod(sfRequest::POST));
 
-    $this->form = new rtShopPromotionCartForm();
+    $this->form = new rtShopPromotionForm();
 
     $this->processForm($request, $this->form);
 
@@ -67,15 +68,15 @@ class BasertShopPromotionAdminActions extends sfActions
 
   public function executeEdit(sfWebRequest $request)
   {
-    $this->forward404Unless($rt_shop_promotion = Doctrine::getTable('rtShopPromotionCart')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_promotion does not exist (%s).', $request->getParameter('id')));
-    $this->form = new rtShopPromotionCartForm($rt_shop_promotion);
+    $this->forward404Unless($rt_shop_promotion = Doctrine::getTable('rtShopPromotion')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_promotion does not exist (%s).', $request->getParameter('id')));
+    $this->form = new rtShopPromotionForm($rt_shop_promotion);
   }
 
   public function executeUpdate(sfWebRequest $request)
   {
     $this->forward404Unless($request->isMethod(sfRequest::POST) || $request->isMethod(sfRequest::PUT));
-    $this->forward404Unless($rt_shop_promotion = Doctrine::getTable('rtShopPromotionCart')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_promotion does not exist (%s).', $request->getParameter('id')));
-    $this->form = new rtShopPromotionCartForm($rt_shop_promotion);
+    $this->forward404Unless($rt_shop_promotion = Doctrine::getTable('rtShopPromotion')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_promotion does not exist (%s).', $request->getParameter('id')));
+    $this->form = new rtShopPromotionForm($rt_shop_promotion);
 
     $this->processForm($request, $this->form);
 
@@ -86,7 +87,7 @@ class BasertShopPromotionAdminActions extends sfActions
   {
     $request->checkCSRFProtection();
 
-    $this->forward404Unless($rt_shop_promotion = Doctrine::getTable('rtShopPromotionCart')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_promotion does not exist (%s).', $request->getParameter('id')));
+    $this->forward404Unless($rt_shop_promotion = Doctrine::getTable('rtShopPromotion')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_promotion does not exist (%s).', $request->getParameter('id')));
     $rt_shop_promotion->delete();
 
     $this->redirect('rtShopPromotionAdmin/index');

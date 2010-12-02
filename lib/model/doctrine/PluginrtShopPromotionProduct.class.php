@@ -23,4 +23,18 @@ abstract class PluginrtShopPromotionProduct extends BasertShopPromotionProduct
       $this->setType('rtShopPromotionProduct');
     }
   }
+
+  /**
+   * Return availability status of promotion
+   *
+   * @return boolean true if promotion is available
+   */
+  public function isAvailable()
+  {
+    $date_now  = date("Y-m-d H:i:s");
+    $date_from = $this->getDateFrom();
+    $date_to   = $this->getDateTo();
+
+    return (($date_from <= $date_now || is_null($date_from)) && ($date_to >= $date_now || is_null($date_to))) ? true : false;
+  }
 }

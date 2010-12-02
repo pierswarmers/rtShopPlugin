@@ -28,7 +28,7 @@
   <dt><?php echo __('Total') ?> (<?php echo $stats['total']['count'] ?>)</dt>
   <dd><?php echo format_currency($stats['total']['revenue'], sfConfig::get('app_rt_currency', 'AUD')) ?></dd>
   <dt><?php echo __('Average Order Value') ?></dt>
-  <dd><?php echo format_currency($stats['total']['revenue']/$stats['total']['count'], sfConfig::get('app_rt_currency', 'AUD')) ?></dd>
+  <dd><?php echo format_currency(($stats['total']['count'] > 0) ? $stats['total']['revenue']/$stats['total']['count'] : 0.0, sfConfig::get('app_rt_currency', 'AUD')) ?></dd>
 </dl>
 <?php end_slot(); ?>
 

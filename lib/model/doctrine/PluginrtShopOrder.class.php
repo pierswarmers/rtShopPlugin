@@ -121,7 +121,28 @@ abstract class PluginrtShopOrder extends BasertShopOrder
 
       $this->_stock_info = $q->fetchArray();
     }
-    return $this->_stock_info;
+
+    return $this->adjustWithProductPromotions($this->_stock_info);
+  }
+
+  private function adjustWithProductPromotions(array $stock_info)
+  {
+    $tmp_stock_info = array();
+
+    $i=0;
+    foreach($stock_info as $stock)
+    {
+      $rt_shop_stock = Doctrine::getTable('rtShopStock')->find($stock['id']);
+      $rt_shop_promotion_product = Doctrine::getTable('rtShopPromotionProduct')->find(($rt_shop_stock->getBestPromotion()) ? $rt_shop_stock->getBestPromotion()->getId() : '',Doctrine_Core::HYDRATE_ARRAY);
+
+      $tmp_stock_info[$i]                           = $stock;
+      $tmp_stock_info[$i]['price_promotion']        = $rt_shop_stock->getCharge();
+      $tmp_stock_info[$i]['rtShopPromotionProduct'] = $rt_shop_promotion_product;
+
+      $i++;
+    }
+    
+    return $tmp_stock_info;
   }
 
   /**

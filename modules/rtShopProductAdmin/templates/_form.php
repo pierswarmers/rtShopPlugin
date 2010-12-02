@@ -87,7 +87,7 @@
         <?php echo render_form_row($form['backorder_allowed']); ?>
         <?php echo render_form_row($form['is_taxable']); ?>
         <?php echo render_form_row($form['rt_shop_attributes_list']); ?>
-        <?php //echo render_form_row($form['rt_shop_promotions_list']); ?>
+        <?php echo render_form_row($form['rt_shop_promotions_list']); ?>
       </tbody>
     </table>
     <script type="text/javascript">

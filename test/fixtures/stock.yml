@@ -1,0 +1,849 @@
+# $ mkdir test/fixtures
+# $ cp plugins/rtShopPlugin/test/unit/fixtures/stock.yml test/fixtures/stock.yml
+
+#rtShopAttribute
+rtShopAttribute:
+  rtShopAttribute_1:
+    title: 'Attribute A'
+    display_title: 'Attribute A'
+    description: 'Attribute A'
+  rtShopAttribute_2:
+    title: 'Attribute B'
+    display_title: 'Attribute B'
+    description: 'Attribute B'
+
+#rtShopCategory
+rtShopCategory:
+  rtShopCategory_1:
+    title: Category
+    content: ''
+    description: ''
+    profile: null
+    published: true
+    published_from: '2010-11-25 08:57:00'
+    published_to: null
+    comment_status: open
+    comment_count: '0'
+    searchable: true
+    menu_title: ''
+    display_in_menu: true
+    slug: category
+    created_at: '2010-11-25 08:57:08'
+    updated_at: '2010-11-29 09:55:20'
+    version: '3'
+    root_id: '1'
+    lft: '1'
+    rgt: '6'
+    level: '0'
+  rtShopCategory_2:
+    title: 'Category A'
+    content: ''
+    description: ''
+    profile: null
+    published: true
+    published_from: '2010-11-25 08:57:00'
+    published_to: null
+    comment_status: open
+    comment_count: '0'
+    searchable: true
+    menu_title: ''
+    display_in_menu: true
+    slug: category-a
+    created_at: '2010-11-25 08:57:21'
+    updated_at: '2010-11-29 09:56:41'
+    version: '4'
+    root_id: '1'
+    lft: '2'
+    rgt: '3'
+    level: '1'
+  rtShopCategory_3:
+    title: 'Category B'
+    content: ''
+    description: ''
+    profile: null
+    published: true
+    published_from: '2010-11-25 08:57:00'
+    published_to: null
+    comment_status: open
+    comment_count: '0'
+    searchable: true
+    menu_title: ''
+    display_in_menu: true
+    slug: category-b
+    created_at: '2010-11-25 08:57:26'
+    updated_at: '2010-11-29 09:56:49'
+    version: '4'
+    root_id: '1'
+    lft: '4'
+    rgt: '5'
+    level: '1'
+
+#rtShopProduct
+rtShopProduct:
+  rtShopProduct_1:
+    title: 'Product A'
+    content: ''
+    description: ''
+    profile: null
+    published: true
+    published_from: '2010-11-25 08:57:00'
+    published_to: null
+    comment_status: open
+    comment_count: '0'
+    searchable: true
+    sku: ''
+    is_featured: false
+    backorder_allowed: false
+    is_taxable: true
+    slug: product-a
+    created_at: '2010-11-25 08:58:22'
+    updated_at: '2010-11-29 09:56:28'
+    version: '2'
+  rtShopProduct_2:
+    title: 'Product B'
+    content: ''
+    description: ''
+    profile: null
+    published: true
+    published_from: '2010-11-25 08:58:00'
+    published_to: null
+    comment_status: open
+    comment_count: '0'
+    searchable: true
+    sku: ''
+    is_featured: false
+    backorder_allowed: false
+    is_taxable: true
+    slug: product-b
+    created_at: '2010-11-25 08:58:36'
+    updated_at: '2010-11-29 09:57:07'
+    version: '2'
+  rtShopProduct_3:
+    title: 'Product C'
+    content: ''
+    description: ''
+    profile: null
+    published: true
+    published_from: '2010-11-25 08:58:00'
+    published_to: null
+    comment_status: open
+    comment_count: '0'
+    searchable: true
+    sku: ''
+    is_featured: false
+    backorder_allowed: false
+    is_taxable: true
+    slug: product-c
+    created_at: '2010-11-25 08:58:55'
+    updated_at: '2010-11-29 09:57:26'
+    version: '2'
+  rtShopProduct_4:
+    title: 'Product D'
+    content: ''
+    description: ''
+    profile: null
+    published: true
+    published_from: '2010-11-25 09:01:00'
+    published_to: null
+    comment_status: open
+    comment_count: '0'
+    searchable: true
+    sku: ''
+    is_featured: false
+    backorder_allowed: false
+    is_taxable: true
+    slug: product-d
+    created_at: '2010-11-25 09:01:57'
+    updated_at: '2010-11-29 09:57:45'
+    version: '2'
+  rtShopProduct_5:
+    title: 'Product E'
+    content: ''
+    description: ''
+    profile: null
+    published: true
+    published_from: '2010-11-25 09:02:00'
+    published_to: null
+    comment_status: open
+    comment_count: '0'
+    searchable: true
+    sku: ''
+    is_featured: false
+    backorder_allowed: false
+    is_taxable: true
+    slug: product-e
+    created_at: '2010-11-25 09:02:22'
+    updated_at: '2010-11-29 09:58:10'
+    version: '3'
+  rtShopProduct_6:
+    title: 'Product F'
+    content: ''
+    description: ''
+    profile: null
+    published: true
+    published_from: '2010-11-25 09:02:00'
+    published_to: null
+    comment_status: open
+    comment_count: '0'
+    searchable: true
+    sku: ''
+    is_featured: false
+    backorder_allowed: false
+    is_taxable: true
+    slug: product-f
+    created_at: '2010-11-25 09:02:40'
+    updated_at: '2010-11-29 09:58:29'
+    version: '2'
+  rtShopProduct_7:
+    title: 'Product G'
+    content: ''
+    description: ''
+    profile: null
+    published: true
+    published_from: '2010-11-25 09:02:00'
+    published_to: null
+    comment_status: open
+    comment_count: '0'
+    searchable: true
+    sku: ''
+    is_featured: false
+    backorder_allowed: false
+    is_taxable: true
+    slug: product-g
+    created_at: '2010-11-25 09:02:40'
+    updated_at: '2010-11-29 09:58:29'
+    version: '2'
+  rtShopProduct_8:
+    title: 'Product H'
+    content: ''
+    description: ''
+    profile: null
+    published: true
+    published_from: '2010-11-25 09:02:00'
+    published_to: null
+    comment_status: open
+    comment_count: '0'
+    searchable: true
+    sku: ''
+    is_featured: false
+    backorder_allowed: false
+    is_taxable: true
+    slug: product-h
+    created_at: '2010-11-25 09:02:40'
+    updated_at: '2010-11-29 09:58:29'
+    version: '2'
+
+#rtShopProductToAttribute
+rtShopProductToAttribute:
+  rtShopProductToAttribute_1_1:
+    position: '0'
+    rtShopProduct: rtShopProduct_1
+    rtShopAttribute: rtShopAttribute_1
+  rtShopProductToAttribute_1_2:
+    position: '1'
+    rtShopProduct: rtShopProduct_1
+    rtShopAttribute: rtShopAttribute_2
+  rtShopProductToAttribute_2_1:
+    position: '0'
+    rtShopProduct: rtShopProduct_2
+    rtShopAttribute: rtShopAttribute_1
+  rtShopProductToAttribute_2_2:
+    position: '1'
+    rtShopProduct: rtShopProduct_2
+    rtShopAttribute: rtShopAttribute_2
+  rtShopProductToAttribute_3_1:
+    position: '0'
+    rtShopProduct: rtShopProduct_3
+    rtShopAttribute: rtShopAttribute_1
+  rtShopProductToAttribute_3_2:
+    position: '1'
+    rtShopProduct: rtShopProduct_3
+    rtShopAttribute: rtShopAttribute_2
+  rtShopProductToAttribute_4_1:
+    position: '0'
+    rtShopProduct: rtShopProduct_4
+    rtShopAttribute: rtShopAttribute_1
+  rtShopProductToAttribute_4_2:
+    position: '1'
+    rtShopProduct: rtShopProduct_4
+    rtShopAttribute: rtShopAttribute_2
+  rtShopProductToAttribute_5_1:
+    position: '0'
+    rtShopProduct: rtShopProduct_5
+    rtShopAttribute: rtShopAttribute_1
+  rtShopProductToAttribute_5_2:
+    position: '1'
+    rtShopProduct: rtShopProduct_5
+    rtShopAttribute: rtShopAttribute_2
+  rtShopProductToAttribute_6_1:
+    position: '0'
+    rtShopProduct: rtShopProduct_6
+    rtShopAttribute: rtShopAttribute_1
+  rtShopProductToAttribute_6_2:
+    position: '1'
+    rtShopProduct: rtShopProduct_6
+    rtShopAttribute: rtShopAttribute_2
+  rtShopProductToAttribute_7_1:
+    position: '0'
+    rtShopProduct: rtShopProduct_7
+    rtShopAttribute: rtShopAttribute_1
+  rtShopProductToAttribute_7_2:
+    position: '1'
+    rtShopProduct: rtShopProduct_7
+    rtShopAttribute: rtShopAttribute_2
+  rtShopProductToAttribute_8_1:
+    position: '0'
+    rtShopProduct: rtShopProduct_8
+    rtShopAttribute: rtShopAttribute_1
+  rtShopProductToAttribute_8_2:
+    position: '1'
+    rtShopProduct: rtShopProduct_8
+    rtShopAttribute: rtShopAttribute_2
+
+
+#rtShopProductToCategory
+rtShopProductToCategory:
+  rtShopProductToCategory_2_1:
+    rtShopCategory: rtShopCategory_2
+    rtShopProduct: rtShopProduct_1
+  rtShopProductToCategory_2_2:
+    rtShopCategory: rtShopCategory_2
+    rtShopProduct: rtShopProduct_2
+  rtShopProductToCategory_2_3:
+    rtShopCategory: rtShopCategory_2
+    rtShopProduct: rtShopProduct_3
+  rtShopProductToCategory_2_4:
+    rtShopCategory: rtShopCategory_2
+    rtShopProduct: rtShopProduct_4
+  rtShopProductToCategory_3_5:
+    rtShopCategory: rtShopCategory_3
+    rtShopProduct: rtShopProduct_5
+  rtShopProductToCategory_3_6:
+    rtShopCategory: rtShopCategory_3
+    rtShopProduct: rtShopProduct_6
+  rtShopProductToCategory_3_7:
+    rtShopCategory: rtShopCategory_3
+    rtShopProduct: rtShopProduct_7
+  rtShopProductToCategory_3_8:
+    rtShopCategory: rtShopCategory_3
+    rtShopProduct: rtShopProduct_8
+
+#rtShopStock
+rtShopStock:
+  rtShopStock_1:
+    rtShopProduct: rtShopProduct_1
+    quantity: '5'
+    sku: '1234'
+    price_retail: '25.00'
+    price_promotion: '0.00'
+    price_wholesale: '0.00'
+    length: '0.00'
+    width: '0.00'
+    height: '0.00'
+    weight: '0.00'
+  rtShopStock_2:
+    rtShopProduct: rtShopProduct_1
+    quantity: '5'
+    sku: '1243'
+    price_retail: '30.00'
+    price_promotion: '0.00'
+    price_wholesale: '0.00'
+    length: '0.00'
+    width: '0.00'
+    height: '0.00'
+    weight: '0.00'
+  rtShopStock_3:
+    rtShopProduct: rtShopProduct_2
+    quantity: '5'
+    sku: '21234'
+    price_retail: '30.00'
+    price_promotion: '0.00'
+    price_wholesale: '0.00'
+    length: '0.00'
+    width: '0.00'
+    height: '0.00'
+    weight: '0.00'
+  rtShopStock_4:
+    rtShopProduct: rtShopProduct_2
+    quantity: '5'
+    sku: '31243'
+    price_retail: '35.00'
+    price_promotion: '0.00'
+    price_wholesale: '0.00'
+    length: '0.00'
+    width: '0.00'
+    height: '0.00'
+    weight: '0.00'
+  rtShopStock_5:
+    rtShopProduct: rtShopProduct_3
+    quantity: '5'
+    sku: '41234'
+    price_retail: '35.00'
+    price_promotion: '0.00'
+    price_wholesale: '0.00'
+    length: '0.00'
+    width: '0.00'
+    height: '0.00'
+    weight: '0.00'
+  rtShopStock_6:
+    rtShopProduct: rtShopProduct_3
+    quantity: '5'
+    sku: '51243'
+    price_retail: '40.00'
+    price_promotion: '0.00'
+    price_wholesale: '0.00'
+    length: '0.00'
+    width: '0.00'
+    height: '0.00'
+    weight: '0.00'
+  rtShopStock_7:
+    rtShopProduct: rtShopProduct_4
+    quantity: '5'
+    sku: '61234'
+    price_retail: '10.00'
+    price_promotion: '0.00'
+    price_wholesale: '0.00'
+    length: '0.00'
+    width: '0.00'
+    height: '0.00'
+    weight: '0.00'
+  rtShopStock_8:
+    rtShopProduct: rtShopProduct_4
+    quantity: '5'
+    sku: '71243'
+    price_retail: '15.00'
+    price_promotion: '0.00'
+    price_wholesale: '0.00'
+    length: '0.00'
+    width: '0.00'
+    height: '0.00'
+    weight: '0.00'
+  rtShopStock_9:
+    rtShopProduct: rtShopProduct_5
+    quantity: '5'
+    sku: '81234'
+    price_retail: '15.00'
+    price_promotion: '0.00'
+    price_wholesale: '0.00'
+    length: '0.00'
+    width: '0.00'
+    height: '0.00'
+    weight: '0.00'
+  rtShopStock_10:
+    rtShopProduct: rtShopProduct_5
+    quantity: '5'
+    sku: '91243'
+    price_retail: '20.00'
+    price_promotion: '0.00'
+    price_wholesale: '0.00'
+    length: '0.00'
+    width: '0.00'
+    height: '0.00'
+    weight: '0.00'
+  rtShopStock_11:
+    rtShopProduct: rtShopProduct_6
+    quantity: '5'
+    sku: '101234'
+    price_retail: '10.00'
+    price_promotion: '8.00'
+    price_wholesale: '0.00'
+    length: '0.00'
+    width: '0.00'
+    height: '0.00'
+    weight: '0.00'
+  rtShopStock_13:
+    rtShopProduct: rtShopProduct_6
+    quantity: '5'
+    sku: '111243'
+    price_retail: '15.00'
+    price_promotion: '12.00'
+    price_wholesale: '0.00'
+    length: '0.00'
+    width: '0.00'
+    height: '0.00'
+    weight: '0.00'
+  rtShopStock_14:
+    rtShopProduct: rtShopProduct_7
+    quantity: '5'
+    sku: '1401234'
+    price_retail: '30.00'
+    price_promotion: '0.00'
+    price_wholesale: '0.00'
+    length: '0.00'
+    width: '0.00'
+    height: '0.00'
+    weight: '0.00'
+  rtShopStock_15:
+    rtShopProduct: rtShopProduct_7
+    quantity: '5'
+    sku: '1112436'
+    price_retail: '35.00'
+    price_promotion: '0.00'
+    price_wholesale: '0.00'
+    length: '0.00'
+    width: '0.00'
+    height: '0.00'
+    weight: '0.00'
+  rtShopStock_16:
+    rtShopProduct: rtShopProduct_8
+    quantity: '10'
+    sku: '140123453'
+    price_retail: '40.00'
+    price_promotion: '35.00'
+    price_wholesale: '0.00'
+    length: '0.00'
+    width: '0.00'
+    height: '0.00'
+    weight: '0.00'
+  rtShopStock_17:
+    rtShopProduct: rtShopProduct_8
+    quantity: '10'
+    sku: '11124376'
+    price_retail: '40.00'
+    price_promotion: '30.00'
+    price_wholesale: '0.00'
+    length: '0.00'
+    width: '0.00'
+    height: '0.00'
+    weight: '0.00'
+
+#rtShopStockToVariation
+rtShopStockToVariation:
+  rtShopStockToVariation_1_2:
+    rtShopStock: rtShopStock_1
+    rtShopVariation: rtShopVariation_2
+  rtShopStockToVariation_3_2:
+    rtShopStock: rtShopStock_3
+    rtShopVariation: rtShopVariation_2
+  rtShopStockToVariation_5_2:
+    rtShopStock: rtShopStock_5
+    rtShopVariation: rtShopVariation_2
+  rtShopStockToVariation_7_2:
+    rtShopStock: rtShopStock_7
+    rtShopVariation: rtShopVariation_2
+  rtShopStockToVariation_9_2:
+    rtShopStock: rtShopStock_9
+    rtShopVariation: rtShopVariation_2
+  rtShopStockToVariation_11_2:
+    rtShopStock: rtShopStock_11
+    rtShopVariation: rtShopVariation_2
+  rtShopStockToVariation_2_3:
+    rtShopStock: rtShopStock_2
+    rtShopVariation: rtShopVariation_3
+  rtShopStockToVariation_4_3:
+    rtShopStock: rtShopStock_4
+    rtShopVariation: rtShopVariation_3
+  rtShopStockToVariation_6_3:
+    rtShopStock: rtShopStock_6
+    rtShopVariation: rtShopVariation_3
+  rtShopStockToVariation_8_3:
+    rtShopStock: rtShopStock_8
+    rtShopVariation: rtShopVariation_3
+  rtShopStockToVariation_10_3:
+    rtShopStock: rtShopStock_10
+    rtShopVariation: rtShopVariation_3
+  rtShopStockToVariation_13_3:
+    rtShopStock: rtShopStock_13
+    rtShopVariation: rtShopVariation_3
+  rtShopStockToVariation_1_5:
+    rtShopStock: rtShopStock_1
+    rtShopVariation: rtShopVariation_5
+  rtShopStockToVariation_3_5:
+    rtShopStock: rtShopStock_3
+    rtShopVariation: rtShopVariation_5
+  rtShopStockToVariation_5_5:
+    rtShopStock: rtShopStock_5
+    rtShopVariation: rtShopVariation_5
+  rtShopStockToVariation_7_5:
+    rtShopStock: rtShopStock_7
+    rtShopVariation: rtShopVariation_5
+  rtShopStockToVariation_9_5:
+    rtShopStock: rtShopStock_9
+    rtShopVariation: rtShopVariation_5
+  rtShopStockToVariation_11_5:
+    rtShopStock: rtShopStock_11
+    rtShopVariation: rtShopVariation_5
+  rtShopStockToVariation_2_6:
+    rtShopStock: rtShopStock_2
+    rtShopVariation: rtShopVariation_6
+  rtShopStockToVariation_4_6:
+    rtShopStock: rtShopStock_4
+    rtShopVariation: rtShopVariation_6
+  rtShopStockToVariation_6_6:
+    rtShopStock: rtShopStock_6
+    rtShopVariation: rtShopVariation_6
+  rtShopStockToVariation_8_6:
+    rtShopStock: rtShopStock_8
+    rtShopVariation: rtShopVariation_6
+  rtShopStockToVariation_10_6:
+    rtShopStock: rtShopStock_10
+    rtShopVariation: rtShopVariation_6
+  rtShopStockToVariation_13_6:
+    rtShopStock: rtShopStock_13
+    rtShopVariation: rtShopVariation_6
+  rtShopStockToVariation_6_7:
+    rtShopStock: rtShopStock_14
+    rtShopVariation: rtShopVariation_2
+  rtShopStockToVariation_8_7:
+    rtShopStock: rtShopStock_14
+    rtShopVariation: rtShopVariation_5
+  rtShopStockToVariation_10_7:
+    rtShopStock: rtShopStock_15
+    rtShopVariation: rtShopVariation_3
+  rtShopStockToVariation_13_7:
+    rtShopStock: rtShopStock_15
+    rtShopVariation: rtShopVariation_6
+  rtShopStockToVariation_6_8:
+    rtShopStock: rtShopStock_16
+    rtShopVariation: rtShopVariation_2
+  rtShopStockToVariation_8_8:
+    rtShopStock: rtShopStock_16
+    rtShopVariation: rtShopVariation_5
+  rtShopStockToVariation_10_8:
+    rtShopStock: rtShopStock_17
+    rtShopVariation: rtShopVariation_3
+  rtShopStockToVariation_13_8:
+    rtShopStock: rtShopStock_17
+    rtShopVariation: rtShopVariation_6
+
+#rtShopVariation
+rtShopVariation:
+  rtShopVariation_1:
+    title: A1
+    position: '1'
+    image: null
+    rtShopAttribute: rtShopAttribute_1
+  rtShopVariation_2:
+    title: A2
+    position: '2'
+    image: null
+    rtShopAttribute: rtShopAttribute_1
+  rtShopVariation_3:
+    title: A3
+    position: '3'
+    image: null
+    rtShopAttribute: rtShopAttribute_1
+  rtShopVariation_4:
+    title: A4
+    position: '4'
+    image: null
+    rtShopAttribute: rtShopAttribute_1
+  rtShopVariation_5:
+    title: B1
+    position: '1'
+    image: null
+    rtShopAttribute: rtShopAttribute_2
+  rtShopVariation_6:
+    title: B2
+    position: '2'
+    image: null
+    rtShopAttribute: rtShopAttribute_2
+  rtShopVariation_7:
+    title: B3
+    position: '3'
+    image: null
+    rtShopAttribute: rtShopAttribute_2
+  rtShopVariation_8:
+    title: B4
+    position: '4'
+    image: null
+    rtShopAttribute: rtShopAttribute_2
+
+#rtShopPromotionCart
+rtShopPromotionCart:
+  rtShopPromotionCart_4:
+    stackable: true
+    date_from: null
+    date_to: null
+    reduction_type: percentageOff
+    reduction_value: '10.00'
+    title: '10% between $100 and $200 (Promotion)'
+    comment: ''
+    type: rtShopPromotionCart
+    code: ''
+    batch_reference: ''
+    count: '1'
+    mode: null
+    quantity_from: null
+    quantity_to: null
+    total_from: '100.00'
+    total_to: '200.00'
+    created_at: '2010-11-25 09:12:50'
+    updated_at: '2010-11-25 09:20:16'
+  rtShopPromotionCart_5:
+    stackable: true
+    date_from: null
+    date_to: null
+    reduction_type: percentageOff
+    reduction_value: '20.00'
+    title: '20% between $200 and $300 (Promotion)'
+    comment: ''
+    type: rtShopPromotionCart
+    code: ''
+    batch_reference: ''
+    count: '1'
+    mode: null
+    quantity_from: null
+    quantity_to: null
+    total_from: '200.00'
+    total_to: '300.00'
+    created_at: '2010-11-25 09:13:17'
+    updated_at: '2010-11-25 09:20:22'
+  rtShopPromotionCart_6:
+    stackable: true
+    date_from: null
+    date_to: null
+    reduction_type: percentageOff
+    reduction_value: '5.00'
+    title: '5% between $50 and $100 (Promotion)'
+    comment: ''
+    type: rtShopPromotionCart
+    code: ''
+    batch_reference: ''
+    count: '1'
+    mode: null
+    quantity_from: null
+    quantity_to: null
+    total_from: '50.00'
+    total_to: '100.00'
+    created_at: '2010-11-25 10:01:17'
+    updated_at: '2010-11-29 10:47:01'
+  rtShopPromotionCart_9:
+    stackable: true
+    date_from: null
+    date_to: null
+    reduction_type: percentageOff
+    reduction_value: '10.00'
+    title: '30% between $300 and $400 (Promotion)'
+    comment: ''
+    type: rtShopPromotionCart
+    code: ''
+    batch_reference: ''
+    count: '1'
+    mode: null
+    quantity_from: null
+    quantity_to: null
+    total_from: '300.00'
+    total_to: '400.00'
+    created_at: '2010-11-26 14:40:34'
+    updated_at: '2010-11-29 10:46:41'
+
+#rtShopOrder
+rtShopOrder:
+  rtShopOrder_1:
+    reference: PGFMNYEGKS
+    status: pending
+    is_wholesale: false
+    email_address: null
+    user_id: null
+    shipping_charge: null
+    shipping_code: null
+    tax_charge: null
+    tax_component: null
+    tax_mode: null
+    tax_rate: null
+    promotion_reduction: null
+    promotion_id: null
+    promotion_data: null
+    voucher_reduction: null
+    voucher_id: null
+    voucher_code: null
+    voucher_data: null
+    products_data: null
+    items_charge: null
+    total_charge: null
+    payment_transaction_id: null
+    payment_type: null
+    payment_charge: null
+    payment_data: null
+    notes_user: null
+    notes_admin: null
+    created_at: '2010-11-29 09:29:20'
+    updated_at: '2010-11-29 09:29:20'
+  rtShopOrder_2:
+    reference: PFFMNYEGXS
+    status: pending
+    is_wholesale: false
+    email_address: null
+    user_id: null
+    shipping_charge: null
+    shipping_code: null
+    tax_charge: null
+    tax_component: null
+    tax_mode: null
+    tax_rate: null
+    promotion_reduction: null
+    promotion_id: null
+    promotion_data: null
+    voucher_reduction: null
+    voucher_id: null
+    voucher_code: null
+    voucher_data: null
+    products_data: null
+    items_charge: null
+    total_charge: null
+    payment_transaction_id: null
+    payment_type: null
+    payment_charge: null
+    payment_data: null
+    notes_user: null
+    notes_admin: null
+    created_at: '2010-11-29 09:29:20'
+    updated_at: '2010-11-29 09:29:20'
+  rtShopOrder_3:
+    reference: PHFMNYEDYS
+    status: pending
+    is_wholesale: false
+    email_address: null
+    user_id: null
+    shipping_charge: null
+    shipping_code: null
+    tax_charge: null
+    tax_component: null
+    tax_mode: null
+    tax_rate: null
+    promotion_reduction: null
+    promotion_id: null
+    promotion_data: null
+    voucher_reduction: null
+    voucher_id: null
+    voucher_code: null
+    voucher_data: null
+    products_data: null
+    items_charge: null
+    total_charge: null
+    payment_transaction_id: null
+    payment_type: null
+    payment_charge: null
+    payment_data: null
+    notes_user: null
+    notes_admin: null
+    created_at: '2010-11-29 09:29:20'
+    updated_at: '2010-11-29 09:29:20'
+
+#rtShopOrderToStock
+rtShopOrderToStock:
+  rtShopOrderToStock_1_2:
+    quantity: '1'
+    rtShopStock: rtShopStock_1
+    rtShopOrder: rtShopOrder_1
+  rtShopOrderToStock_2_2:
+    quantity: '1'
+    rtShopStock: rtShopStock_2
+    rtShopOrder: rtShopOrder_1
+  rtShopOrderToStock_3_2:
+    quantity: '2'
+    rtShopStock: rtShopStock_3
+    rtShopOrder: rtShopOrder_2
+  rtShopOrderToStock_4_2:
+    quantity: '2'
+    rtShopStock: rtShopStock_4
+    rtShopOrder: rtShopOrder_2
+  rtShopOrderToStock_5_2:
+    quantity: '4'
+    rtShopStock: rtShopStock_5
+    rtShopOrder: rtShopOrder_3
+  rtShopOrderToStock_6_2:
+    quantity: '4'
+    rtShopStock: rtShopStock_6
+    rtShopOrder: rtShopOrder_3

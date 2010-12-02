@@ -27,9 +27,10 @@ class rtShopVoucherCodeValidator extends sfValidatorBase
     if(!is_null($value) && $value !== '')
     {
       // Replace space with hypen
-      $clean = ereg_replace("[[:space:]]", "-", $value);
+      //$clean = ereg_replace("[[:space:]]", "-", $value);   // deprecated in php 5.3
+      $clean = preg_replace('/\s+/', '-', $value);
       // Removed special characters: Allowed are a-z, A-Z, 0-9,_ (under-dash),- (hypen)
-      $clean= preg_replace('/[^\w\d_-]/si', '', $clean);
+      $clean = preg_replace('/[^\w\d_-]/si', '', $clean);
       // Uppercase string
       $clean = strtoupper($clean);
     }
