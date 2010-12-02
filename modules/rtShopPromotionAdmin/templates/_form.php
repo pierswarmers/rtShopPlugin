@@ -1,7 +1,7 @@
 <?php use_stylesheets_for_form($form) ?>
 <?php use_javascripts_for_form($form) ?>
 <?php use_helper('I18N', 'rtForm') ?>
-<?php use_javascript('/rtCorePlugin/js/main.js', 'last') ?>
+<?php use_javascript('/rtCorePlugin/js/admin-main.js', 'last') ?>
 
 <?php slot('rt-tools') ?>
 <?php include_partial('rtAdmin/standard_modal_tools', array('object' => $form->getObject(), 'controller' => 'rtShopPromotionAdmin'))?>

@@ -10,7 +10,7 @@ $config = sfConfig::get('app_rt_gallery');
 if(!isset($config['javascripts']))
 {
   $config['javascripts'] = array('/rtCorePlugin/vendor/jquery/js/jquery.min.js',
-                                 '/rtCorePlugin/js/gallery.js');
+                                 '/rtCorePlugin/js/frontend-gallery.js');
 }
 
 foreach ($config['javascripts'] as $file)
@@ -21,7 +21,7 @@ foreach ($config['javascripts'] as $file)
 if(!isset($config['stylesheets']))
 {
   $config['stylesheets'] = array(
-      '/rtCorePlugin/css/gallery.css'
+      '/rtCorePlugin/css/frontend-gallery.css'
   );
 }
 
