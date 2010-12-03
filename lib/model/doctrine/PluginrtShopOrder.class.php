@@ -119,10 +119,9 @@ abstract class PluginrtShopOrder extends BasertShopOrder
         ->leftJoin('s.rtShopProduct p')
         ->andWhere('ots.order_id = ?', $this->getId());
 
-      $this->_stock_info = $q->fetchArray();
+      $this->_stock_info = $this->adjustWithProductPromotions($q->fetchArray());
     }
-
-    return $this->adjustWithProductPromotions($this->_stock_info);
+    return $this->_stock_info;
   }
 
   private function adjustWithProductPromotions(array $stock_info)
