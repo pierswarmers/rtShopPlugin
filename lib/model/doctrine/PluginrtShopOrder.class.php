@@ -119,10 +119,9 @@ abstract class PluginrtShopOrder extends BasertShopOrder
         ->leftJoin('s.rtShopProduct p')
         ->andWhere('ots.order_id = ?', $this->getId());
 
-      $this->_stock_info = $q->fetchArray();
+      $this->_stock_info = $this->adjustWithProductPromotions($q->fetchArray());
     }
-
-    return $this->adjustWithProductPromotions($this->_stock_info);
+    return $this->_stock_info;
   }
 
   private function adjustWithProductPromotions(array $stock_info)
@@ -136,7 +135,7 @@ abstract class PluginrtShopOrder extends BasertShopOrder
       $rt_shop_promotion_product = Doctrine::getTable('rtShopPromotionProduct')->find(($rt_shop_stock->getBestPromotion()) ? $rt_shop_stock->getBestPromotion()->getId() : '',Doctrine_Core::HYDRATE_ARRAY);
 
       $tmp_stock_info[$i]                           = $stock;
-      $tmp_stock_info[$i]['price_promotion']        = $rt_shop_stock->getCharge();
+      $tmp_stock_info[$i]['price_promotion']        = $rt_shop_stock->isOnPromotion() ? $rt_shop_stock->getCharge() : '0.00'; // Only add charge when on promotion
       $tmp_stock_info[$i]['rtShopPromotionProduct'] = $rt_shop_promotion_product;
 
       $i++;

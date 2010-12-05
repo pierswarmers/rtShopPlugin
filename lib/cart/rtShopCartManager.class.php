@@ -25,13 +25,13 @@ class rtShopCartManager
   const FILTER_NON_STACKABLE = 'NONSTACKABLE';
   const FILTER_STACKABLE = 'STACKABLE';
 
-  /**
-   * Construct the cart manager - initialising the user and order objects.
-   *
-   * @param array $options
-   */
-	public function __construct($options = array())
-	{
+/**
+ * Construct the cart manager - initialising the user and order objects.
+ *
+ * @param array $options
+ */
+  public function __construct($options = array())
+  {
     // is this a wholesale cart
     $this->_is_wholesale = isset($options['is_wholesale']) ? $options['is_wholesale'] : false;
 
@@ -58,22 +58,15 @@ class rtShopCartManager
   public function getItemsCharge($filter = null)
   {
     $charge = 0.0;
-    $column = $this->isWholesale() ? 'price_wholesale' : 'price_retail';
     
     foreach ($this->getStockInfoArray() as $stock)
     {
-      $price = 0;
-      
-      if($filter == self::FILTER_STACKABLE)
+      if(($filter == self::FILTER_NON_STACKABLE && $stock['price_promotion'] > 0))
       {
-        $price = $stock['price_promotion'] > 0 ? $stock['price_promotion'] : $stock[$column];
-      }
-      elseif($stock['price_promotion'] == 0)
-      {
-        $price = $stock[$column];
+        continue;
       }
 
-      $charge += $stock['rtShopOrderToStock'][0]['quantity'] * $price;
+      $charge += $stock['rtShopOrderToStock'][0]['quantity'] * $this->getItemCharge($stock);
     }
 
     return (float) $charge;
@@ -283,7 +276,26 @@ class rtShopCartManager
    */
   public function getSubTotal()
   {
-    return $this->getItemsCharge();
+    $charge = 0;
+
+    foreach($this->getStockInfoArray() as $item)
+    {
+      $charge += $this->getItemCharge($item);
+    }
+
+    return $charge;
+  }
+
+  /**
+   * Return the charge for a single line item.
+   * 
+   * @param array $item 
+   */
+  public function getItemCharge(array $item)
+  {
+    $column = $this->isWholesale() ? 'price_wholesale' : 'price_retail';
+
+    return $item['price_promotion'] > 0 ? $item['price_promotion'] : $item[$column];
   }
   
   /**
@@ -308,7 +320,7 @@ class rtShopCartManager
   {
     if(is_null($this->_promotion))
     {
-      $this->_promotion = rtShopPromotionToolkit::getBest($this->getItemsCharge());
+      $this->_promotion = rtShopPromotionToolkit::getBest($this->getSubTotal());
     }
 		return $this->_promotion;
   }
