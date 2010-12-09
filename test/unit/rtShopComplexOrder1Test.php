@@ -339,17 +339,17 @@ sfConfig::set('app_rt_shop_shipping_charges', array('default' => 20, 'AU' => 10)
 $tools = new rtShopComplexOrder1TestTools;
 
 // Add product promotions
-$productpromo1 = $tools->createProductPromotion($stock3->getRtShopProduct()->getId(),'Test Promotion 10% - '.$stock3->getRtShopProduct()->getTitle(), 10, 'percentageOff', true);
-$productpromo2 = $tools->createProductPromotion($stock4->getRtShopProduct()->getId(),'Test Promotion 10% - '.$stock4->getRtShopProduct()->getTitle(), 10, 'percentageOff', false);
-$productpromo3 = $tools->createProductPromotion($stock5->getRtShopProduct()->getId(),'Test Promotion 10% - '.$stock5->getRtShopProduct()->getTitle(), 10, 'percentageOff', true);
-$productpromo4 = $tools->createProductPromotion($stock6->getRtShopProduct()->getId(),'Test Promotion 10% - '.$stock6->getRtShopProduct()->getTitle(), 10, 'percentageOff', false);
-$productpromo5 = $tools->createProductPromotion($stock7->getRtShopProduct()->getId(),'Test Promotion 10% - '.$stock7->getRtShopProduct()->getTitle(), 10, 'percentageOff', false);
+$productpromo1 = $tools->createProductPromotion($stock3->getRtShopProduct()->getId(),'Promotion 10% - '.$stock3->getRtShopProduct()->getTitle(), 10, 'percentageOff', true);
+$productpromo2 = $tools->createProductPromotion($stock4->getRtShopProduct()->getId(),'Promotion 10% - '.$stock4->getRtShopProduct()->getTitle(), 10, 'percentageOff', false);
+$productpromo3 = $tools->createProductPromotion($stock5->getRtShopProduct()->getId(),'Promotion 10% - '.$stock5->getRtShopProduct()->getTitle(), 10, 'percentageOff', true);
+$productpromo4 = $tools->createProductPromotion($stock6->getRtShopProduct()->getId(),'Promotion 10% - '.$stock6->getRtShopProduct()->getTitle(), 10, 'percentageOff', false);
+$productpromo5 = $tools->createProductPromotion($stock7->getRtShopProduct()->getId(),'Promotion 10% - '.$stock7->getRtShopProduct()->getTitle(), 10, 'percentageOff', false);
 
 // Add cart promotion
-$cartpromo1 = $tools->createCartPromotion('Test Promotion 10% - 200 to 300', 10, 200, 300);
+$cartpromo1 = $tools->createCartPromotion('Cart Promotion 10%', 10, 200, 300);
 
 // Add voucher
-$voucher1 = $tools->createVoucher('Test Voucher $10 - 200 to 300', 10, 'dollarOff', 200, 300);
+$voucher1 = $tools->createVoucher('Voucher $10', 10, 'dollarOff', 200, 300);
 
 // Create cart manager instance
 try {
@@ -380,12 +380,13 @@ $compare_charge = array(40,30,36,36,27,30,36);
 foreach($stock_info as $stock)
 {
   $prod_promo = Doctrine::getTable('rtShopPromotionProduct')->find($stock['rtShopPromotionProduct']['id']);
-
+  $rt_shop_stock = Doctrine::getTable('rtShopStock')->find($stock['id']);
+  
   $charge = ($stock['price_promotion'] > 0) ? $stock['price_promotion'] : $stock['price_retail'];
   
   $message = $stock['rtShopProduct']['title'].
              " || PR: ".format_currency($stock['price_retail'], sfConfig::get('app_rt_currency', 'AUD')).
-             " || PP: ".format_currency($stock['price_promotion'], sfConfig::get('app_rt_currency', 'AUD')).
+             " || PP: ".format_currency($rt_shop_stock->getPricePromotion(), sfConfig::get('app_rt_currency', 'AUD')).
              " || QTY: ".$stock['rtShopOrderToStock'][0]['quantity'].
              " || Total: ".format_currency($charge, sfConfig::get('app_rt_currency', 'AUD'));
 
