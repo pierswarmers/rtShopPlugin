@@ -506,7 +506,7 @@ unset($promotions,$promotions1,$promotions2,$promotions3,$promotions4);
 try {
   rtShopPromotionTestTools::clean();
 
-  $i3 = new rtShopPromotion();
+  $i3 = new rtShopPromotionCart();
   $i3->setTitle('Combinations');
   $i3->setDateTo(date('Y-m-d H:i:s',strtotime(sprintf("+%s months",2))));
   $i3->setTotalFrom(100);
@@ -514,7 +514,7 @@ try {
   $i3->setReductionType('percentageOff');
   $i3->setReductionValue(10);
   $i3->save();
-  $i4 = new rtShopPromotion();
+  $i4 = new rtShopPromotionCart();
   $i4->setTitle('Combinations');
   $i4->setDateFrom(date('Y-m-d H:i:s',strtotime(sprintf("-%s months",2))));
   $i4->setDateTo(date('Y-m-d H:i:s',strtotime(sprintf("-%s months",1))));
@@ -522,7 +522,7 @@ try {
   $i4->setReductionType('dollarOff');
   $i4->setReductionValue(10);
   $i4->save();
-  $i5 = new rtShopPromotion();
+  $i5 = new rtShopPromotionCart();
   $i5->setTitle('Combinations');
   $i5->setDateFrom(date('Y-m-d H:i:s',strtotime(sprintf("-%s months",1))));
   $i5->setDateTo(date('Y-m-d H:i:s',strtotime(sprintf("+%s months",3))));
@@ -530,7 +530,7 @@ try {
   $i5->setReductionType('dollarOff');
   $i5->setReductionValue(7);
   $i5->save();
-  $i6 = new rtShopPromotion();
+  $i6 = new rtShopPromotionCart();
   $i6->setTitle('Combinations');
   $i6->setDateFrom(date('Y-m-d H:i:s',strtotime(sprintf("-%s months",1))));
   $i6->setDateTo(date('Y-m-d H:i:s',strtotime(sprintf("+%s months",1))));
@@ -538,14 +538,14 @@ try {
   $i6->setReductionType('percentageOff');
   $i6->setReductionValue(8);
   $i6->save();
-  $i7 = new rtShopPromotion();
+  $i7 = new rtShopPromotionCart();
   $i7->setTitle('Combinations');
   $i7->setDateFrom(date('Y-m-d H:i:s',strtotime(sprintf("+%s months",1))));
   $i7->setTotalTo(100);
   $i7->setReductionType('dollarOff');
   $i7->setReductionValue(15);
   $i7->save();
-  $i8 = new rtShopPromotion();
+  $i8 = new rtShopPromotionCart();
   $i8->setTitle('Combinations');
   $i8->setDateFrom(date('Y-m-d H:i:s',strtotime(sprintf("-%s months",1))));
   $i8->setDateTo(date('Y-m-d H:i:s',strtotime(sprintf("+%s months",3))));
@@ -553,7 +553,7 @@ try {
   $i8->setReductionType('dollarOff');
   $i8->setReductionValue(100);
   $i8->save();
-  $i9 = new rtShopPromotion();
+  $i9 = new rtShopPromotionCart();
   $i9->setTitle('Combinations');
   $i9->setDateFrom(date('Y-m-d H:i:s',strtotime(sprintf("-%s months",1))));
   $i9->setDateTo(date('Y-m-d H:i:s',strtotime(sprintf("+%s months",3))));
@@ -561,7 +561,7 @@ try {
   $i9->setReductionType('dollarOff');
   $i9->setReductionValue(10);
   $i9->save();
-  $i10 = new rtShopPromotion();
+  $i10 = new rtShopPromotionCart();
   $i10->setTitle('Combinations');
   $i10->setDateFrom(date('Y-m-d H:i:s',strtotime(sprintf("-%s months",1))));
   $i10->setDateTo(date('Y-m-d H:i:s',strtotime(sprintf("+%s months",3))));
@@ -570,7 +570,7 @@ try {
   $i10->setReductionType('dollarOff');
   $i10->setReductionValue(10);
   $i10->save();
-  $i11 = new rtShopPromotion();
+  $i11 = new rtShopPromotionCart();
   $i11->setTitle('Combinations');
   $i11->setDateFrom(date('Y-m-d H:i:s',strtotime(sprintf("-%s months",1))));
   $i11->setDateTo(date('Y-m-d H:i:s',strtotime(sprintf("+%s months",3))));
@@ -579,7 +579,7 @@ try {
   $i11->setReductionType('dollarOff');
   $i11->setReductionValue(10);
   $i11->save();
-  $i12 = new rtShopPromotion();
+  $i12 = new rtShopPromotionCart();
   $i12->setTitle('Combinations');
   $i12->setDateFrom(date('Y-m-d H:i:s',strtotime(sprintf("-%s months",1))));
   $i12->setDateTo(date('Y-m-d H:i:s',strtotime(sprintf("+%s months",3))));
@@ -597,7 +597,7 @@ $t->diag('Get best promotion offer');
 
 $order_total = 130;
 $promotions = rtShopPromotionToolkit::getBest($order_total, date("Y-m-d H:i:s"));
-$t->is(get_class($promotions), 'rtShopPromotion', '::getBest() Returns a rtShopPromotion object correctly.');
+$t->is(get_class($promotions), 'rtShopPromotionCart', '::getBest() Returns a rtShopPromotion object correctly.');
 $t->is($promotions->getId(), $i8->getId(), '::getBest() Best offer found.');
 
 $t->diag('Apply best promotion offer');
@@ -608,7 +608,7 @@ $t->is($promotion_total, 30, '::applyPromotion() Applied best promotion correctl
 $t->diag('Get next best promotion offer');
 
 $promotions = rtShopPromotionToolkit::getNextBest(130, date("Y-m-d H:i:s"));
-$t->is(get_class($promotions), 'rtShopPromotion', '::getNextBest() Returns a rtShopPromotion object correctly.');
+$t->is(get_class($promotions), 'rtShopPromotionCart', '::getNextBest() Returns a rtShopPromotion object correctly.');
 $t->is($promotions->getId(), $i11->getId(), '::getNextBest() Next best offer found.');
 
 $t->diag('Get distance to next best promotion offer');
