@@ -358,6 +358,7 @@ class BasertShopOrderActions extends sfActions
           $this->redirect('rt_shop_order_payment');
         }
       }
+      $this->getUser()->setFlash('default_error', true, false);
     }
   }
 
