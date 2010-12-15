@@ -472,7 +472,7 @@ class BasertShopOrderActions extends sfActions
 
         $this->logMessage($this->getCartManager()->getPricingInfo());
 
-        if($payment->doPayment((int) bcmul($rt_shop_cart_manager->getTotalCharge() * 100), $cc_array, $customer_array))
+        if($payment->doPayment((int) bcmul($rt_shop_cart_manager->getTotalCharge(), 100), $cc_array, $customer_array))
         {
           if($payment->isApproved())
           {
