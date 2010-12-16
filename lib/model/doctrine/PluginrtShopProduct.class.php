@@ -98,6 +98,57 @@ abstract class PluginrtShopProduct extends BasertShopProduct
   }
 
   /**
+   * Returns if any stock of product has a price_promotion
+   *
+   * @return boolean
+   */
+  public function hasPromotionPrice()
+  {
+    $promotion = false;
+
+    foreach($this->getRtShopStocks() as $stock)
+    {
+      if($stock->getPricePromotion() != 0)
+      {
+        $promotion = true;
+      }
+    }
+    return $promotion;
+  }
+
+  /**
+   * Returns if any stock of product has a product promotion
+   *
+   * @return boolean
+   */
+  public function hasProductPromotion()
+  {
+    $promotions = $this->getrtShopPromotionsAvailableOnly();
+    return (count($promotions) > 0) ? true : false;
+  }
+
+  /**
+   * Returns the minimum price for the product
+   *
+   * @return float
+   */
+  public function getMinimumPrice()
+  {
+    $prices = array();
+
+    if(count($this->getRtShopStocks()) > 0)
+    {
+      foreach($this->getRtShopStocks() as $stock)
+      {
+        $prices[] = $stock->getCharge();
+      }
+      sort($prices);
+      return $prices[0];
+    }
+    return NULL;
+  }
+
+  /**
    * Return the minimum promotional price.
    *
    * @return float
