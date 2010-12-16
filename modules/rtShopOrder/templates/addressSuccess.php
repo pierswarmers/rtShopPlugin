@@ -10,7 +10,7 @@
   <fieldset>
     <legend><?php echo __('Your Email Address') ?></legend>
     <ul class="rt-form-schema">
-      <li class="rt-form-row"><?php echo $form['email_address']->renderLabel() ?><div class="rt-form-field"><?php echo $form['email_address'] ?></div></li>
+      <li class="rt-form-row"><?php echo $form['email_address']->renderLabel() ?><div class="rt-form-field"><?php echo $form['email_address']->renderError() ?><?php echo $form['email_address'] ?></div></li>
     </ul>
   </fieldset>
 
