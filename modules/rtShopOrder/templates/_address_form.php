@@ -4,16 +4,16 @@
 
 <?php  echo $form->renderHiddenFields() ?>
 <ul class="rt-form-schema">
-  <li class="rt-form-row"><?php echo $form['first_name']->renderLabel() ?><div class="rt-form-field"><?php echo $form['first_name'] ?></div></li>
-  <li class="rt-form-row"><?php echo $form['last_name']->renderLabel() ?><div class="rt-form-field"><?php echo $form['last_name'] ?></div></li>
-  <li class="rt-form-row"><?php echo $form['address_1']->renderLabel() ?><div class="rt-form-field"><?php echo $form['address_1'] ?></div></li>
-  <li class="rt-form-row"><?php echo $form['address_2']->renderLabel() ?><div class="rt-form-field"><?php echo $form['address_2'] ?></div></li>
-  <li class="rt-form-row"><?php echo $form['town']->renderLabel() ?><div class="rt-form-field"><?php echo $form['town'] ?></div></li>
-  <li class="rt-form-row"><?php echo $form['country']->renderLabel() ?><div class="rt-form-field"><?php echo $form['country'] ?></div></li>
-  <li class="rt-form-row"><?php echo $form['state']->renderLabel() ?><div class="rt-form-field"><?php echo $form['state'] ?></div></li>
-  <li class="rt-form-row"><?php echo $form['postcode']->renderLabel() ?><div class="rt-form-field"><?php echo $form['postcode'] ?></div></li>
-  <li class="rt-form-row"><?php echo $form['phone']->renderLabel() ?><div class="rt-form-field"><?php echo $form['phone'] ?></div></li>
-  <li class="rt-form-row"><?php echo $form['instructions']->renderLabel() ?><div class="rt-form-field"><?php echo $form['instructions'] ?></div></li>
+  <li class="rt-form-row"><?php echo $form['first_name']->renderLabel() ?><div class="rt-form-field"><?php echo $form['first_name']->renderError() ?><?php echo $form['first_name'] ?></div></li>
+  <li class="rt-form-row"><?php echo $form['last_name']->renderLabel() ?><div class="rt-form-field"><?php echo $form['last_name']->renderError() ?><?php echo $form['last_name'] ?></div></li>
+  <li class="rt-form-row"><?php echo $form['address_1']->renderLabel() ?><div class="rt-form-field"><?php echo $form['address_1']->renderError() ?><?php echo $form['address_1'] ?></div></li>
+  <li class="rt-form-row"><?php echo $form['address_2']->renderLabel() ?><div class="rt-form-field"><?php echo $form['address_2']->renderError() ?><?php echo $form['address_2'] ?></div></li>
+  <li class="rt-form-row"><?php echo $form['town']->renderLabel() ?><div class="rt-form-field"><?php echo $form['town']->renderError() ?><?php echo $form['town'] ?></div></li>
+  <li class="rt-form-row"><?php echo $form['country']->renderLabel() ?><div class="rt-form-field"><?php echo $form['country']->renderError() ?><?php echo $form['country'] ?></div></li>
+  <li class="rt-form-row"><?php echo $form['state']->renderLabel() ?><div class="rt-form-field"><?php echo $form['state']->renderError() ?><?php echo $form['state'] ?></div></li>
+  <li class="rt-form-row"><?php echo $form['postcode']->renderLabel() ?><div class="rt-form-field"><?php echo $form['postcode']->renderError() ?><?php echo $form['postcode'] ?></div></li>
+  <li class="rt-form-row"><?php echo $form['phone']->renderLabel() ?><div class="rt-form-field"><?php echo $form['phone']->renderError() ?><?php echo $form['phone'] ?></div></li>
+  <li class="rt-form-row"><?php echo $form['instructions']->renderLabel() ?><div class="rt-form-field"><?php echo $form['instructions']->renderError() ?><?php echo $form['instructions'] ?></div></li>
 </ul>
 
 <script type="text/javascript">
