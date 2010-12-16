@@ -85,18 +85,20 @@ if(!$shipping_address)
         <?php endif; ?>
       </td>
     </tr>
-    <tr>
-      <td>
-        <?php if($billing_address && $billing_address['instructions'] != ''): ?>
-          <?php echo __('Instructions') ?>: <?php echo $billing_address['instructions'] ?>
-        <?php endif; ?>
-      </td>
-      <td>
-        <?php if($shipping_address && $shipping_address['instructions'] != ''): ?>
-          <?php echo __('Instructions') ?>: <?php echo $shipping_address['instructions'] ?>
-        <?php endif; ?>
-      </td>
-    </tr>
+    <?php if(($billing_address && $billing_address['instructions'] != '') || ($shipping_address && $shipping_address['instructions'] != '')): ?>
+      <tr>
+        <td>
+          <?php if($billing_address['instructions'] != ''): ?>
+            <?php echo __('Instructions') ?>: <?php echo $billing_address['instructions'] ?>
+          <?php endif; ?>
+        </td>
+        <td>
+          <?php if($shipping_address['instructions'] != ''): ?>
+            <?php echo __('Instructions') ?>: <?php echo $shipping_address['instructions'] ?>
+          <?php endif; ?>
+        </td>
+      </tr>
+    <?php endif; ?>
   </tbody>
 </table>
 <?php include_partial('rtShopOrderAdmin/archive', array('rt_shop_order' => $rt_shop_order)) ?>
