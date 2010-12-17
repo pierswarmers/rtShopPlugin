@@ -27,6 +27,11 @@
     </thead>
     <?php include_partial('cart', array('rt_shop_cart_manager' => $rt_shop_cart_manager, 'stock_exceeded' => isset($stock_exceeded) ? $stock_exceeded : array(), 'update_quantities' => isset($update_quantities) ? $update_quantities : array())) ?>
     <tfoot>
+      <tr class="rt-shop-cart-subtotal">
+        <th colspan="5"><?php echo __('Subtotal'); ?>:</th>
+        <td colspan="2"><?php echo format_currency($rt_shop_cart_manager->getSubTotal(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
+      </tr>
+      
      <?php if(!$rt_shop_cart_manager->isTaxModeInclusive()): ?>
       <tr class="rt-shop-cart-tax">
         <th colspan="5"><?php echo __('Tax'); ?>:</th>
