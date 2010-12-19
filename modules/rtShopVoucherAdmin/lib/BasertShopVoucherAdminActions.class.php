@@ -53,22 +53,11 @@ class BasertShopVoucherAdminActions extends sfActions
 
     $result_vouchers_total               = $con->fetchAssoc("select count(id) as count from rt_shop_promotion where type = 'rtShopVoucher'");
     $result_vouchers_total_active        = $con->fetchAssoc("select count(id) as count from rt_shop_promotion where type = 'rtShopVoucher' and count > 0 and (date_from <= '".$date_now."' OR date_from IS NULL) and (date_to > '".$date_now."' OR date_to IS NULL)");
-//    $result_users_total_active        = $con->fetchAssoc("select count(id) as count from sf_guard_user where is_active = 1");
-//    $result_users_total_admin         = $con->fetchAssoc("select count(id) as count from sf_guard_user where is_super_admin = 1");
-//    $result_users_total_unused        = $con->fetchAssoc("select count(id) as count from sf_guard_user where last_login Is Null");
-//    $result_users_added_current_month = $con->fetchAssoc("select count(id) as count from sf_guard_user where created_at > '".$first_this_month."' and created_at < '".$first_next_month."'");
 
     // Create array
     $stats = array();
     $stats['total']         = $result_vouchers_total[0] != '' ? $result_vouchers_total[0] : 0;
-
     $stats['total_active']  = $result_vouchers_total_active[0] != '' ? $result_vouchers_total_active[0] : 0;
-//
-//    $stats['total_admin']   = $result_users_total_admin[0] != '' ? $result_users_total_admin[0] : 0;
-//
-//    $stats['total_unused']  = $result_users_total_unused[0] != '' ? $result_users_total_unused[0] : 0;
-//
-//    $stats['month_current'] = $result_users_added_current_month[0] != '' ? $result_users_added_current_month[0] : 0;
 
     return $stats;
   }
