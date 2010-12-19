@@ -36,6 +36,41 @@ class BasertShopVoucherAdminActions extends sfActions
     $this->pager->setQuery($query);
     $this->pager->setPage($request->getParameter('page', 1));
     $this->pager->init();
+
+    $this->stats = $this->stats();
+  }
+
+  private function stats()
+  {
+    // Dates
+    $date_now         = date("Y-m-d H:i:s");
+    $first_next_month = date('Y-m-d H:i:s',mktime(00,00,00,(date("n")+1 <= 12) ? date("n")+1 : 1 ,1,(date("n")+1 <= 12) ? date("Y") : date("Y")+1));
+    $first_this_month = date('Y-m-d H:i:s',mktime(00,00,00,date("n"),1,date("Y")));
+    $first_last_month = date('Y-m-d H:i:s',mktime(00,00,00,(date("n") != 1) ? date("n")-1 : 12,1,(date("n") != 1) ? date("Y") : date("Y")-1));
+
+    // SQL queries
+    $con = Doctrine_Manager::getInstance()->getCurrentConnection();
+
+    $result_vouchers_total               = $con->fetchAssoc("select count(id) as count from rt_shop_promotion where type = 'rtShopVoucher'");
+    $result_vouchers_total_active        = $con->fetchAssoc("select count(id) as count from rt_shop_promotion where type = 'rtShopVoucher' and count > 0 and (date_from <= '".$date_now."' OR date_from IS NULL) and (date_to > '".$date_now."' OR date_to IS NULL)");
+//    $result_users_total_active        = $con->fetchAssoc("select count(id) as count from sf_guard_user where is_active = 1");
+//    $result_users_total_admin         = $con->fetchAssoc("select count(id) as count from sf_guard_user where is_super_admin = 1");
+//    $result_users_total_unused        = $con->fetchAssoc("select count(id) as count from sf_guard_user where last_login Is Null");
+//    $result_users_added_current_month = $con->fetchAssoc("select count(id) as count from sf_guard_user where created_at > '".$first_this_month."' and created_at < '".$first_next_month."'");
+
+    // Create array
+    $stats = array();
+    $stats['total']         = $result_vouchers_total[0] != '' ? $result_vouchers_total[0] : 0;
+
+    $stats['total_active']  = $result_vouchers_total_active[0] != '' ? $result_vouchers_total_active[0] : 0;
+//
+//    $stats['total_admin']   = $result_users_total_admin[0] != '' ? $result_users_total_admin[0] : 0;
+//
+//    $stats['total_unused']  = $result_users_total_unused[0] != '' ? $result_users_total_unused[0] : 0;
+//
+//    $stats['month_current'] = $result_users_added_current_month[0] != '' ? $result_users_added_current_month[0] : 0;
+
+    return $stats;
   }
 
   private function getCountPerPage(sfWebRequest $request)
