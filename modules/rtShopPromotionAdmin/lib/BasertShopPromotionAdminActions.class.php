@@ -37,6 +37,31 @@ class BasertShopPromotionAdminActions extends sfActions
     $this->pager->setQuery($query);
     $this->pager->setPage($request->getParameter('page', 1));
     $this->pager->init();
+
+    $this->stats = $this->stats();
+  }
+
+  private function stats()
+  {
+    // Date
+    $date_now = date("Y-m-d H:i:s");
+
+    // SQL queries
+    $con = Doctrine_Manager::getInstance()->getCurrentConnection();
+
+    $result_promotions_total             = $con->fetchAssoc("select count(id) as count from rt_shop_promotion where type != 'rtShopVoucher'");
+    $result_promotions_active            = $con->fetchAssoc("select count(id) as count from rt_shop_promotion where type != 'rtShopVoucher' and (date_from <= '".$date_now."' OR date_from IS NULL) and (date_to > '".$date_now."' OR date_to IS NULL)");
+    $result_promotions_total_cart        = $con->fetchAssoc("select count(id) as count from rt_shop_promotion where type = 'rtShopPromotionCart'");
+    $result_promotions_total_product     = $con->fetchAssoc("select count(id) as count from rt_shop_promotion where type = 'rtShopPromotionProduct'");
+
+    // Create array
+    $stats = array();
+    $stats['total']          = $result_promotions_total[0] != '' ? $result_promotions_total[0] : 0;
+    $stats['total_active']   = $result_promotions_active[0] != '' ? $result_promotions_active[0] : 0;
+    $stats['total_cart']     = $result_promotions_total_cart[0] != '' ? $result_promotions_total_cart[0] : 0;
+    $stats['total_product']  = $result_promotions_total_product[0] != '' ? $result_promotions_total_product[0] : 0;
+
+    return $stats;
   }
 
   private function getCountPerPage(sfWebRequest $request)
