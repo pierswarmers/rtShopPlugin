@@ -18,22 +18,20 @@
   <?php $i++; endforeach; ?>
   </div>
 
-  <div class="rt-tools rt-shop-wishlist-tools">
-    <form action="<?php echo url_for('@rt_shop_show_wishlist') ?>" method="post">
-      <?php echo $form->renderHiddenFields() ?>
-      <ul class="rt-form-schema">
-        <li class="rt-form-row">
-          <?php echo $form['email_address']->renderLabel() ?>
-          <div class="rt-form-field">
-            <?php echo $form['email_address']->renderError() ?><?php echo $form['email_address'] ?>
-          </div>
-      </li>
-      </ul>
-      <p class="rt-form-tools">
-        <button type="submit" class="button rt-shop-wishlist-email"><?php echo __('Email this wishlist') ?></button>
-      </p>
-    </form>
-  </div>
+  <form action="<?php echo url_for('@rt_shop_show_wishlist') ?>" method="post">
+    <?php echo $form->renderHiddenFields() ?>
+    <ul class="rt-form-schema">
+      <li class="rt-form-row">
+        <?php echo $form['email_address']->renderLabel() ?>
+        <div class="rt-form-field">
+          <?php echo $form['email_address']->renderError() ?><?php echo $form['email_address'] ?>
+        </div>
+    </li>
+    </ul>
+    <p class="rt-form-tools">
+      <button type="submit" class="button rt-shop-wishlist-email"><?php echo __('Email this wishlist') ?></button>
+    </p>
+  </form>
 <?php else: ?>
   <p><?php echo __('No items in your wishlist yet.') ?></p>
 <?php endif; ?>
