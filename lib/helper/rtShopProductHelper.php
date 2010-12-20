@@ -17,7 +17,7 @@ function price_for($rt_shop_product, $config = array())
 
   $currency  = sfConfig::get('app_rt_currency', 'USD');
 
-  $price_min = $rt_shop_product->isOnPromotion() ? $rt_shop_product->getMinPromotionPrice() : $rt_shop_product->getMinRetailPrice();
+  $price_min = $rt_shop_product->isOnPromotion() ? $rt_shop_product->getMinimumPrice() : $rt_shop_product->getMinRetailPrice();
   $price_max = max($rt_shop_product->getMaxRetailPrice(), $rt_shop_product->getMaxPromotionPrice());
 
   if(!$rt_shop_product->isOnPromotion())

@@ -9,8 +9,8 @@ $links = array(
 ?>
 <ol class="rt-shop-order-breadcrumb">
 <?php $class = ' class="past"'; foreach($links as $key => $link): ?>
-  <?php $class = ($key === $sf_request->getParameter('action')) ? ' class="here"' : $class; ?>
-  <li<?php echo $class ?>><?php echo link_to_if($sf_request->getParameter('action') !== $key && $class !== '', $link['title'],$link['route']) ?></li>
-  <?php $class = ($class == ' class="here"') ? '' : $class; ?>
+<?php $class = ($key === $sf_request->getParameter('action')) ? ' class="here"' : $class; ?>
+<li<?php echo $class ?>><?php echo link_to_if($sf_request->getParameter('action') !== $key && $class !== '', $link['title'],$link['route']) ?></li>
+<?php $class = ($class == ' class="here"') ? '' : $class; ?>
 <?php endforeach; ?>
 </ol>
