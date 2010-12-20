@@ -8,7 +8,7 @@ if($rt_shop_product->isPurchasable()):
 
 <form action="<?php echo url_for('@rt_shop_order_add_to_bag') ?>" method="post" class="rt-shop-product-order-panel">
 
-  <input type="hidden" name="rt-shop-product-id" value="<?php echo $rt_shop_product->getId(); ?>" />
+  <input type="hidden" name="rt-shop-product-id" id="rt-shop-product-id" value="<?php echo $rt_shop_product->getId(); ?>" />
   
   <?php 
   

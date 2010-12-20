@@ -21,7 +21,7 @@ $(function() {
   $(".rt-shop-add-to-wishlist a").click(function() {
     $('.rt-shop-add-to-wishlist').addClass('loading').html('Adding to wishlist...');
     $.ajax({ type: "POST", url: '/add-to-wishlist', data: ({
-      id : '<?php echo $rt_shop_product->getId() ?>'
+      id : $('#rt-shop-product-id').att('value')
     }), dataType: "xhr",
     success: function(data) {
       $('.rt-shop-add-to-wishlist').removeClass('loading').addClass('success');
