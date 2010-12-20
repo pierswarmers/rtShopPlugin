@@ -31,7 +31,7 @@ class BasertShopProductActions extends sfActions
   public function executeShow(sfWebRequest $request)
   {
     $this->rt_shop_product = $this->getRoute()->getObject();
-    
+
     $this->forward404Unless($this->rt_shop_product);
 
     if(!$this->rt_shop_product->isPublished() && !$this->isAdmin())
@@ -44,7 +44,7 @@ class BasertShopProductActions extends sfActions
     $this->related_products = $query->execute();
 
     rtSiteToolkit::checkSiteReference($this->rt_shop_product);
-    
+
     $this->updateResponse($this->rt_shop_product);
   }
 
@@ -57,12 +57,68 @@ class BasertShopProductActions extends sfActions
 
   public function executeShowWishlist(sfWebRequest $request)
   {
+    $this->form = new rtShopOrderEmailForm();
+
+    $wishlist = $this->getUser()->getAttribute('rt_shop_wish_list', array());
+
     if($request->hasParameter('delete'))
     {
-      $wishlist = $this->getUser()->getAttribute('rt_shop_wish_list', array());
       unset($wishlist[$request->getParameter('delete')]);
       $this->getUser()->setAttribute('rt_shop_wish_list', $wishlist);
     }
+
+    // Send wishlist to user
+    if($request->isMethod(sfRequest::POST) || $request->isMethod(sfRequest::PUT))
+    {
+      $this->form->bind($request->getParameter($this->form->getName()));
+
+      if($this->form->isValid())
+      {
+        $vars = $this->form->getValues();
+
+        try {
+          $this->notifyUserOfWishlist($vars['email_address'],$wishlist);
+        } catch (Exception $e) {
+
+        }
+        $this->getUser()->setFlash('notice', 'Thank you. Your wishlist has been sent to the selected email address.', false);
+      }
+      else
+      {
+        $this->getUser()->setFlash('default_error', true, false);
+      }
+    }
+  }
+
+  /**
+   * Notify the user about his wishlist
+   *
+   * @param sfGuardUser $user
+   */
+  protected function notifyUserOfWishlist($email_address,$wishlist)
+  {
+    if(!$email_address)
+    {
+      return;
+    }
+
+    $vars = array('email' => $email_address);
+    $vars['wishlist'] = $wishlist;
+
+    $message_html = $this->getPartial('rtShopProduct/email_wishlist_user_html', $vars);
+    $message_html = $this->getPartial('rtEmail/layout_html', array('content' => $message_html));
+
+    $message_plain = $this->getPartial('rtShopProduct/email_wishlist_user_plain', $vars);
+    $message_plain = $this->getPartial('rtEmail/layout_plain', array('content' => html_entity_decode($message_plain)));
+
+    $message = Swift_Message::newInstance()
+            ->setFrom(sfConfig::get('app_rt_shop_order_admin_email', 'from@noreply.com'))
+            ->setTo($email_address)
+            ->setSubject('My wishlist')
+            ->setBody($message_html, 'text/html')
+            ->addPart($message_plain, 'text/plain');
+
+    $this->getMailer()->send($message);
   }
 
   public function executeSendToFriend(sfWebRequest $request)
