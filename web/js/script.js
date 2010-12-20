@@ -18,14 +18,14 @@ $(function() {
   /*
    * Handle clicks on the wishlist and the Ajax call to save the item.
    */
-  $("#rt-shop-add-to-wishlist a").click(function() {
-    $('#rt-shop-add-to-wishlist').addClass('loading').html('Adding to wishlist...');
+  $(".rt-shop-add-to-wishlist a").click(function() {
+    $('.rt-shop-add-to-wishlist').addClass('loading').html('Adding to wishlist...');
     $.ajax({ type: "POST", url: '/add-to-wishlist', data: ({
       id : '<?php echo $rt_shop_product->getId() ?>'
     }), dataType: "xhr",
     success: function(data) {
-      $('#rt-shop-add-to-wishlist').removeClass('loading').addClass('success');
-      $('#rt-shop-add-to-wishlist').html(data);
+      $('.rt-shop-add-to-wishlist').removeClass('loading').addClass('success');
+      $('.rt-shop-add-to-wishlist').html(data);
     }
     });
     return false;
