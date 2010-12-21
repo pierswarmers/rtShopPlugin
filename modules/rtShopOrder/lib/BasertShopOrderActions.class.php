@@ -209,7 +209,7 @@ class BasertShopOrderActions extends sfActions
     // Is this user already logged in? If yes, redirect forwards...
     $this->redirectIf($this->getUser()->isAuthenticated(), 'rt_shop_order_address');
 
-    $class = sfConfig::get('app_sf_guard_plugin_signin_form', 'sfGuardFormSignin');
+    $class = sfConfig::get('app_sf_guard_plugin_signin_form', 'rtGuardFormSignin');
     $this->form_user = new $class();
   }
 

@@ -30,7 +30,7 @@
     </fieldset>
   </div>
 
-  <p class="rt-form-tools"><button><?php echo __('Proceed to payment') ?></button></p>
+  <p class="rt-shop-order-tools"><button><?php echo __('Proceed to payment') ?></button></p>
 </form>
 
 <script type="text/javascript">

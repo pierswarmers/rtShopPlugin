@@ -2,6 +2,7 @@
 
 <?php slot('rt-title', $rt_shop_product->getTitle()) ?>
 
+<div class="clearfix">
 <div class="rt-shop-product-gallery">
 <?php include_partial('rtShopProduct/gallery', array('rt_shop_product' => $rt_shop_product)) ?>
 </div>
@@ -12,7 +13,7 @@
   <?php include_partial('details_suffix', array('rt_shop_product' => $rt_shop_product)) ?>
   <?php include_component('rtSnippet','snippetPanel', array('collection' => 'shop-product-suffix','sf_cache_key' => 'shop-product-suffix')); ?>
 </div>
-
+</div>
 <?php if($related_products): ?>
 <div class="rt-shp-products-related rt-collection clearfix">
   <h2><?php echo __('Related Products') ?></h2>

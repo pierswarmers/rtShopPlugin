@@ -15,9 +15,9 @@
     $shop_membership_prompt .= '<p>'  . __('Creating an account is simple, free and opens the door to a range of member only benefits.') . '</p>';
   ?>
   <?php include_component('rtSnippet','snippetPanel', array('collection' => 'shop-membership-prompt','sf_cache_key' => 'shop-membership-prompt', 'default' => $shop_membership_prompt)); ?>
-  <p><a href="<?php echo url_for('sf_guard_register') ?>"><?php echo __('Want to register?', null, 'sf_guard') ?></a></p>
 </div>
 <?php endif; ?>
 <div class="rt-shop-order-tools">
-  <?php echo link_to(__('Proceed without an account'), 'rt_shop_order_address', array(), array('class' => 'button')) ?>
+  <button onclick="document.location.href='<?php echo url_for('sf_guard_register') ?>';"><?php echo __('Register a new account') ?></button> &nbsp; 
+  <?php echo __('Or') ?>, <?php echo link_to(__('proceed without an account'), 'rt_shop_order_address', array(), array('class' => 'button')) ?>
 </div>
