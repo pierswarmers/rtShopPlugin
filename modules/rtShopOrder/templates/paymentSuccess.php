@@ -107,7 +107,7 @@
       <?php include_component('rtSnippet','snippetPanel', array('collection' => 'shop-payment-suffix','sf_cache_key' => 'shop-payment-suffix')); ?>
     </div>
 
-    <p class="rt-form-tools"><button id="rt-submit-order"><?php echo __('Place your order') ?></button></p>
+    <p class="rt-shop-order-tools"><button id="rt-submit-order"><?php echo __('Place your order') ?></button></p>
 </form>
 
 <script type="text/javascript">

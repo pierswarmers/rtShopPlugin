@@ -11,8 +11,8 @@ if(!$shipping_address)
 <table class="rt-shop-order-addresses">
   <thead>
     <tr>
-      <th><?php echo __('Billing Address'); ?><span><?php echo link_to(__('Change'),'rt_shop_order_address') ?></span></th>
-      <th><?php echo __('Shipping Address'); ?><span><?php echo link_to(__('Change'),'rt_shop_order_address') ?></span></th>
+      <th><?php echo __('Billing Address'); ?> <?php echo link_to(__('Change'),'rt_shop_order_address') ?></th>
+      <th><?php echo __('Shipping Address'); ?> <?php echo link_to(__('Change'),'rt_shop_order_address') ?></th>
     </tr>
   </thead>
   <tbody>
