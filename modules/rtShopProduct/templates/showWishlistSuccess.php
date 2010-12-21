@@ -5,7 +5,7 @@
 <?php $wishlist = $sf_user->getAttribute('rt_shop_wish_list', array()); ?>
 
 <?php if(count($wishlist) > 0): ?>
-<div class="rt-collection">
+<div class="rt-collection rt-shop-product rt-shop-product-wishlist clearfix">
   <?php $i = 1; foreach ($wishlist as $id): ?>
   <?php
   $product = Doctrine::getTable('rtShopProduct')->find($id);
@@ -17,6 +17,8 @@
   <?php endif; ?>
   <?php $i++; endforeach; ?>
   </div>
+
+<h2><?php echo __('Email your wishlist') ?></h2>
 
   <form action="<?php echo url_for('@rt_shop_show_wishlist') ?>" method="post">
     <?php echo $form->renderHiddenFields() ?>
