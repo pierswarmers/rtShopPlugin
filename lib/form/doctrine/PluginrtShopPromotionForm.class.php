@@ -18,7 +18,8 @@ abstract class PluginrtShopPromotionForm extends BasertShopPromotionForm
       $this['updated_at'],
       $this['created_at'],
       $this['quantity_from'],
-      $this['quantity_to']
+      $this['quantity_to'],
+      $this['rt_shop_product_list']
     );
 
     $rt_shop_promotion_types = array('rtShopPromotionCart' => 'Cart level promotion', 'rtShopPromotionProduct' => 'Product level promotion');
