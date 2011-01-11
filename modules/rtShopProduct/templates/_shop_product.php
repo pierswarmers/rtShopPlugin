@@ -24,3 +24,22 @@
   <?php $i++; endforeach; ?>
 </div>
 <?php endif; ?>
+
+<script type="text/javascript">
+  // No product variations, only quantities
+  var count_available_items   = 0;
+  var count_selection_groups  = $("form.rt-shop-product-order-panel .rt-shop-option-set").size();
+  var button                  = $('form.rt-shop-product-order-panel button');
+
+  $(".rt-shop-option-set").each(function(){
+    $(this).children('input:checked').each(function(){
+      count_available_items++;
+    });
+  });
+
+  if(count_selection_groups == 0)
+  {
+    button.text("Add to Cart").attr("disabled",false);
+    button.removeClass("disabled");
+  }
+</script>

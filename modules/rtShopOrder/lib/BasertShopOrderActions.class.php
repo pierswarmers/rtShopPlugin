@@ -86,15 +86,29 @@ class BasertShopOrderActions extends sfActions
         $this->redirect('rt_shop_product_show', $rt_shop_product);
       }
 
-      $rt_shop_stock = Doctrine::getTable('rtShopStock')->findOneByVariationsAndProductId($variation_ids, $rt_shop_product);
-
-      if(!$rt_shop_stock)
+      if(is_null($variation_ids) || $variation_ids == '')
       {
-        $this->getUser()->setFlash('error', 'We don\'t seem to have any stock available for that selection.');
-        $this->redirect('rt_shop_product_show', $rt_shop_product);
-      }
+        // No variation on stock. Get stock object through product id
+        $rt_shop_stock = Doctrine::getTable('rtShopStock')->findByProductId($rt_shop_product->getId());
+        
+        if(count($rt_shop_stock) > 1)
+        {
+          throw new sfException('Products without variations can only have one stock item. More than one found.');
+        }
 
-      $stock_id = $rt_shop_stock->getId();
+        $this->checkIfStockIsAvailable($rt_shop_stock);
+
+        $stock_id = $rt_shop_stock[0]->id;
+      }
+      else
+      {
+        // Has variations
+        $rt_shop_stock = Doctrine::getTable('rtShopStock')->findOneByVariationsAndProductId($variation_ids, $rt_shop_product);
+
+        $this->checkIfStockIsAvailable($rt_shop_stock);
+
+        $stock_id = $rt_shop_stock->getId();
+      }
     }
 
     if(!$this->getCartManager()->addToCart($stock_id,(int) $request->getParameter('rt-shop-quantity')))
@@ -107,6 +121,20 @@ class BasertShopOrderActions extends sfActions
 
     $this->getUser()->setFlash('notice', 'Product added to ' . sfConfig::get('rt_shop_cart_name', 'shopping bag') . '.');
     $this->redirect('rt_shop_product_show', $rt_shop_product);
+  }
+
+  /**
+   * Check if product has stock
+   *
+   * @param rtShopStock $rt_shop_stock
+   */
+  private function checkIfStockIsAvailable($rt_shop_stock)
+  {
+    if(!$rt_shop_stock)
+    {
+      $this->getUser()->setFlash('error', 'We don\'t seem to have any stock available for that selection.');
+      $this->redirect('rt_shop_product_show', $rt_shop_product);
+    }
   }
 
   /**
