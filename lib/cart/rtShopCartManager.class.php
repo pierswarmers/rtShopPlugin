@@ -259,11 +259,11 @@ class rtShopCartManager
     }
 
     $charge = $this->getPreTotalCharge($filter);
-    
-		if(is_null($this->getVoucherCode()))
-		{
-			return 0.00;
-		}
+
+	if(is_null($this->getVoucherCode()))
+    {
+      return 0.00;
+    }
     
     return (float) $charge - rtShopVoucherToolkit::applyVoucher($this->getVoucherCode(), $charge);
   }
@@ -539,7 +539,8 @@ class rtShopCartManager
    public function archive()
    {
      $order = $this->getOrder();
-     
+
+     // Products
      $products = array();
      $i=0;
      foreach ($order->getStockInfoArray() as $stock)
@@ -571,15 +572,19 @@ class rtShopCartManager
        $i++;
      }
 
+     // Save products data
      $order->setProductsData($products);
 
+     // Shipping charge
      $order->setShippingCharge($this->getShippingCharge());
-     
+
+     // Taxes
      $order->setTaxCharge($this->getTaxCharge());
      $order->setTaxComponent($this->getTaxComponent());
      $order->setTaxMode($this->getTaxMode());
      $order->setTaxRate($this->getTaxRate());
 
+     // Voucher     
      $order->setVoucherCode($this->getVoucherCode());
      $order->setVoucherReduction($this->getVoucherReduction());
      $voucher = $this->getVoucher();
@@ -588,7 +593,8 @@ class rtShopCartManager
        $order->setVoucherId($voucher->getId());
        $order->setVoucherData($voucher->toArray());
      }
-     
+
+     // Promotion
      $promotion = $this->getPromotion();
      $order->setPromotionReduction($this->getPromotionReduction());
      if($promotion)
@@ -596,7 +602,11 @@ class rtShopCartManager
        $order->setPromotionId($promotion->getId());
        $order->setPromotionData($promotion->toArray());
      }
+
+     // Items charge
      $order->setItemsCharge($this->getItemsCharge());
+
+     // Total charge
      $order->setTotalCharge($this->getTotalCharge());
    }
 
@@ -626,6 +636,11 @@ class rtShopCartManager
    */
   public function adjustVoucherDetails()
   {
+    if($this->getVoucherReduction() == 0)
+    {
+      return;
+    }
+
     $voucher = $this->getVoucher();
     if($voucher)
     {

@@ -45,7 +45,7 @@
       </tr>
     <?php endif; ?>
 
-    <?php if($rt_shop_order->getVoucherReduction() > 0): ?>
+    <?php if($rt_shop_order->getVoucherCode()): ?>
     <?php $voucher = $rt_shop_order->getVoucherData(); ?>
       <tr>
         <td colspan="4"><?php echo __('Voucher'); ?> (<?php echo $voucher['title'] ?>):</td>

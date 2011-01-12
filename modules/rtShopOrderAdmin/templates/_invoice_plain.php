@@ -89,7 +89,7 @@ $voucher = $rt_shop_order->getVoucherData();
 <?php if($rt_shop_order->getPromotionReduction() > 0): ?>
 <?php echo strtoupper(__('Promotion')); ?> (<?php echo $promotion['title'] ?>): -<?php echo format_currency($rt_shop_order->getPromotionReduction(), sfConfig::get('app_rt_currency', 'AUD')); ?><?php echo "\r\n" ?>
 <?php endif; ?>
-<?php if($rt_shop_order->getVoucherReduction() > 0): ?>
+<?php if($rt_shop_order->getVoucherCode()): ?>
 <?php echo strtoupper(__('Voucher')); ?> (<?php echo $voucher['title'] ?>): -<?php echo format_currency($rt_shop_order->getVoucherReduction(), sfConfig::get('app_rt_currency', 'AUD')); ?><?php echo "\r\n" ?>
 <?php endif; ?>
 <?php echo strtoupper(__('Shipping rate')); ?>: <?php echo ($rt_shop_order->getShippingCharge() != false) ? format_currency($rt_shop_order->getShippingCharge(), sfConfig::get('app_rt_currency', 'AUD')) : __('undefined'); ?><?php echo "\r\n" ?>
