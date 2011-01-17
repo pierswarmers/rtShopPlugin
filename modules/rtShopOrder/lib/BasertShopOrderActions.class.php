@@ -194,6 +194,7 @@ class BasertShopOrderActions extends sfActions
       }
     }
 
+    $this->getCartManager()->resetShippingCharge();
     $this->updateUserSession();
 
     // Only go to checkout when no quantity errors
