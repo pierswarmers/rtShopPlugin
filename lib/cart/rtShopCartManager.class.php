@@ -20,7 +20,8 @@ class rtShopCartManager
 	private $_order,
 					$_user,
 					$_promotion,
-          $_is_wholesale;
+          $_is_wholesale,
+          $_shipping_charge;
 
   const FILTER_NON_STACKABLE = 'NONSTACKABLE';
   const FILTER_STACKABLE = 'STACKABLE';
@@ -180,15 +181,38 @@ class rtShopCartManager
   }
 
   /**
-   * Return shipping charges.
+   * Return shipping charge.
    *
    * @return float
    */
   public function getShippingCharge()
   {
-    $class = sfConfig::get('app_rt_shop_shipping_class','rtShopShipping');
-    $shipping = new $class($this);
-    return $shipping->getShippingCharge();
+    if(is_null($this->_shipping_charge))
+    {
+      $class = sfConfig::get('app_rt_shop_shipping_class','rtShopShipping');
+      $shipping = new $class($this);
+      $this->_shipping_charge = $shipping->getShippingCharge();
+    }
+
+    return $this->_shipping_charge;
+  }
+
+  /**
+   * Set the shipping charge.
+   *
+   * @param mixed $shipping_charge
+   */
+  public function getShippingCharge($shipping_charge)
+  {
+    $this->_shipping_charge = $shipping_charge;
+  }
+
+  /**
+   * Reset the shipping charge to null.
+   */
+  public function resetShippingCharge()
+  {
+    $this->_shipping_charge = null;
   }
 
   /**
@@ -430,6 +454,8 @@ class rtShopCartManager
     $ots->setOrderId($order->getId());
     $ots->save();
 
+    $this->resetShippingCharge();
+
     return true;
   }
 
@@ -453,6 +479,8 @@ class rtShopCartManager
 			->execute();
 
     sfContext::getInstance()->getLogger()->info('{rtShopCartManager} Unlinking stock_id '. $stock_id .' from order_id '. $order->getId());
+
+    $this->resetShippingCharge();
 
     return true;
   }

@@ -350,6 +350,8 @@ class BasertShopOrderActions extends sfActions
 
       if($this->form->isValid() && $this->form_billing->isValid())
       {
+        $this->getCartManager()->resetShippingCharge();
+
         // At this point we have the two primary forms vaild...
         $valid = true;
 
