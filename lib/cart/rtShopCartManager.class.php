@@ -202,7 +202,7 @@ class rtShopCartManager
    *
    * @param mixed $shipping_charge
    */
-  public function getShippingCharge($shipping_charge)
+  public function setShippingCharge($shipping_charge)
   {
     $this->_shipping_charge = $shipping_charge;
   }
