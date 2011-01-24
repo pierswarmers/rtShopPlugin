@@ -171,7 +171,7 @@
           var checkboxId = '#rt_shop_product_rt_shop_products_list_' + data[1];
 
           // Check if list item does not exist, if exists highlight item
-          if($(checkboxId).html() == null) {
+          if($(checkboxId).html() == null && <?php echo $form->getObject()->getId() ?> != data[1]) {
             var li_start    = '<li style="">';
             var input_field = '<input name="rt_shop_product[rt_shop_products_list][]" type="checkbox" value="' + data[1] + '" id="rt_shop_product_rt_shop_products_list_' + data[1] + '" checked="checked">';
             var label       = '<label for="rt_shop_product_rt_shop_products_list_' + data[1] + '">' + data[0] + '</label>';
