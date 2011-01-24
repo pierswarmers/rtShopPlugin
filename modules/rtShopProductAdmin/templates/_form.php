@@ -1,5 +1,7 @@
 <?php use_stylesheets_for_form($form) ?>
 <?php use_javascripts_for_form($form) ?>
+<?php use_javascript('/sfFormExtraPlugin/js/jquery.autocompleter.js') ?>
+<?php use_stylesheet('/sfFormExtraPlugin/css/jquery.autocompleter.css') ?>
 <?php use_helper('I18N', 'rtForm') ?>
 
 <?php slot('rt-tools') ?>
@@ -130,7 +132,20 @@
         <?php if(isset($form['site_id'])): ?>
           <?php echo render_form_row($form['site_id']); ?>
         <?php endif; ?>
-        <?php echo render_form_row($form['rt_shop_products_list']); ?>
+        <tr class="rt-form-row standard">
+          <th><?php echo $form['rt_shop_products_list']->renderLabel() ?></th>
+          <td>
+            <?php echo $form['rt_shop_products_list']->renderError() ?>
+            <?php echo $form['rt_shop_products_list'] ?>
+            <div class="help"><?php echo $form['rt_shop_products_list']->getParent()->getWidget()->getHelp('rt_shop_products_list') ?></div>
+            <div id="rt-shop-product-product-search">
+              <label for="rt_shop_product_product_search">Add another product:</label>
+              <input type="text" id="rt_shop_product_product_search" name="rt_shop_product_product_search" />
+              <div class="help"><?php echo __('Type in the title of a product. If a product is found it will be shown in a dropdown selection.') ?></div>
+            </div>
+          </td>
+        </tr>
+        <?php //echo render_form_row($form['rt_shop_products_list']); ?>
         <?php echo render_form_row($form['rt_shop_categories_list']); ?>
       </tbody>
     </table>
@@ -139,6 +154,44 @@
       $("#rtSortableProducts ul.checkbox_list").first().sortable({
         revert: true
       });
+
+        jQuery("#rt_shop_product_product_search")
+        .autocomplete('/rtShopProductAdmin/productSelect?q=' + $("#rt_shop_product_product_search").val(), jQuery.extend({}, {
+          dataType: 'json',
+          parse:    function(data) {
+            var parsed = [];
+            for (key in data) {
+              parsed[parsed.length] = { data: [ data[key], key ], value: data[key], result: data[key] };
+            }
+            return parsed;
+          }
+        }, { }))
+        .result(function(event, data) {
+
+          var checkboxId = '#rt_shop_product_rt_shop_products_list_' + data[1];
+
+          // Check if list item does not exist, if exists highlight item
+          if($(checkboxId).html() == null) {
+            var li_start    = '<li style="">';
+            var input_field = '<input name="rt_shop_product[rt_shop_products_list][]" type="checkbox" value="' + data[1] + '" id="rt_shop_product_rt_shop_products_list_' + data[1] + '" checked="checked">';
+            var label       = '<label for="rt_shop_product_rt_shop_products_list_' + data[1] + '">' + data[0] + '</label>';
+            var li_end      = '</li>';
+
+            var list = $("#rt_shop_product_product_search").parents('td').children('ul');
+
+            if(list.html() == null)
+            {
+              $("#rt_shop_product_product_search").parents('td').prepend('<ul class="checkbox_list"></ul>');
+              list = $("#rt_shop_product_product_search").parents('td').children('ul');
+              list.sortable({
+                revert: true
+              });
+            }
+
+            list.append(li_start + input_field + '&nbsp;' + label + li_end);
+          }
+          $(checkboxId).parents('li').effect('highlight');
+        });
     });
     </script>
   </div>

@@ -36,7 +36,9 @@ abstract class PluginrtShopProductForm extends BasertShopProductForm
     $this->setWidget('rt_shop_attributes_list', new sfWidgetFormDoctrineChoice(array('query' => $query, 'expanded' => true ,'multiple' => true, 'model' => 'rtShopAttribute')));
     $this->setWidget('rt_shop_promotions_list', new sfWidgetFormDoctrineChoice(array('expanded' => true ,'multiple' => true, 'model' => 'rtShopPromotionProduct')));
 
-    $query = Doctrine_Query::create()->from('rtShopProduct p');
+    $query = Doctrine_Query::create()->from('rtShopProduct p')
+            ->leftJoin('p.rtShopProductToProduct as ptp')
+            ->andWhere('ptp.product_id = ?',$this->object->id);
     
     if(!$this->isNew())
     {
@@ -46,7 +48,7 @@ abstract class PluginrtShopProductForm extends BasertShopProductForm
         (select position from rt_shop_product_to_product where product_id = %s and product_id_target = p.id) as position,
         ((select position from rt_shop_product_to_product where product_id = %s and product_id_target = p.id) IS NULL) as has_position
         ', $this->object->id, $this->object->id))
-              ->andWhere('p.id != ?', $this->getObject()->getId())
+        ->andWhere('p.id != ?', $this->getObject()->getId())
         ->orderBy('has_position ASC, position ASC');
     }
     else
