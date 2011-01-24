@@ -334,6 +334,30 @@ class BasertShopProductAdminActions extends sfActions
     $this->clearCache($rt_shop_product);
   }
 
+  /**
+   * Return products as JSON reponse for product selections
+   *
+   * @param sfWebRequest $request
+   * @return JSON
+   */
+  public function executeProductSelect(sfWebRequest $request)
+  {
+    $this->getResponse()->setContentType('application/json');
+
+    $query = Doctrine::getTable('rtIndex')->getBaseSearchQuery($request->getParameter('q'), $this->getUser()->getCulture());
+    $query->andWhere('i.model = ?', 'rtShopProduct');
+    $products_raw = $query->execute();
+
+    $products = array();
+    foreach ($products_raw as $product)
+    {
+      //$products[$product->getId()] = $product->getTitle();
+      $products[$product->getModelId()] = (string) $product;
+    }
+    
+    return $this->renderText(json_encode($products));
+  }
+
   protected function processForm(sfWebRequest $request, sfForm $form)
   {
     $form->bind($request->getParameter($form->getName()), $request->getFiles($form->getName()));
