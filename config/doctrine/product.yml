@@ -143,7 +143,6 @@ rtShopStockToVariation:
 
 rtShopProductToAttribute:
   columns:
-    position: integer(3)
     product_id:
       type: integer
       primary: true
@@ -201,6 +200,7 @@ rtShopProductToCategory:
     product_id:
       type: integer
       primary: true
+    position: integer
   relations:
     rtShopCategory:  { onDelete: CASCADE, local: category_id, foreign: id }
     rtShopProduct:  { onDelete: CASCADE, local: product_id, foreign: id }
