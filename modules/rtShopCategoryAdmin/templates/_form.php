@@ -1,5 +1,8 @@
 <?php use_stylesheets_for_form($form) ?>
 <?php use_javascripts_for_form($form) ?>
+<?php use_javascript('/sfFormExtraPlugin/js/jquery.autocompleter.js') ?>
+<?php use_stylesheet('/sfFormExtraPlugin/css/jquery.autocompleter.css') ?>
+<?php use_helper('I18N', 'rtForm') ?>
 
 <?php slot('rt-tools') ?>
 <?php include_partial('rtAdmin/standard_modal_tools', array('show_route_handle' => 'admin', 'object' => $form->getObject()))?>
@@ -20,48 +23,87 @@
   <table>
     <tbody>
       <?php echo $form->renderGlobalErrors() ?>
-      <tr>
-        <th><?php echo $form['title']->renderLabel() ?></th>
-        <td>
-          <?php echo $form['title']->renderError() ?>
-          <?php echo $form['title'] ?>
-        </td>
-      </tr>
-      <tr>
-        <th><?php echo $form['content']->renderLabel() ?></th>
-        <td>
-          <?php echo $form['content']->renderError() ?>
-          <?php echo $form['content'] ?>
-        </td>
-      </tr>
+      <?php echo render_form_row($form['title']); ?>
+      <?php echo render_form_row($form['content']); ?>
     </tbody>
   </table>
+
+  <div class="rt-admin-toggle-panel">
+    <h2><?php echo __('Product Selection') ?></h2>
+    <table class="rt-admin-toggle-panel-content" id="rtSortableProducts">
+      <tbody>
+        <tr class="rt-form-row standard">
+          <th><?php echo $form['rt_shop_products_list']->renderLabel() ?></th>
+          <td>
+            <?php echo $form['rt_shop_products_list']->renderError() ?>
+            <?php echo $form['rt_shop_products_list'] ?>
+            <div class="help"><?php echo $form['rt_shop_products_list']->getParent()->getWidget()->getHelp('rt_shop_products_list') ?></div>
+            <div id="rt-shop-category-product-search">
+              <label for="rt_shop_category_product_search">Add another product:</label>
+              <input type="text" id="rt_shop_category_product_search" name="rt_shop_category_product_search" />
+              <div class="help"><?php echo __('Type in the title of a product. If a product is found it will be shown in a dropdown selection.') ?></div>
+            </div>
+          </td>
+        </tr>
+        <?php //echo render_form_row($form['rt_shop_products_list']); ?>
+      </tbody>
+    </table>
+    
+    <script type="text/javascript">
+      $(function() {
+        $("#rtSortableProducts ul.checkbox_list").first().sortable({
+          revert: true
+        });
+
+        jQuery("#rt_shop_category_product_search")
+        .autocomplete('/rtShopProductAdmin/productSelect?q=' + $("#rt_shop_category_product_search").val(), jQuery.extend({}, {
+          dataType: 'json',
+          parse:    function(data) {
+            var parsed = [];
+            for (key in data) {
+              parsed[parsed.length] = { data: [ data[key], key ], value: data[key], result: data[key] };
+            }
+            return parsed;
+          }
+        }, { }))
+        .result(function(event, data) {
+
+          var checkboxId = '#rt_shop_category_rt_shop_products_list_' + data[1];
+
+          // Check if list item does not exist, if exists highlight item
+          if($(checkboxId).html() == null) {
+            var li_start    = '<li style="">';
+            var input_field = '<input name="rt_shop_category[rt_shop_products_list][]" type="checkbox" value="' + data[1] + '" id="rt_shop_category_rt_shop_products_list_' + data[1] + '" checked="checked">';
+            var label       = '<label for="rt_shop_category_rt_shop_products_list_' + data[1] + '">' + data[0] + '</label>';
+            var li_end      = '</li>';
+
+            var list = $("#rt_shop_category_product_search").parents('td').children('ul');
+
+            if(list.html() == null)
+            {
+              $("#rt_shop_category_product_search").parents('td').prepend('<ul class="checkbox_list"></ul>');
+              list = $("#rt_shop_category_product_search").parents('td').children('ul');
+              list.sortable({
+                revert: true
+              });
+            }
+            
+            list.append(li_start + input_field + '&nbsp;' + label + li_end);
+          }
+          $(checkboxId).parents('li').effect('highlight');
+        });
+      });
+    </script>
+  </div>
 
   <div class="rt-admin-toggle-panel">
     <h2><?php echo __('Publish Status') ?></h2>
     <table class="rt-admin-toggle-panel-content">
       <tbody>
         <tr>
-          <th><?php echo $form['published']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['published']->renderError() ?>
-            <?php echo $form['published'] ?>
-          </td>
-        </tr>
-        <tr>
-          <th><?php echo $form['published_from']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['published_from']->renderError() ?>
-            <?php echo $form['published_from'] ?>
-          </td>
-        </tr>
-        <tr>
-          <th><?php echo $form['published_to']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['published_to']->renderError() ?>
-            <?php echo $form['published_to'] ?>
-          </td>
-        </tr>
+          <?php echo render_form_row($form['published']); ?>
+          <?php echo render_form_row($form['published_from']); ?>
+          <?php echo render_form_row($form['published_to']); ?>
       </tbody>
     </table>
   </div>
@@ -70,27 +112,9 @@
     <h2><?php echo __('Metadata and SEO') ?></h2>
     <table class="rt-admin-toggle-panel-content">
       <tbody>
-        <tr>
-          <th><?php echo $form['description']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['description']->renderError() ?>
-            <?php echo $form['description'] ?>
-          </td>
-        </tr>
-        <tr>
-          <th><?php echo $form['tags']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['tags']->renderError() ?>
-            <?php echo $form['tags'] ?>
-          </td>
-        </tr>
-        <tr>
-          <th><?php echo $form['searchable']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['searchable']->renderError() ?>
-            <?php echo $form['searchable'] ?>
-          </td>
-        </tr>
+        <?php echo render_form_row($form['description']); ?>
+        <?php echo render_form_row($form['tags']); ?>
+        <?php echo render_form_row($form['searchable']); ?>
       </tbody>
     </table>
   </div>
@@ -99,20 +123,8 @@
     <h2><?php echo __('Menu and Navigation') ?></h2>
     <table class="rt-admin-toggle-panel-content">
       <tbody>
-        <tr>
-          <th><?php echo $form['display_in_menu']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['display_in_menu']->renderError() ?>
-            <?php echo $form['display_in_menu'] ?>
-          </td>
-        </tr>
-        <tr>
-          <th><?php echo $form['menu_title']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['menu_title']->renderError() ?>
-            <?php echo $form['menu_title'] ?>
-          </td>
-        </tr>
+        <?php echo render_form_row($form['display_in_menu']); ?>
+        <?php echo render_form_row($form['menu_title']); ?>
       </tbody>
     </table>
   </div>
@@ -121,22 +133,10 @@
     <h2><?php echo __('Location and Referencing') ?></h2>
     <table class="rt-admin-toggle-panel-content">
       <tbody>
-        <tr>
-          <th><?php echo $form['slug']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['slug']->renderError() ?>
-            <?php echo $form['slug'] ?>
-          </td>
-        </tr>
-      <?php if(isset($form['site_id'])): ?>
-        <tr>
-          <th><?php echo $form['site_id']->renderLabel() ?></th>
-          <td>
-            <?php echo $form['site_id']->renderError() ?>
-            <?php echo $form['site_id'] ?>
-          </td>
-        </tr>
-      <?php endif; ?>
+        <?php echo render_form_row($form['slug']); ?>
+        <?php if(isset($form['site_id'])): ?>
+          <?php echo render_form_row($form['site_id']); ?>
+        <?php endif; ?>
       </tbody>
     </table>
   </div>
