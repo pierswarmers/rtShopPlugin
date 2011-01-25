@@ -1,3 +1,6 @@
+<?php use_javascript('/rtCorePlugin/vendor/raphael/raphael.min.js') ?>
+<?php use_javascript('/rtCorePlugin/vendor/raphael/g.raphael.min.js') ?>
+<?php use_javascript('/rtCorePlugin/vendor/raphael/g.bar.min.js') ?>
 <?php use_helper('I18N', 'Number', 'rtAdmin') ?>
 
 <h1><?php echo __('Listing Orders') ?></h1>
@@ -32,6 +35,43 @@
   <dt><?php echo __('Average Order Value') ?></dt>
   <dd><?php echo format_currency(($stats['total']['count'] > 0) ? $stats['total']['revenue']/$stats['total']['count'] : 0.0, sfConfig::get('app_rt_currency', 'AUD')) ?></dd>
 </dl>
+<h2><?php echo __('30 Day Summary') ?></h2>
+<?php $orders_by_day = $sf_data->getRaw('orders_by_day') ?>
+<script type="text/javascript" charset="utf-8">
+  window.onload = function () {
+    var r = Raphael("graph-summary-one-month");
+    r.g.txtattr.font = "10px 'Fontin Sans', Fontin-Sans, sans-serif";
+
+    fin = function () {
+      this.flag = r.g.popup(this.bar.x, this.bar.y, '$' + this.bar.value || "0").insertBefore(this);
+    },
+    fout = function () {
+      this.flag.animate({opacity: 0}, 300, function () {this.remove();});
+    },
+
+    // X-axis
+    xaxis                  = r.path("M22 131 L202 131");
+    xaxis_middle           = r.path("M22 81 L202 81").attr("stroke", "#ccc").attr("stroke-width", "0.5");
+
+    // Y-axis
+    yaxis                  = r.path("M21 138 L21 25");
+    yaxis_middle           = r.path("M116 138 L116 25").attr("stroke", "#ccc").attr("stroke-width", "0.5");
+    yaxis_middle_inidcator = r.path("M116 138 L116 131");
+    yaxis_end              = r.path("M202 138 L202 25");
+
+    // Labels
+    day01 = r.text(20, 155, "<?php echo date('M d',strtotime(sprintf("-%s days",30))) ?>").rotate(45);
+    day15 = r.text(115, 155, "<?php echo date('M d',strtotime(sprintf("-%s days",15))) ?>").rotate(45);
+    day30 = r.text(200, 155, "<?php echo date('M d') ?>").rotate(45);
+
+    // Draw bar chart graph
+    values = [[<?php echo implode(',', array_reverse($orders_by_day)) ?>]];
+    chart = r.g.barchart(20, 10, 210, 140, values, {stacked: false, type: "soft"});
+    chart.attr("fill", "#ccc");
+    chart.hover(fin, fout);
+  };
+</script>
+<div id="graph-summary-one-month" class="rt-graph-holder" style="height:240px; width: 240px"></div>
 <?php end_slot(); ?>
 
 <?php include_partial('rtAdmin/flashes') ?>

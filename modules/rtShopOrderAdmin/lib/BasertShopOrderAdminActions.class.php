@@ -34,8 +34,51 @@ class BasertShopOrderAdminActions extends sfActions
     $this->pager->init();
 
     $this->stats = $this->stats();
+
+    // Summary graph
+    $this->orders_by_day = $this->getGraphOrderByDaySummary();
   }
 
+  /**
+   * Return array with revenue totals for the last 30 days
+   *
+   * @param integer $days
+   * @return array
+   */
+  private function getGraphOrderByDaySummary($days = 30)
+  {
+    $query = Doctrine::getTable('rtShopOrder')->getQuery();
+    $query->select('concat(month(o.created_at), "-", day(o.created_at)) as date, sum(o.total_charge)')
+          ->andWhere('o.status != ?', rtShopOrder::STATUS_PENDING)
+          ->andWhere('date(o.created_at) >= ?', date('Y-m-d H:i:s',strtotime(sprintf("-%s days",$days))))
+          ->groupBy('DAY(o.created_at)');
+
+    $raw_data = $query->execute(array(), Doctrine_Core::HYDRATE_SCALAR);
+
+    $data = array();
+    foreach($raw_data as $item)
+    {
+      $data[$item['o_date']] = $item['o_sum'];
+    }
+
+    $totals = array();
+    for($i=0; $i<$days; $i++)
+    {
+      $date_check = date('n-j',strtotime(sprintf("-%s days",$i)));
+
+      if(key_exists($date_check, $data))
+      {
+        $totals[$i] = (float) $data[$date_check];
+      }
+      else
+      {
+        $totals[$i] = 0;
+      }
+      
+    }
+    return $totals;
+  }
+  
   private function stats()
   {
     // Dates
