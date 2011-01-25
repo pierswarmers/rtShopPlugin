@@ -21,6 +21,8 @@
 <dl class="rt-admin-summary-panel clearfix">
   <dt class="rt-admin-primary"><?php echo __('Today') ?> (<?php echo $stats['today']['count'] ?>)</dt>
   <dd class="rt-admin-primary"><?php echo format_currency($stats['today']['revenue'], sfConfig::get('app_rt_currency', 'AUD')) ?></dd>
+  <dt><?php echo __('Yesterday') ?> (<?php echo $stats['yesterday']['count'] ?>)</dt>
+  <dd><?php echo format_currency($stats['yesterday']['revenue'], sfConfig::get('app_rt_currency', 'AUD')) ?></dd>
   <dt><?php echo __('This Month') ?> (<?php echo $stats['month_current']['count'] ?>)</dt>
   <dd><?php echo format_currency($stats['month_current']['revenue'], sfConfig::get('app_rt_currency', 'AUD')) ?></dd>
   <dt><?php echo __('Last Month') ?> (<?php echo $stats['month_last']['count'] ?>)</dt>

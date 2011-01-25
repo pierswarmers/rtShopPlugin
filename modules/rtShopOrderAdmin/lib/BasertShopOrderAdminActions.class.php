@@ -45,11 +45,10 @@ class BasertShopOrderAdminActions extends sfActions
 
     // SQL queries
     $con = Doctrine_Manager::getInstance()->getCurrentConnection();
-    //$result_order_total           = $con->fetchAssoc("select count(*) as orders from rt_shop_order where status <> 'pending'");
-
-
+    
     $result_revenue_total         = $con->fetchAssoc("select sum(payment_charge) as revenue, count(payment_charge) as count from rt_shop_order where status <> 'pending'");
     $result_revenue_today         = $con->fetchAssoc("select sum(payment_charge) as revenue, count(payment_charge) as count from rt_shop_order where date(created_at) = date(NOW()) and status <> 'pending'");
+    $result_revenue_yesterday     = $con->fetchAssoc("select sum(payment_charge) as revenue, count(payment_charge) as count from rt_shop_order where date(created_at) = date_sub(curdate(),interval 1 day) and status <> 'pending'");
     $result_revenue_month_current = $con->fetchAssoc("select sum(payment_charge) as revenue, count(payment_charge) as count from rt_shop_order where status <> 'pending' and created_at > '".$first_this_month."' and created_at < '".$first_next_month."'");
     $result_revenue_month_last    = $con->fetchAssoc("select sum(payment_charge) as revenue, count(payment_charge) as count from rt_shop_order where status <> 'pending' and created_at > '".$first_last_month."' and created_at < '".$first_this_month."'");
 
@@ -60,6 +59,9 @@ class BasertShopOrderAdminActions extends sfActions
 
     $stats['today']            = $result_revenue_today[0];
     $stats['today']['revenue'] = $stats['today']['revenue'] != null ? $stats['today']['revenue'] : 0;
+
+    $stats['yesterday']            = $result_revenue_yesterday[0];
+    $stats['yesterday']['revenue'] = $stats['yesterday']['revenue'] != null ? $stats['yesterday']['revenue'] : 0;
 
     $stats['month_current']    = $result_revenue_month_current[0];
     $stats['month_current']['revenue'] = $stats['month_current']['revenue'] != null ? $stats['month_current']['revenue'] : 0;
