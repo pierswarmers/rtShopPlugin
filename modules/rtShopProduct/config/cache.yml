@@ -8,4 +8,8 @@ _shop_product:
 show:
   enabled:     true
 
+_shopProductFeatured:
+  enabled:  true
+  lifetime: 1800
+
 <?php endif; ?>
