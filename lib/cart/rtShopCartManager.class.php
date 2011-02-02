@@ -304,7 +304,7 @@ class rtShopCartManager
 
     foreach($this->getStockInfoArray() as $item)
     {
-      $charge += $this->getItemCharge($item);
+      $charge += $item['rtShopOrderToStock'][0]['quantity'] * $this->getItemCharge($item);
     }
 
     return $charge;
