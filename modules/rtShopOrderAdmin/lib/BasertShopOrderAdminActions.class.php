@@ -212,7 +212,7 @@ class BasertShopOrderAdminActions extends sfActions
       }
       if($order_report['date_to']['year'] != '' && $order_report['date_to']['month'] != '' && $order_report['date_to']['day'] != '')
       {
-        $q->andWhere('o.created_at <= ?', sprintf('%s-%s-%s 00:00:00',$order_report['date_to']['year'],$order_report['date_to']['month'],$order_report['date_to']['day']));
+        $q->andWhere('o.created_at <= ?', sprintf('%s-%s-%s 23:59:59',$order_report['date_to']['year'],$order_report['date_to']['month'],$order_report['date_to']['day']));
       }
     }
     $q->orderBy('o.created_at');
