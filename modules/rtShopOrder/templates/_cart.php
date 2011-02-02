@@ -7,6 +7,7 @@
 ?>
 <tbody>
 <?php $i = 0; foreach($rt_shop_cart_manager->getOrder()->getStockInfoArray() as $stock): ?>
+  <?php // Cart item row START ?>
   <?php
     $item_price = $stock['price_promotion'] != 0 ? $stock['price_promotion'] : $stock['price_retail'];
     $product = Doctrine::getTable('rtShopProduct')->find($stock['product_id']);
@@ -21,6 +22,7 @@
       
       foreach($stock['rtShopVariations'] as $variation)
       {
+        // build the variation list to display
         $variations .= $comma . $variation['title'];
         $comma = ', ';
 
@@ -28,33 +30,39 @@
 
         if(!is_numeric($cleaned_title))
         {
-          // avoid simple numbers.
+          // avoid simple numbers when building the $match regex.
           $match .= $or . rtAssetToolkit::cleanFilename($cleaned_title, true);
           $or = '|';
         }
       }
 
       $match = '/('.$match.')/i';
-    }
 
+      $image = $product->getPrimaryImage($match) ? image_tag(rtAssetToolkit::getThumbnailPath($product->getPrimaryImage($match)->getSystemPath(), array('maxHeight' => 70, 'maxWidth' => 50))) : 'xx';
+    }
+    else
+    {
+      $image = $product->getPrimaryImage() ? image_tag(rtAssetToolkit::getThumbnailPath($product->getPrimaryImage()->getSystemPath(), array('maxHeight' => 70, 'maxWidth' => 50))) : 'xx';
+    }
+    
   ?>
   <tr class="<?php echo (isset($stock_exceeded[$stock['id']])) ? 'error' : '' ?>">
-    <td class="rt-shop-cart-primary-image-thumb"><?php echo link_to(($product->getPrimaryImage($match)) ? image_tag(rtAssetToolkit::getThumbnailPath($product->getPrimaryImage($match)->getSystemPath(), array('maxHeight' => 70, 'maxWidth' => 50))) : '', '@rt_shop_product_show?id='.$stock['rtShopProduct']['id'].'&slug='.$stock['rtShopProduct']['slug']) ?></td>
+    <td class="rt-shop-cart-primary-image-thumb">
+      <?php echo link_to($image, '@rt_shop_product_show?id='.$stock['rtShopProduct']['id'].'&slug='.$stock['rtShopProduct']['slug']) ?>
+    </td>
     <td class="rt-shop-cart-details">
       <input type="hidden" name="product_id[]" value="<?php echo $stock['rtShopProduct']['id']; ?>" />
       <?php echo link_to($stock['rtShopProduct']['title'], '@rt_shop_product_show?id='.$stock['rtShopProduct']['id'].'&slug='.$stock['rtShopProduct']['slug']) ?>
       <br />
-      <span><?php
-
-        echo $variations
-
-        ?></span>
-        <?php if(rtSiteToolkit::isMultiSiteEnabled()): ?>
-        <?php include_partial('rtAdmin/site_reference_key', array('id' => $product->getSiteId()))?>
-        <?php endif; ?>
+      <span><?php echo $variations ?></span>
+      <?php if(rtSiteToolkit::isMultiSiteEnabled()): ?>
+      <?php include_partial('rtAdmin/site_reference_key', array('id' => $product->getSiteId()))?>
+      <?php endif; ?>
     </td>
     <?php if($editable == true): ?>
-      <td class="rt-shop-cart-actions"><?php echo link_to(__('Delete'), '@rt_shop_order_stock_delete?id='.$stock['id']) ?></td>
+    <td class="rt-shop-cart-actions">
+      <?php echo link_to(__('Delete'), '@rt_shop_order_stock_delete?id='.$stock['id']) ?>
+    </td>
     <?php endif; ?>
     <td class="rt-shop-cart-price-unit">
         <?php echo format_currency($item_price, sfConfig::get('app_rt_currency', 'AUD')); ?>
@@ -74,5 +82,6 @@
       <?php echo format_currency($stock['rtShopOrderToStock'][0]['quantity'] * $item_price, sfConfig::get('app_rt_currency', 'AUD')) ?>
     </td>
   </tr>
+  <?php // Cart item row END ?>
 <?php $i++; endforeach; ?>
 </tbody>
