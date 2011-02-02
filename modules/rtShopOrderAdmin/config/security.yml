@@ -1,4 +1,23 @@
-<?php $admin_cred = sfConfig::get('app_rt_shop_order_admin_credential', 'admin_shop_order') . "\n" ?>
+<?php $admin_cred    = sfConfig::get('app_rt_shop_order_admin_credential', 'admin_shop_order') . "\n" ?>
+<?php $dispatch_cred = sfConfig::get('app_rt_shop_order_dispatch_credential', 'admin_shop_order_dispatch') . "\n" ?>
+
+index:
+  credentials:
+    -
+      - <?php echo $admin_cred ?>
+      - <?php echo $dispatch_cred ?>
+
+show:
+  credentials:
+    -
+      - <?php echo $admin_cred ?>
+      - <?php echo $dispatch_cred ?>
+
+statusUpdate:
+  credentials:
+    -
+      - <?php echo $admin_cred ?>
+      - <?php echo $dispatch_cred ?>
 
 all:
   is_secure: true

@@ -1,7 +1,9 @@
 <?php
+
 /*
  * This file is part of the reditype package.
- * (c) 2009-2010 Piers Warmers <piers@wranglers.com.au>
+ *
+ * (c) 2009-2010 digital Wranglers <info@wranglers.com.au>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -20,9 +22,15 @@ class BasertShopOrderAdminActions extends sfActions
   public function executeIndex(sfWebRequest $request)
   {
     $query = Doctrine::getTable('rtShopOrder')->getQuery();
-
     $query->andWhere('o.status != ?', rtShopOrder::STATUS_PENDING);
     $query->orderBy('o.created_at DESC');
+
+    // Is dispatch user only show picking status orders
+    if($this->getUser()->hasCredential(sfConfig::get('app_rt_shop_order_dispatch_credential', 'admin_shop_order_dispatch')))
+    {
+      $query->andWhereIn('o.status', array(rtShopOrder::STATUS_PICKING,rtShopOrder::STATUS_SENDING,rtShopOrder::STATUS_SENT));
+      $query->orderBy('o.status ASC, o.created_at DESC');
+    }
 
     $this->pager = new sfDoctrinePager(
       'rtShopOrder',
@@ -33,6 +41,7 @@ class BasertShopOrderAdminActions extends sfActions
     $this->pager->setPage($request->getParameter('page', 1));
     $this->pager->init();
 
+    // Summary stats
     $this->stats = $this->stats();
 
     // Summary graph
@@ -78,9 +87,16 @@ class BasertShopOrderAdminActions extends sfActions
     }
     return $totals;
   }
-  
+
+  /**
+   * Return summary display data
+   *
+   * @return array
+   */
   private function stats()
   {
+    $is_dispatch = $this->getUser()->hasCredential(sfConfig::get('app_rt_shop_order_dispatch_credential', 'admin_shop_order_dispatch'));
+
     // Dates
     $first_next_month = date('Y-m-d H:i:s',mktime(00,00,00,(date("n")+1 <= 12) ? date("n")+1 : 1 ,1,(date("n")+1 <= 12) ? date("Y") : date("Y")+1));
     $first_this_month = date('Y-m-d H:i:s',mktime(00,00,00,date("n"),1,date("Y")));
@@ -88,15 +104,24 @@ class BasertShopOrderAdminActions extends sfActions
 
     // SQL queries
     $con = Doctrine_Manager::getInstance()->getCurrentConnection();
-    
+
+    $stats = array();
+
+    if($is_dispatch && !$this->getUser()->isSuperAdmin())
+    {
+      $result_picking_total       = $con->fetchAssoc("select count(payment_charge) as count from rt_shop_order where status = '".rtShopOrder::STATUS_PICKING."'");
+
+      $stats['picking']            = $result_picking_total[0] != '' ? $result_picking_total[0] : 0;
+
+      return $stats;
+    }
+
     $result_revenue_total         = $con->fetchAssoc("select sum(payment_charge) as revenue, count(payment_charge) as count from rt_shop_order where status <> 'pending'");
     $result_revenue_today         = $con->fetchAssoc("select sum(payment_charge) as revenue, count(payment_charge) as count from rt_shop_order where date(created_at) = date(NOW()) and status <> 'pending'");
     $result_revenue_yesterday     = $con->fetchAssoc("select sum(payment_charge) as revenue, count(payment_charge) as count from rt_shop_order where date(created_at) = date_sub(curdate(),interval 1 day) and status <> 'pending'");
     $result_revenue_month_current = $con->fetchAssoc("select sum(payment_charge) as revenue, count(payment_charge) as count from rt_shop_order where status <> 'pending' and created_at > '".$first_this_month."' and created_at < '".$first_next_month."'");
     $result_revenue_month_last    = $con->fetchAssoc("select sum(payment_charge) as revenue, count(payment_charge) as count from rt_shop_order where status <> 'pending' and created_at > '".$first_last_month."' and created_at < '".$first_this_month."'");
 
-    // Create array
-    $stats = array();
     $stats['total']            = $result_revenue_total[0] != '' ? $result_revenue_total[0] : 0.0;
     $stats['total']['revenue'] = $stats['total']['revenue'] != null ? $stats['total']['revenue'] : 0;
 
@@ -144,7 +169,8 @@ class BasertShopOrderAdminActions extends sfActions
 
   public function executeShow(sfWebRequest $request)
   {
-    $this->forward404Unless($rt_shop_order = Doctrine::getTable('rtShopOrder')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_order does not exist (%s).', $request->getParameter('id')));
+    $rt_shop_order = $this->getRtShopOrderObjectById($request);
+    $this->checkOrderStatusForDispatch($rt_shop_order->getStatus());
     $this->rt_shop_order = $rt_shop_order;
   }
 
@@ -153,7 +179,7 @@ class BasertShopOrderAdminActions extends sfActions
     // temporary redirect
     $this->redirect('rtShopOrderAdmin/show?id='.$request->getParameter('id'));
 
-    $this->forward404Unless($rt_shop_order = Doctrine::getTable('rtShopOrder')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_order does not exist (%s).', $request->getParameter('id')));
+    $rt_shop_order = $this->getRtShopOrderObjectById($request);
     $this->rt_shop_order = $rt_shop_order;
     $this->form = new rtShopOrderForm($rt_shop_order);
   }
@@ -221,20 +247,12 @@ class BasertShopOrderAdminActions extends sfActions
     $this->pager->init();
   }
 
-  /**
-   * Create order report schema file (XSD)
-   *
-   * @param sfWebRequest $request
-   */
-  public function executeOrderXsd(sfWebRequest $request)
-  {
-
-  }
-
   public function executeUpdate(sfWebRequest $request)
   {
     $this->forward404Unless($request->isMethod(sfRequest::POST) || $request->isMethod(sfRequest::PUT));
-    $this->forward404Unless($rt_shop_order = Doctrine::getTable('rtShopOrder')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_order does not exist (%s).', $request->getParameter('id')));
+
+    $rt_shop_order = $this->getRtShopOrderObjectById($request);
+    
     $this->rt_shop_order = $rt_shop_order;
     $this->form = new rtShopOrderForm($rt_shop_order);
 
@@ -247,7 +265,8 @@ class BasertShopOrderAdminActions extends sfActions
   {
     $request->checkCSRFProtection();
 
-    $this->forward404Unless($rt_shop_order = Doctrine::getTable('rtShopOrder')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_order does not exist (%s).', $request->getParameter('id')));
+    $rt_shop_order = $this->getRtShopOrderObjectById($request);
+    
     $rt_shop_order->delete();
 
     $this->redirect('rtShopOrderAdmin/index');
@@ -320,18 +339,125 @@ class BasertShopOrderAdminActions extends sfActions
    */
   public function executeStatusUpdate(sfWebRequest $request)
   {
-    $this->forward404Unless($rt_shop_order = Doctrine::getTable('rtShopOrder')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_order does not exist (%s).', $request->getParameter('id')));
+    $rt_shop_order = $this->getRtShopOrderObjectById($request);
+
+    $this->checkOrderStatusForDispatch($request->getParameter('rt-shop-order-status'));
 
     if($rt_shop_order->getStatus() != $request->getParameter('rt-shop-order-status'))
-    {
+    {      
       $rt_shop_order->setStatus($request->getParameter('rt-shop-order-status'));
       $rt_shop_order->save();
+
+      switch ($rt_shop_order->getStatus())
+      {
+        case rtShopOrder::STATUS_PICKING:
+          $this->notifyStatusChangeToPicking($rt_shop_order);
+          break;
+        case rtShopOrder::STATUS_SENT:
+          $this->notifyStatusChangeToSent($rt_shop_order);
+          break;
+        default:
+          break;
+      }
       $this->getUser()->setFlash('notice', 'Order status has been changed to '.$request->getParameter('rt-shop-order-status'));
     }
 
-    $this->redirect('/rtShopOrderAdmin/show?id='.$request->getParameter('id'));
+    $this->redirect('rtShopOrderAdmin/show?id='.$request->getParameter('id'));
   }
 
+  /**
+   * Status update to "Picking", send email to random dispatch user to notify of
+   * confirmation that order is ready to send.
+   *
+   * @param rtShopOrder $rt_shop_order
+   */
+  protected function notifyStatusChangeToPicking($rt_shop_order)
+  {
+    $dispatch_users = Doctrine::getTable('rtGuardUser')->getUsersArrayByPermission('admin_shop_order_dispatch');
+
+    shuffle($dispatch_users);
+
+    if(count($dispatch_users) == 0)
+    {
+      return;
+    }
+
+    $vars = array('dispatch_user' => $dispatch_users[0]);
+    $vars['rt_shop_order'] = $rt_shop_order;
+    $vars['user'] = $rt_shop_order->getBillingAddress() ? $rt_shop_order->getBillingAddress()->getData() : '';
+
+    $message_html = $this->getPartial('rtShopOrderAdmin/email_status_dispatch_html', $vars);
+    $message_html = $this->getPartial('rtEmail/layout_html', array('content' => $message_html));
+
+    $message_plain = $this->getPartial('rtShopOrderAdmin/email_status_dispatch_plain', $vars);
+    $message_plain = $this->getPartial('rtEmail/layout_plain', array('content' => html_entity_decode($message_plain)));
+
+    $message = Swift_Message::newInstance()
+               ->setFrom(sfConfig::get('app_rt_shop_order_admin_email', 'from@noreply.com'))
+               ->setTo($dispatch_users[0]['u_email_address'])
+               ->setSubject('Order #'.$rt_shop_order->getReference().' ready for picking')
+               ->setBody($message_html, 'text/html')
+               ->addPart($message_plain, 'text/plain');
+
+    $this->getMailer()->send($message);
+  }
+
+  /**
+   * Status update to "Sent", send email to order recipient to notify them of parcel pickup.
+   *
+   * @param rtShopOrder $rt_shop_order
+   */
+  protected function notifyStatusChangeToSent($rt_shop_order)
+  {
+    // Stub method, nothing yet!
+  }
+
+  /**
+   * Check that the provided order status is available for a dispatch user.
+   *
+   * @param string $status
+   * @return boolean
+   */
+  protected function checkOrderStatusForDispatch($status)
+  {
+    $cred  = sfConfig::get('app_rt_shop_order_dispatch_credential', 'admin_shop_order_dispatch');
+    
+    $allowed_dispatch_status  = array(rtShopOrder::STATUS_PICKING, rtShopOrder::STATUS_SENDING, rtShopOrder::STATUS_SENT);
+
+    if($this->getUser()->hasCredential($cred) && !in_array($status, $allowed_dispatch_status))
+    {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Helper method to retrieve order objects via either a passed id, or alternatively
+   * an ID request parameter.
+   *
+   * @param sfWebRequest $request
+   * @param mixed        $id
+   */
+  protected function getRtShopOrderObjectById($request, $id = null)
+  {
+    if(is_null($id))
+    {
+      $id = $request->getParameter('id');
+    }
+
+    $rt_shop_order = Doctrine::getTable('rtShopOrder')->find($id);
+
+    $this->forward404Unless($rt_shop_order, sprintf('Object rt_shop_order does not exist (%s).', $id));
+
+    return $rt_shop_order;
+  }
+
+  /**
+   * Process a submitted order form
+   * 
+   * @param sfWebRequest $request
+   * @param sfForm $form
+   */
   protected function processForm(sfWebRequest $request, sfForm $form)
   {
     $form->bind($request->getParameter($form->getName()), $request->getFiles($form->getName()));
