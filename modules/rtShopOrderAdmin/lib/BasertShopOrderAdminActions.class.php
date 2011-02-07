@@ -373,6 +373,10 @@ class BasertShopOrderAdminActions extends sfActions
    */
   protected function notifyStatusChangeToPicking($rt_shop_order)
   {
+    return;
+    
+    // TODO: create method - rtGuardUser::getUsersArrayByPermission()
+
     $dispatch_users = Doctrine::getTable('rtGuardUser')->getUsersArrayByPermission('admin_shop_order_dispatch');
 
     shuffle($dispatch_users);
