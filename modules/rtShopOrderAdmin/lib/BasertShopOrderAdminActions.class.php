@@ -373,20 +373,23 @@ class BasertShopOrderAdminActions extends sfActions
    */
   protected function notifyStatusChangeToPicking($rt_shop_order)
   {
-    return;
-    
-    // TODO: create method - rtGuardUser::getUsersArrayByPermission()
+    // Retrieve active users with dispatch permission
+    $dispatch_users = Doctrine::getTable('rtGuardUser')
+                      ->getUsersArrayByPermissionQuery('admin_shop_order_dispatch')
+                      ->execute(array(), Doctrine_Core::HYDRATE_SCALAR);
 
-    $dispatch_users = Doctrine::getTable('rtGuardUser')->getUsersArrayByPermission('admin_shop_order_dispatch');
-
-    shuffle($dispatch_users);
-
+    // Stop if no dispatch user available
     if(count($dispatch_users) == 0)
     {
       return;
     }
 
-    $vars = array('dispatch_user' => $dispatch_users[0]);
+    // Randomize selection
+    shuffle($dispatch_users);
+    $dispatch_user = $dispatch_users[0];
+
+    // Send mail
+    $vars = array('dispatch_user' => $dispatch_user);
     $vars['rt_shop_order'] = $rt_shop_order;
     $vars['user'] = $rt_shop_order->getBillingAddress() ? $rt_shop_order->getBillingAddress()->getData() : '';
 
@@ -398,7 +401,7 @@ class BasertShopOrderAdminActions extends sfActions
 
     $message = Swift_Message::newInstance()
                ->setFrom(sfConfig::get('app_rt_shop_order_admin_email', 'from@noreply.com'))
-               ->setTo($dispatch_users[0]['u_email_address'])
+               ->setTo($dispatch_user['u_email_address'])
                ->setSubject('Order #'.$rt_shop_order->getReference().' ready for picking')
                ->setBody($message_html, 'text/html')
                ->addPart($message_plain, 'text/plain');
