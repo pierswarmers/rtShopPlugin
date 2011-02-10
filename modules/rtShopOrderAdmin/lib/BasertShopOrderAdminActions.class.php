@@ -191,6 +191,10 @@ class BasertShopOrderAdminActions extends sfActions
    */
   public function executeOrderReport(sfWebRequest $request)
   {
+    // Date switch
+    $has_from_date = false;
+    $has_to_date   = false;
+
     $this->form = new rtShopOrderReportDateForm();
     $fields = 'o.reference,o.status,o.id,o.is_wholesale,o.email_address,o.user_id,o.shipping_charge,o.tax_charge,o.tax_component,o.tax_mode,o.tax_rate,o.promotion_reduction,o.promotion_id,o.voucher_reduction,o.voucher_id,o.voucher_code,o.items_charge,o.total_charge,o.payment_transaction_id,o.payment_type,o.payment_charge,o.created_at,o.updated_at';
     if($this->getRequest()->getParameter('sf_format') != 'csv')
@@ -206,34 +210,25 @@ class BasertShopOrderAdminActions extends sfActions
     if($request->isMethod(sfRequest::POST) || $request->isMethod(sfRequest::PUT))
     {
       $order_report = $request->getParameter('rt_shop_order_report');
-      if($order_report['date_from']['year'] != '' && $order_report['date_from']['month'] != '' && $order_report['date_from']['day'] != '')
+      if($order_report['date_from']['year'] !== '' && $order_report['date_from']['month'] !== '' && $order_report['date_from']['day'] !== '')
       {
+        $has_from_date = true;
         $q->andWhere('o.created_at >= ?', sprintf('%s-%s-%s 00:00:00',$order_report['date_from']['year'],$order_report['date_from']['month'],$order_report['date_from']['day']));
       }
-      if($order_report['date_to']['year'] != '' && $order_report['date_to']['month'] != '' && $order_report['date_to']['day'] != '')
+      if($order_report['date_to']['year'] !== '' && $order_report['date_to']['month'] !== '' && $order_report['date_to']['day'] !== '')
       {
+        $has_to_date = true;
         $q->andWhere('o.created_at <= ?', sprintf('%s-%s-%s 23:59:59',$order_report['date_to']['year'],$order_report['date_to']['month'],$order_report['date_to']['day']));
       }
     }
     $q->orderBy('o.created_at');
     $this->orders = $q->execute(array(), Doctrine_Core::HYDRATE_SCALAR);
 
-    // CSV header
-    if($this->getRequest()->getParameter('sf_format') === 'csv')
+    // Set order report headers for export files
+    if(in_array($this->getRequest()->getParameter('sf_format'), array('csv','xml','json')))
     {
-      $response = $this->getResponse();
-      $response->setHttpHeader('Last-Modified', date('r'));
-      $response->setContentType("application/octet-stream");
-      $response->setHttpHeader('Cache-Control','no-store, no-cache');
-      if (strstr($_SERVER['HTTP_USER_AGENT'], "MSIE"))
-      {
-        $response->setHttpHeader('Content-Disposition','inline; filename="order_report.csv"');
-      }
-      else
-      {
-        $response->setHttpHeader('Content-Disposition','attachment; filename="order_report.csv"');
-      }
-
+      $report_filename = $this->getReportFilename($order_report, $has_from_date, $has_to_date);
+      $this->setReportHeader($this->getRequest()->getParameter('sf_format'), $report_filename);
       $this->setLayout(false);
     }
 
@@ -245,6 +240,69 @@ class BasertShopOrderAdminActions extends sfActions
     $this->pager->setQuery($q);
     $this->pager->setPage($request->getParameter('page', 1));
     $this->pager->init();
+  }
+
+  /**
+   * Return report filename with date
+   *
+   * @example order_report_from_[year|month|day]_to_[year|month|day].[csv/xml/json]
+   * @param   Boolean $has_from_date
+   * @param   Boolean $has_to_date
+   * @return  string
+   */
+  protected function getReportFilename($report_array, $has_from_date = false,$has_to_date = false)
+  {
+    // Texts and dates
+    $filename         = 'order_report';
+    $from_text        = '_from_';
+    $to_text          = '_to_';
+    $from_date        = $report_array['date_from'];
+    $to_date          = $report_array['date_to'];
+
+    // Date string => [year|month|day]
+    $from_date_string = sprintf('%s%s%s',$from_date['year'],
+                                         strlen($from_date['month']) > 1 ? $from_date['month'] : '0'.$from_date['month'],
+                                         strlen($from_date['day']) > 1 ? $from_date['day'] : '0'.$from_date['day']);
+    $to_date_string   = sprintf('%s%s%s',$to_date['year'],
+                                         strlen($to_date['month']) > 1 ? $to_date['month'] : '0'.$to_date['month'],
+                                         strlen($to_date['day']) > 1 ? $to_date['day'] : '0'.$to_date['day']);
+
+    if($has_from_date)
+    {
+      $filename .= $from_text.$from_date_string;
+    }
+
+    if($has_to_date)
+    {
+      $filename .= $to_text.$to_date_string;
+    }
+
+    return $filename;
+  }
+
+  /**
+   * Set headers for csv, xml and json exports
+   *
+   * @param String $sf_format
+   */
+  protected function setReportHeader($sf_format, $filename = 'order_report')
+  {
+    $response = $this->getResponse();
+    // Format switch
+    switch ($sf_format) {
+      case 'csv':
+        $response->setHttpHeader('Last-Modified', date('r'));
+        $response->setContentType("application/octet-stream");
+        $response->setHttpHeader('Cache-Control','no-store, no-cache');
+        $response->setHttpHeader('Content-Disposition','attachment; filename="'.$filename.'.csv"');
+        break;
+      case 'xml':
+        $response->setHttpHeader('Content-Disposition','attachment; filename="'.$filename.'.xml"');
+        break;
+      case 'json':
+        $response->setHttpHeader('Content-Disposition','attachment; filename="'.$filename.'.json"');
+        break;
+    }
   }
 
   public function executeUpdate(sfWebRequest $request)
