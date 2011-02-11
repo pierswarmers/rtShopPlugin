@@ -19,6 +19,9 @@ statusUpdate:
       - <?php echo $admin_cred ?>
       - <?php echo $dispatch_cred ?>
 
+downloadReport:
+  is_secure: false
+
 all:
   is_secure: true
   credentials: <?php echo $admin_cred ?>

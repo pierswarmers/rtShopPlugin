@@ -95,5 +95,8 @@ class rtShopPluginConfiguration extends sfPluginConfiguration
     $routing->prependRoute('rt_shop_order_update', new sfRoute('/order/update', array('module' => 'rtShopOrder', 'action' => 'update')));
     $routing->prependRoute('rt_shop_order_stock_delete', new sfRoute('/order/delete-stock', array('module' => 'rtShopOrder', 'action' => 'deleteStock', 'act' => 'cart')));
     $routing->prependRoute('rt_shop_order_receipt', new sfRoute('/order/receipt', array('module' => 'rtShopOrder', 'action' => 'receipt')));
+
+    // API routes
+    $routing->prependRoute('rt_api_shop_order_download', new sfRoute('/api/orders/get/order_report.:sf_format/*', array('module' => 'rtShopOrderAdmin', 'action' => 'downloadReport')));
   }
 }

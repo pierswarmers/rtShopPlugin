@@ -305,6 +305,60 @@ class BasertShopOrderAdminActions extends sfActions
     }
   }
 
+  /**
+   * API: Return XML or JSON stream of orders other than pending
+   *
+   * @param sfWebRequest $request
+   * @return Mixed
+   */
+  public function executeDownloadReport(sfWebRequest $request)
+  {
+    $response = $this->getResponse();
+
+//    if($this->getRequest()->getParameter('sf_format') != NULL)
+//    {
+      // 403 - Access denied
+      if(!rtApiToolkit::grantApiAccess($request->getParameter('auth')))
+      {
+        $this->getResponse()->setHeaderOnly(true);
+        $this->getResponse()->setStatusCode(403);
+        return sfView::NONE;
+      }
+//    }
+
+    // Get orders
+    $q = Doctrine_Query::create()->from('rtShopOrder o');
+
+    // With from date
+    if($request->hasParameter('date_from') && $request->getParameter('date_from') !== '')
+    {
+      $q->andWhere('o.created_at >= ?', urldecode($request->getParameter('date_from')));
+    }
+
+    // With to date
+    if($request->hasParameter('date_to') && $request->getParameter('date_to') !== '')
+    {
+      $q->andWhere('o.created_at <= ?', urldecode($request->getParameter('date_to')));
+    }
+
+    // Only orders with status...
+    if($request->hasParameter('status') && $request->getParameter('status') !== '')
+    {
+      $q->andWhere('o.status = ?', urldecode($request->getParameter('status')));
+    }
+
+    // Pending orders always excluded
+    $q->andWhere('o.status != ?', rtShopOrder::STATUS_PENDING);
+
+    $q->orderBy('o.created_at');
+    $this->orders = $q->execute(array(), Doctrine_Core::HYDRATE_SCALAR);
+
+    if(in_array($this->getRequest()->getParameter('sf_format'), array('xml','json')))
+    {
+      $this->setLayout(false);
+    }
+  }
+
   public function executeUpdate(sfWebRequest $request)
   {
     $this->forward404Unless($request->isMethod(sfRequest::POST) || $request->isMethod(sfRequest::PUT));
