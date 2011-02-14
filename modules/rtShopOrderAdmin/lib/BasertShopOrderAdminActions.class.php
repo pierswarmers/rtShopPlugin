@@ -315,16 +315,13 @@ class BasertShopOrderAdminActions extends sfActions
   {
     $response = $this->getResponse();
 
-//    if($this->getRequest()->getParameter('sf_format') != NULL)
-//    {
-      // 403 - Access denied
-      if(!rtApiToolkit::grantApiAccess($request->getParameter('auth')))
-      {
-        $this->getResponse()->setHeaderOnly(true);
-        $this->getResponse()->setStatusCode(403);
-        return sfView::NONE;
-      }
-//    }
+    // 403 - Access denied
+    if(!rtApiToolkit::grantApiAccess($request->getParameter('auth')))
+    {
+      $response->setHeaderOnly(true);
+      $response->setStatusCode(403);
+      return sfView::NONE;
+    }
 
     // Get orders
     $q = Doctrine_Query::create()->from('rtShopOrder o');
