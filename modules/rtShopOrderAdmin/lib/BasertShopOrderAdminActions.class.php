@@ -308,7 +308,7 @@ class BasertShopOrderAdminActions extends sfActions
   /**
    * API: Return XML or JSON stream of orders other than pending
    *
-   * @param sfWebRequest $request
+   * @param  sfWebRequest $request
    * @return Mixed
    */
   public function executeDownloadReport(sfWebRequest $request)
@@ -381,64 +381,97 @@ class BasertShopOrderAdminActions extends sfActions
     $this->redirect('rtShopOrderAdmin/index');
   }
 
-  private function getGraphOrderSummary($month)
+  /**
+   * Return array with daily order sums and counts for sales charts
+   *
+   * @param  Integer $months
+   * @return Array
+   */
+  private function getGraphOrderSummaryRange($months = 6)
   {
     $query = Doctrine::getTable('rtShopOrder')->getQuery();
 
-    $query->select('day(o.created_at), month(o.created_at), count(o.id), sum(o.total_charge)')
+    $query->select('DATE_FORMAT(o.created_at,"%Y%m%d") as date, sum(o.total_charge), count(o.id)')
           ->andWhere('o.status != ?', rtShopOrder::STATUS_PENDING)
-          ->andWhere('MONTH(o.created_at) = ?', $month)
-          ->groupBy('DAY(o.created_at)');
+          ->andWhere('date(o.created_at) <= ?', date('Y-m-d H:i:s'))
+          ->andWhere('date(o.created_at) >= ?', date('Y-m-d H:i:s',strtotime(sprintf("-%s months",$months))))
+          ->groupBy('date');
 
     $raw_data = $query->execute(array(), Doctrine_Core::HYDRATE_SCALAR);
 
-    $data = array();
-
-    // form better keys
-    foreach($raw_data as $item)
+    // Build empty days array
+    $last_six_months = array();
+    $day_today = date('d');
+    for ($i=$months; $i>=0; $i--)
     {
-      $data[$item['o_month'].'-'.$item['o_day']] = $item;
-    }
+      // Days of current month
+      $days_in_month = date('t', mktime(0,0,0,(date('m')-$i),28,date('Y')));
 
-    $raw_data = $data;
-    $data = array();
-    
-    for($i=1; $i<=31; $i++)
-    {
-      if(date('n') == $month && date('j') < $i)
+      // Month and year of current iteration
+      $month = date('m', mktime(0,0,0,(date('m')-$i),$days_in_month,date('Y')));
+      $year  = date('Y', mktime(0,0,0,(date('m')-$i),$days_in_month,date('Y')));
+
+      if($i == $months)
       {
-        continue;
+        // Fill up array of last month
+        $days = $days_in_month - $day_today;
+        for ($j = $day_today; $j <= $days_in_month; $j++) {
+          $day = (strlen($j) == 1) ? '0'.$j: $j;
+          $last_six_months[$year.$month.$day] = array('o_sum' => 0, 'o_count' => 0);
+        }
       }
-      $key = $month.'-'.$i;
-
-      if(!isset($raw_data[$key]))
+      elseif($i < $months && $i > 0)
       {
-        $data[$key]['o_count'] = 0;
-        $data[$key]['o_sum'] = 0;
-        $data[$key]['o_day'] = $i;
-        $data[$key]['o_month'] = $month;
+        // Fill up array of months in between
+        for ($k = 1; $k <= $days_in_month; $k++) {
+          $day = (strlen($k) == 1) ? '0'.$k: $k;
+          $last_six_months[$year.$month.$day] = array('o_sum' => 0, 'o_count' => 0);
+        }
       }
       else
       {
-        $data[$key] = $raw_data[$key];
+        // Fill up array of current month
+        for ($l = 1; $l <= $day_today; $l++) {
+          $day = (strlen($l) == 1) ? '0'.$l: $l;
+          $last_six_months[$year.$month.$day] = array('o_sum' => 0, 'o_count' => 0);
+        }
       }
     }
 
-    return $data;
+    // Add revenue data to zero values array
+    foreach($raw_data as $key => $value)
+    {
+      $last_six_months[$value['o_date']]['o_sum']   = $value['o_sum'];
+      $last_six_months[$value['o_date']]['o_count'] = $value['o_count'];
+    }
+
+    return $last_six_months;
   }
 
+  /**
+   * Show sales graphs page
+   *
+   * @param sfWebRequest $request
+   */
   public function executeGraph(sfWebRequest $request)
   {
-    $span_back_in_months = 3;
+    // 6 months range
+    $summary_data = $this->getGraphOrderSummaryRange();
 
-    $orders_by_month = array();
+    $sums_list   = '';  // Sums list,   y-axis
+    $counts_list = '';  // Counts list, y-axis
+    $i           = 0;
+    foreach($summary_data as $key => $value)
+    {
+      $separator = ($i > 0) ? ',' : '';
+      $sums_list .= $separator.$value['o_sum'];
+      $counts_list .= $separator.$value['o_count'];
+      $i++;
+    }
 
-    $orders_by_month[] = $this->getGraphOrderSummary(date('n'));
-    $orders_by_month[] = $this->getGraphOrderSummary(date('n') - 1);
-    $orders_by_month[] = $this->getGraphOrderSummary(date('n') - 2);
-    $orders_by_month[] = $this->getGraphOrderSummary(date('n') - 3);
-
-    $this->orders_by_month = $orders_by_month;
+    $this->days_in_months            = implode(",", range(1,count($summary_data),1));
+    $this->revenue_per_day_in_months = $sums_list;
+    $this->orders_per_day_in_months  = $counts_list;
   }
 
   /**
