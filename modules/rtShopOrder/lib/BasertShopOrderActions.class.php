@@ -370,6 +370,7 @@ class BasertShopOrderActions extends sfActions
           else
           {
             $valid = false;
+            $this->show_shipping = true;
           }
         }
         else
