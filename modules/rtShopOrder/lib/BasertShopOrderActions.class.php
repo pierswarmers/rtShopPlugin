@@ -14,6 +14,12 @@
  * @subpackage modules
  * @author     Piers Warmers <piers@wranglers.com.au>
  * @author     Konny Zurcher <konny@wranglers.com.au>
+ * @method     sfUser        getUser()               Return the session user
+ * @method     void          redirect()              Redirect the response
+ * @method     boolean       hasRequestParameter()   Test for a request parameter
+ * @method     boolean       hasParameter()   Test for a request parameter
+ * @method     string       getRequestParameter()   Return request paramater
+ * @method     string       getParameter()   Return request paramater
  */
 class BasertShopOrderActions extends sfActions
 {
