@@ -32,6 +32,54 @@ class BasertShopOrderActions extends sfActions
   }
 
   /**
+   * Redeem voucher function
+   *
+   * @example: http://example.com/order/voucher/redeem?code=123456
+   * @example: http://example.com/order/voucher/redeem?code=123456&redirect=/category/3/shirts
+   *
+   * @param sfWebRequest $request
+   */
+  public function executeRedeemVoucher(sfWebRequest $request)
+  {
+    if(!$this->hasRequestParameter('code'))
+    {
+      $this->getUser()->setFlash('error', 'No voucher code found.', true);
+      $this->redirect('@homepage');
+    }
+
+    // Prevent abuse
+    $attempts = $this->getUser()->getAttribute('rt_shop_voucher_redeem_attempt', 0);
+    if($attempts > 10)
+    {
+      $this->getUser()->setFlash('success', 'Excess number of bad voucher codes found... please try again later.', true);
+    }
+    $this->getUser()->setAttribute('rt_shop_voucher_redeem_attempt', $attempts + 1);
+
+    // Get rtShopVoucher
+    $rt_shop_voucher = Doctrine::getTable('rtShopVoucher')->findOneByCode($this->getRequestParameter('code'));
+
+    // Set voucher code
+    if($rt_shop_voucher)
+    {
+      $cm = $this->getCartManager();
+      $cm->setVoucherCode($rt_shop_voucher->getCode());
+      $this->getUser()->setFlash('notice', 'Voucher has been added.', true);
+    }
+    else
+    {
+      $this->getUser()->setFlash('error', 'Voucher not found. Probably a bad voucher code.', true);
+    }
+
+    // Allow for redirect parameter
+    if($this->hasRequestParameter('redirect'))
+    {
+      $this->redirect($this->getRequestParameter('redirect'));
+    }
+
+    $this->redirect('@homepage'); 
+  }
+
+  /**
    * Executes the index page
    *
    * @param sfWebRequest $request
@@ -157,6 +205,8 @@ class BasertShopOrderActions extends sfActions
    */
   public function executeUpdate(sfWebRequest $request)
   {
+    $this->redirectIf($this->cartIsPopulatedByVoucherOnly(), 'rt_shop_order_membership');
+    
     $this->rt_shop_cart_manager = $this->getCartManager();
 
     if($request->getMethod() !== 'POST')
@@ -178,13 +228,13 @@ class BasertShopOrderActions extends sfActions
         return false;
       }
 
-      if ($value == 0) {
+      if($value == 0) {
         $this->getCartManager()->removeFromCart($key);
       }
       else
       {
         // Check if quantity ordered is available when backorder is not allowed
-        if ($stock->rtShopProduct->getBackorderAllowed() == false && $value > $stock->getQuantity()) {
+        if($stock->rtShopProduct->getBackorderAllowed() == false && $value > $stock->getQuantity()) {
           $stock_error = true;
           $stock_exceeded[$stock->getId()] = $stock->getQuantity();
         } else {
@@ -198,7 +248,7 @@ class BasertShopOrderActions extends sfActions
     $this->updateUserSession();
 
     // Only go to checkout when no quantity errors
-    if (count($stock_exceeded) == 0 && $request->hasParameter('_proceed_to_checkout'))
+    if(count($stock_exceeded) == 0 && $request->hasParameter('_proceed_to_checkout'))
     {
       $this->redirect('rt_shop_order_membership');
     }
@@ -227,12 +277,11 @@ class BasertShopOrderActions extends sfActions
   public function executeMembership(sfWebRequest $request)
   {
     // Are there items in the cart? If no, redirect backwards...
-    $this->redirectIf($this->getCartManager()->isEmpty(), 'rt_shop_order_cart');
+    $this->redirectUnless($this->cartIsPopulated(), 'rt_shop_order_cart');
 
     if($this->getUser()->getAttribute('registration_success', false))
     {
       $this->getUser()->setFlash('notice', 'You are registered and signed in!');
-      $this->generateVouchure();
     }
 
     // Is this user already logged in? If yes, redirect forwards...
@@ -267,7 +316,7 @@ class BasertShopOrderActions extends sfActions
    */
   public function executeAddress(sfWebRequest $request)
   {
-    $this->redirectUnless(count($this->getOrder()->Stocks) > 0, '@rt_shop_order_cart');
+    $this->redirectUnless($this->cartIsPopulated(), '@rt_shop_order_cart');
 
     $this->show_shipping = false;
 
@@ -343,7 +392,7 @@ class BasertShopOrderActions extends sfActions
 
     // Run save logic...
 
-    if ($this->getRequest()->isMethod('POST'))
+    if($this->getRequest()->isMethod('POST'))
     {
       $this->form->bind($request->getParameter($this->form->getName()), $request->getFiles($this->form->getName()));
       $this->form_billing->bind($request->getParameter($this->form_billing->getName()), $request->getFiles($this->form_billing->getName()));
@@ -441,9 +490,9 @@ class BasertShopOrderActions extends sfActions
    */
   public function executePayment(sfWebRequest $request)
   {
-    // Get the cart manager... all access to order will be through the cart manager.
+    $this->redirectUnless($this->cartIsPopulated(), 'rt_shop_order_cart');
+
     $rt_shop_cart_manager = $this->getCartManager();
-    $this->redirectUnless(count($rt_shop_cart_manager->getOrder()->Stocks) > 0, 'rt_shop_order_cart');
 
     // If order placed is placed and total charge = 0
     if($this->getCartManager()->getTotalCharge() == 0 && $rt_shop_cart_manager->getVoucherCode() != '')
@@ -462,7 +511,7 @@ class BasertShopOrderActions extends sfActions
     $this->form = new rtShopPaymentForm($rt_shop_cart_manager->getOrder(), array('rt_shop_cart_manager' => $rt_shop_cart_manager));
     $this->form_cc = new rtShopCreditCardPaymentForm();
 
-    if ($this->getRequest()->isMethod('PUT') || $this->getRequest()->isMethod('POST'))
+    if($this->getRequest()->isMethod('PUT') || $this->getRequest()->isMethod('POST'))
     {
       // If order placed is placed and total charge = 0
       if($this->getCartManager()->getTotalCharge() == 0)
@@ -562,20 +611,21 @@ class BasertShopOrderActions extends sfActions
    */
   public function executeReceipt(sfWebRequest $request)
   {
+    $this->redirectUnless($this->cartIsPopulated(), '@rt_shop_order_cart');
+
     $rt_shop_cart_manager = $this->getCartManager();
-    $this->redirectUnless(count($rt_shop_cart_manager->getOrder()->Stocks) > 0, '@rt_shop_order_cart');
+    //$this->redirectUnless(count($rt_shop_cart_manager->getOrder()->Stocks) > 0, '@rt_shop_order_cart');
     $this->rt_shop_order = $rt_shop_cart_manager->getOrder();
 
-    //Send mail to admin and user
-
+    // Send mail to admin and user
     $order_reference = $rt_shop_cart_manager->getOrder()->getReference();
 
     // Multipart mail content
-    $invoice_html = $this->getPartial('rtShopOrderAdmin/invoice_html', array('rt_shop_order' => $rt_shop_cart_manager->getOrder()));
-    $message_html = $this->getPartial('rtEmail/layout_html', array('content' => $invoice_html));
+    $invoice_html  = $this->getPartial('rtShopOrderAdmin/invoice_html', array('rt_shop_order' => $rt_shop_cart_manager->getOrder()));
+    $message_html  = $this->getPartial('rtEmail/layout_html', array('content' => $invoice_html));
     $message_plain = $this->getPartial('rtShopOrderAdmin/invoice_plain', array('rt_shop_order' => $rt_shop_cart_manager->getOrder()));
     
-    //Send confirmation mail to customer
+    // Send confirmation mail to customer
     $message = Swift_Message::newInstance()
             ->setContentType('text/html')
             ->setFrom(sfConfig::get('app_rt_shop_order_admin_email', 'from@noreply.com'))
@@ -598,32 +648,37 @@ class BasertShopOrderActions extends sfActions
   }
 
   /**
-   * Clean defined session variables
-   *
+   * Clean order session
    */
-  private function cleanSession() {
+  private function cleanSession()
+  {
+    $rt_shop_cart_manager = $this->getCartManager();
+
     // Overwrite session token for order id
     $this->getUser()->setAttribute($this->_session_token, '');
 
     // Reset transaction token
-    if ($this->getUser()->hasAttribute($this->_transaction_token)) {
+    if($this->getUser()->hasAttribute($this->_transaction_token)) {
       $this->getUser()->setAttribute($this->_transaction_token, '');
     }
 
     // Reset unique user token
-    if ($this->getUser()->hasAttribute($this->_user_id_token)) {
+    if($this->getUser()->hasAttribute($this->_user_id_token)) {
       $this->getUser()->setAttribute($this->_user_id_token, '');
     }
 
     // Mini cart - items
-    if ($this->getUser()->hasAttribute('rt_shop_order_cart_items')) {
+    if($this->getUser()->hasAttribute('rt_shop_order_cart_items')) {
       $this->getUser()->setAttribute('rt_shop_order_cart_items', '');
     }
 
     // Mini cart - total
-    if ($this->getUser()->hasAttribute('rt_shop_order_cart_total')) {
+    if($this->getUser()->hasAttribute('rt_shop_order_cart_total')) {
       $this->getUser()->setAttribute('rt_shop_order_cart_total', '');
     }
+
+    // Remove gift voucher from session
+    $rt_shop_cart_manager->removeGiftVoucherFromSession();
   }
 
   /**
@@ -726,98 +781,33 @@ class BasertShopOrderActions extends sfActions
     }
   }
 
-  private function generateVouchure()
-  {
-    return;
-//    if(!$this->getUser()->isAuthenticated())
-//    {
-//      return;
-//    }
-//
-//    if(sfConfig::get('app_rt_shop_registration_voucher', false))
-//    {
-//      $config = sfConfig::get('app_rt_shop_registration_voucher');
-//
-//      $config['title'] = isset($config['title']) ? $config['title'] : 'Welcome Voucher';
-//
-//      $voucher = new rtShopVoucher;
-//      $voucher->setCount(1);
-//      $voucher->setTitle($config['title']);
-//      $voucher->setReductionType(isset($config['reduction_type']) ? $config['reduction_type'] : 'dollarOff');
-//      $voucher->setReductionValue(isset($config['reduction_value']) ? $config['reduction_value'] : '0');
-//      $voucher->setStackable(isset($config['stackable']) ? $config['stackable'] : false);
-//
-//      if(isset($config['date_from']))
-//      {
-//        $voucher->setDateFrom($config['date_from']);
-//      }
-//      if(isset($config['date_to']))
-//      {
-//        $voucher->setDateTo($config['date_to']);
-//      }
-//
-//      if(isset($config['total_from']))
-//      {
-//        $voucher->setTotalFrom($config['total_from']);
-//      }
-//      if(isset($config['total_to']))
-//      {
-//        $voucher->setTotalTo($config['total_to']);
-//      }
-//
-//      $user = $this->getUser()->getGuardUser();
-//      $voucher->setComment(sprintf('Created for: %s %s (%s)', $user->getFirstName(), $user->getLastName(), $user->getEmailAddress()));
-//      $voucher->save();
-//      $this->getUser()->setAttribute('registration_success', false);
-//      $this->getCartManager()->setVoucherCode($voucher->getCode());
-//      $this->getCartManager()->getOrder()->save();
-//      $this->getUser()->setAttribute('rt_shop_vouchure_code', $voucher->getCode());
-//      $this->notifyUserOfgenerateVouchure($user, $voucher, $config);
-//    }
-  }
-
   /**
-   * Notify the user of the activated voucher.
-   *
-   * @param sfGuardUser $user
-   * @param rtShopVoucher $voucher
-   * @param array $config
-   */
-  private function notifyUserOfgenerateVouchure(sfGuardUser $user, rtShopVoucher $voucher, $config = null)
-  {
-    return;
-//    $vars = array('user' => $user, 'voucher' => $voucher);
-//
-//    if(is_null($config))
-//    {
-//      $config = array();
-//    }
-//
-//    $config['title'] = isset($config['title']) ? $config['title'] : 'Welcome Voucher';
-//
-//    $message_html = $this->getPartial('rtShopOrder/email_voucher_success_html', $vars);
-//    $message_html = $this->getPartial('rtEmail/layout_html', array('content' => $message_html));
-//
-//    $message_plain = $this->getPartial('rtShopOrder/email_voucher_success_plain', $vars);
-//    $message_plain = $this->getPartial('rtEmail/layout_plain', array('content' => html_entity_decode($message_plain)));
-//
-//    $message = Swift_Message::newInstance()
-//            ->setFrom($this->getAdminEmail())
-//            ->setTo($user->getEmailAddress())
-//            ->setSubject($config['title'])
-//            ->setBody($message_html, 'text/html')
-//            ->addPart($message_plain, 'text/plain');
-//
-//    $this->getMailer()->send($message);
-  }
-
-  /**
-   * Get the admin email address.
+   * Get the admin email address
    *
    * @return string
    */
   private function getAdminEmail()
   {
     return sfConfig::get('app_rt_registration_admin_email', sfConfig::get('app_rt_admin_email'));
+  }
+
+  /**
+   * Checks if the cart has any items in it. This can include a single voucher.
+   *
+   * @return boolean
+   */
+  protected function cartIsPopulated()
+  {
+    return count($this->getCartManager()->getStockInfoArray()) > 0;
+  }
+
+  /**
+   * Checks if the cart has only a single voucher in it
+   *
+   * @return boolean
+   */
+  protected function cartIsPopulatedByVoucherOnly()
+  {
+    return count($this->getCartManager()->getStockInfoArray()) === 1 && !$this->getCartManager()->hasRealItems();
   }
 }

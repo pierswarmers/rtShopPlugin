@@ -1,7 +1,7 @@
 <?php use_helper('I18N', 'Date', 'Number', 'rtText', 'rtForm', 'rtDate', 'rtSite') ?>
 
 <?php slot('rt-title') ?>
-<?php echo __(sfConfig::get('app_rt_shop_payment_title', 'Payment')) ?>
+  <?php echo __(sfConfig::get('app_rt_shop_payment_title', 'Payment')) ?>
 <?php end_slot(); ?>
 
 <form action="<?php echo url_for('@rt_shop_order_payment') ?>" method="post" id="rt-shop-order-payment-form">

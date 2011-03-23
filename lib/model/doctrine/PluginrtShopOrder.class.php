@@ -172,9 +172,9 @@ abstract class PluginrtShopOrder extends BasertShopOrder
   }
 
   /**
-   * Get shipping address as array
+   * Get shipping address
    *
-   * @return Array Shipping Address as array
+   * @return rtAddress Shipping address
    */
   public function getShippingAddress()
   {
@@ -192,9 +192,9 @@ abstract class PluginrtShopOrder extends BasertShopOrder
   }
 
   /**
-   * Get billing address as array
+   * Get billing address
    *
-   * @return Array Billing Address as array
+   * @return rtAddress Billing address
    */
   public function getBillingAddress()
   {

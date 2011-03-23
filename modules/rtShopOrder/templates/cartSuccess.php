@@ -1,10 +1,10 @@
 <?php use_helper('I18N', 'Date', 'rtText', 'rtForm', 'rtDate', 'rtSite', 'Number') ?>
 
 <?php slot('rt-title') ?>
-<?php echo ucwords(__(sfConfig::get('rt_shop_cart_name', 'shopping bag'))) ?>
+  <?php echo ucwords(__(sfConfig::get('rt_shop_cart_name', 'shopping bag'))) ?>
 <?php end_slot(); ?>
 
-<?php if(is_object($rt_shop_order) && count($rt_shop_order->Stocks) > 0): ?>
+<?php if((is_object($rt_shop_order) && count($rt_shop_order->Stocks) > 0) || $rt_shop_cart_manager->getVoucherManager()->hasSessionVoucher()): ?>
 
 <form action="<?php echo url_for('@rt_shop_order_update') ?>" method="post">
 
@@ -27,12 +27,15 @@
     </thead>
     <?php include_partial('cart', array('rt_shop_cart_manager' => $rt_shop_cart_manager, 'stock_exceeded' => isset($stock_exceeded) ? $stock_exceeded : array(), 'update_quantities' => isset($update_quantities) ? $update_quantities : array())) ?>
     <tfoot>
-      <tr class="rt-shop-cart-update">
-        <td colspan="4">&nbsp;</td>
-        <td colspan="1"><button type="submit" name="_update_quantities" class="button rt-shop-order-update"><?php echo __('Update') ?></button></td>
-        <td colspan="1">&nbsp;</td>
-      </tr>
-      
+
+      <?php if(is_object($rt_shop_order) && count($rt_shop_order->Stocks) > 0): ?>
+        <tr class="rt-shop-cart-update">
+          <td colspan="4">&nbsp;</td>
+          <td colspan="1"><button type="submit" name="_update_quantities" class="button rt-shop-order-update"><?php echo __('Update') ?></button></td>
+          <td colspan="1">&nbsp;</td>
+        </tr>
+      <?php endif; ?>
+
       <tr class="rt-shop-cart-subtotal">
         <th colspan="5"><?php echo __('Subtotal'); ?>:</th>
         <td colspan="1"><?php echo format_currency($rt_shop_cart_manager->getSubTotal(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
@@ -96,9 +99,7 @@
 
   <div class="rt-shop-order-suffix">
     <?php
-
-    $shop_cart_empty_prompt = '<p>'  . sprintf('%s %s',__('You have nothing in your '.sfConfig::get('rt_shop_cart_name', 'shopping bag').' yet, '),link_to(__('time to start shopping!'),'rt_shop_category_index')) . '</p>';
-
+      $shop_cart_empty_prompt = '<p>'  . sprintf('%s %s',__('You have nothing in your '.sfConfig::get('rt_shop_cart_name', 'shopping bag').' yet, '),link_to(__('time to start shopping!'),'rt_shop_category_index')) . '</p>';
     ?>
     <?php include_component('rtSnippet','snippetPanel', array('collection' => 'shop-cart-empty-prompt','sf_cache_key' => 'shop-cart-empty-prompt', 'default' => $shop_cart_empty_prompt)); ?>
   </div>

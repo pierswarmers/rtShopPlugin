@@ -84,4 +84,25 @@
   </tr>
   <?php // Cart item row END ?>
 <?php $i++; endforeach; ?>
+
+<!-- Gift voucher START -->
+<?php $vm = $rt_shop_cart_manager->getVoucherManager(); ?>
+<?php if ($vm->hasSessionVoucher()): ?>
+  <?php $voucher = $rt_shop_cart_manager->getVoucherManager()->getSessionVoucherArray(); ?>
+  <?php $options =array('rt-voucher-referer' => urlencode(rtSiteToolkit::getRequestUri())); ?>
+  <tr class="rt-shop-cart-voucher">
+    <td class="rt-shop-cart-primary-image-thumb"><div>&nbsp;</div></td>
+    <td class="rt-shop-cart-details"><?php echo link_to($voucher['title'], 'rt_shop_voucher_edit', $options) ?>
+    <br />
+    <span><?php echo __('For') ?>: <?php echo $voucher['first_name'] ?> <?php echo $voucher['last_name'] ?></span></td>
+    <?php if($editable == true): ?>
+      <td class="rt-shop-cart-actions"><?php echo link_to(__('Edit'), 'rt_shop_voucher_edit', $options) ?> | <?php echo link_to(__('Delete'), 'rt_shop_voucher_delete', $options) ?></td>
+    <?php endif; ?>
+    <td class="rt-shop-cart-price-unit"><?php echo format_currency($voucher['reduction_value'], sfConfig::get('app_rt_currency', 'AUD')) ?></td>
+    <td class="rt-shop-cart-quantity">1</td>
+    <td class="rt-shop-cart-price-total"><?php echo format_currency($voucher['reduction_value'], sfConfig::get('app_rt_currency', 'AUD')) ?></td>
+  </tr>
+<?php endif; ?>
+<!-- Gift voucher END -->
+
 </tbody>

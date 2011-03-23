@@ -5,6 +5,11 @@
 
 <?php slot('rt-tools') ?>
 <?php include_partial('rtAdmin/standard_modal_tools', array('object' => $form->getObject()))?>
+<?php if(!$form->getObject()->isNew()): ?>
+<h2><?php echo __('Redeem Link') ?></h2>
+<p><?php echo __('Use this link to auto-redeem vouchers.') ?></p>
+<?php include_component('rtShopVoucherAdmin', 'redeemLink'); ?>
+<?php endif; ?>
 <?php end_slot(); ?>
 
 <?php include_partial('rtAdmin/flashes') ?>

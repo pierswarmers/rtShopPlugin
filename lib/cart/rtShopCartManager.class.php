@@ -1,6 +1,8 @@
 <?php
+
 /*
  * This file is part of the rtShopPlugin package.
+ *
  * (c) 2006-2008 digital Wranglers <steercms@wranglers.com.au>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -17,20 +19,21 @@
  */
 class rtShopCartManager
 {
-	private $_order,
-					$_user,
-					$_promotion,
+  private $_order,
+          $_user,
+          $_promotion,
           $_is_wholesale,
-          $_shipping_charge;
+          $_shipping_charge,
+          $_voucher_manager;
 
   const FILTER_NON_STACKABLE = 'NONSTACKABLE';
-  const FILTER_STACKABLE = 'STACKABLE';
+  const FILTER_STACKABLE     = 'STACKABLE';
 
-/**
- * Construct the cart manager - initialising the user and order objects.
- *
- * @param array $options
- */
+  /**
+   * Construct the cart manager - initialising the user and order objects.
+   *
+   * @param array $options
+   */
   public function __construct($options = array())
   {
     // is this a wholesale cart
@@ -48,7 +51,9 @@ class rtShopCartManager
       $this->_order->save();
       $this->_user->setAttribute('rt_shop_frontend_order_id', $this->_order->getId());
     }
-	}
+
+    $this->_voucher_manager = new rtShopVoucherManager;
+  }
 
   /**
    * Return the item charges, with tax if running in exclusive tax mode.
@@ -187,6 +192,11 @@ class rtShopCartManager
    */
   public function getShippingCharge()
   {
+    if(!$this->hasRealItems())
+    {
+      return 0.0;
+    }
+
     if(is_null($this->_shipping_charge))
     {
       $class = sfConfig::get('app_rt_shop_shipping_class','rtShopShipping');
@@ -329,6 +339,7 @@ class rtShopCartManager
   {
     return $this->_order;
   }
+  
   /**
    * @return sfUser
    */
@@ -400,7 +411,62 @@ class rtShopCartManager
    */
   public function getStockInfoArray()
   {
-    return $this->getOrder()->getStockInfoArray();
+    $vm = $this->getVoucherManager();
+    
+    // Combine items
+    $merged_info_array = array();
+    foreach($this->getOrder()->getStockInfoArray() as $key => $value)
+    {
+      $merged_info_array[] = $value;
+    }
+    // Add gift voucher, if exits
+    if($vm->hasSessionVoucher())
+    {
+      $merged_info_array[] = $this->getFauxStockItemArray();
+    }
+    
+    return $merged_info_array;
+  }
+
+  /**
+   * Create faux stock item (i.e. for gift vochers, etc.)
+   *
+   * @return array
+   */
+  public function getFauxStockItemArray()
+  {
+    $vm      = $this->getVoucherManager();
+    $voucher = $vm->getSessionVoucherArray();
+
+    $faux_item = array();
+
+    $faux_item['id'] = null;
+    $faux_item['product_id'] = null;
+    $faux_item['sku'] = 'VOUCHER';
+    $faux_item['quantity'] = 1;
+    $faux_item['price_promotion'] = 0.0;
+    $faux_item['price_retail'] = $voucher['reduction_value'];
+    $faux_item['price_wholesale'] = 0.0;
+    $faux_item['rtShopOrderToStock'][]['quantity'] = 1;
+
+    return $faux_item;
+  }
+
+  /**
+   * Return status if real stock items exist
+   *
+   * @return boolean
+   */
+  public function hasRealItems()
+  {
+    foreach($this->getStockInfoArray() as $item)
+    {
+      if($item['sku'] !== 'VOUCHER')
+      {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -411,18 +477,18 @@ class rtShopCartManager
    */
   public function addToCart($stock_id, $quantity)
   {
-		$order = $this->getOrder();
-		sfContext::getInstance()->getLogger()->info(sprintf('{rtShopCartManager} Adding %s stock_id %s to order_id %s', $quantity, $stock_id, $order->getId()));
+    $order = $this->getOrder();
+    sfContext::getInstance()->getLogger()->info(sprintf('{rtShopCartManager} Adding %s stock_id %s to order_id %s', $quantity, $stock_id, $order->getId()));
 
     if (!is_int($quantity))
-		{
+	{
       throw new Exception('Supplied quantity must be an integer.');
     }
 
     $stock = Doctrine::getTable('rtShopStock')->find($stock_id);
 
     if (!$stock)
-		{
+	{
       throw new Exception('No stock found for given id ' . $stock_id);
     }
 
@@ -476,7 +542,7 @@ class rtShopCartManager
       ->delete('rtShopOrderToStock os')
       ->addWhere('os.stock_id = ?', $stock_id)
       ->addWhere('os.order_id = ?', $order->getId())
-			->execute();
+	  ->execute();
 
     sfContext::getInstance()->getLogger()->info('{rtShopCartManager} Unlinking stock_id '. $stock_id .' from order_id '. $order->getId());
 
@@ -488,22 +554,25 @@ class rtShopCartManager
   /**
    * Returns no of items in cart
    *
+   * @todo   Why doesn't this use self::getStockInfoArray()
    * @return Integer
    */
   public function getItemsInCart()
   {
-    $order = $this->getOrder();
+//    $order = $this->getOrder();
+//
+//    $query = Doctrine_Query::create()
+//             ->from('rtShopOrderToStock os')
+//             ->addWhere('os.order_id = ?', $order->getId());
+//    $order_to_stock = $query->fetchArray();
+//
+//    if(!$order_to_stock) {
+//      return 0;
+//    }
+//
+//    return count($order_to_stock);
 
-    $query = Doctrine_Query::create()
-             ->from('rtShopOrderToStock os')
-             ->addWhere('os.order_id = ?', $order->getId());
-    $order_to_stock = $query->fetchArray();
-
-    if(!$order_to_stock) {
-      return 0;
-    }
-
-    return count($order_to_stock);
+    return count($this->getStockInfoArray());
   }
 
   /**
@@ -546,101 +615,123 @@ class rtShopCartManager
    *
    * @return string
    */
-	public function getVoucherCode()
-	{
+  public function getVoucherCode()
+  {
     return $this->getOrder()->getVoucherCode();
-	}
+  }
   
   /**
    * Set voucher details
    */
-	public function setVoucherCode($voucher_code)
-	{
-		$this->getOrder()->setVoucherCode($voucher_code);
-	}
+  public function setVoucherCode($voucher_code)
+  {
+    $this->getOrder()->setVoucherCode($voucher_code);
+    $this->getOrder()->save();
+  }
 
-   /**
-    * Archive closed order values (total, tax, products)
-    *
-    * @param $order Order object
-    */
-   public function archive()
-   {
-     $order = $this->getOrder();
+  /**
+   * Archive closed order values (total, tax, products)
+   *
+   * @param $order Order object
+   */
+  public function archive()
+  {
+    $order = $this->getOrder();
 
-     // Products
-     $products = array();
-     $i=0;
-     foreach ($order->getStockInfoArray() as $stock)
-     {
-       // String with all variations for that product
-       $variations = '';
-       if(count($stock['rtShopVariations']) > 0) {
-         $deliminator = '';
-         foreach ($stock['rtShopVariations'] as $variation) {
-           $variations .= $deliminator.$variation['title'];
-           $deliminator = ', ';
-         }
-       }
+    // Products
+    $products = array();
+    $i=0;
+    foreach ($order->getStockInfoArray() as $stock)
+    {
+      // String with all variations for that product
+      $variations = '';
+      if(count($stock['rtShopVariations']) > 0) {
+        $deliminator = '';
+        foreach ($stock['rtShopVariations'] as $variation) {
+          $variations .= $deliminator.$variation['title'];
+          $deliminator = ', ';
+        }
+      }
 
-       // Put together the small products array
-       $products[$i]['id'] = $stock['id'];
-       $products[$i]['id_product'] = $stock['rtShopProduct']['id'];
-       $products[$i]['sku'] = $stock['sku'];
-       $products[$i]['sku_product'] = $stock['rtShopProduct']['sku'];
-       $products[$i]['title'] = $stock['rtShopProduct']['title'];
-       $products[$i]['variations'] = $variations;
-       $products[$i]['summary'] = rtrim(ltrim(strip_tags($stock['rtShopProduct']['description'])));
-       $products[$i]['quantity'] = $stock['rtShopOrderToStock'][0]['quantity'];
-       $products[$i]['charge_price'] = $stock['price_promotion'] != 0 ? $stock['price_promotion'] : $stock['price_retail'];
-       $products[$i]['price_promotion'] = $stock['price_promotion'];
-       $products[$i]['price_retail'] = $stock['price_retail'];
-       $products[$i]['price_wholesale'] = $stock['price_wholesale'];
-       $products[$i]['currency'] = sfConfig::get('app_rt_shop_payment_currency','AUD');
-       $i++;
-     }
+      // Put together the small products array
+      $products[$i]['id'] = $stock['id'];
+      $products[$i]['id_product'] = $stock['rtShopProduct']['id'];
+      $products[$i]['sku'] = $stock['sku'];
+      $products[$i]['sku_product'] = $stock['rtShopProduct']['sku'];
+      $products[$i]['title'] = $stock['rtShopProduct']['title'];
+      $products[$i]['variations'] = $variations;
+      $products[$i]['summary'] = rtrim(ltrim(strip_tags($stock['rtShopProduct']['description'])));
+      $products[$i]['quantity'] = $stock['rtShopOrderToStock'][0]['quantity'];
+      $products[$i]['charge_price'] = $stock['price_promotion'] != 0 ? $stock['price_promotion'] : $stock['price_retail'];
+      $products[$i]['price_promotion'] = $stock['price_promotion'];
+      $products[$i]['price_retail'] = $stock['price_retail'];
+      $products[$i]['price_wholesale'] = $stock['price_wholesale'];
+      $products[$i]['currency'] = sfConfig::get('app_rt_shop_payment_currency','AUD');
+      $i++;
+    }
 
-     // Save products data
-     $order->setProductsData($products);
+    // Create gift voucher
+    $voucher = $this->createGiftVoucherFromSession();
 
-     // Shipping charge
-     $order->setShippingCharge($this->getShippingCharge());
+    // Archive gift voucher details
+    if($voucher)
+    {
+      $products[$i]['id'] = '';
+      $products[$i]['id_product'] = '';
+      $products[$i]['sku'] = 'VOUCHER';
+      $products[$i]['sku_product'] = '';
+      $products[$i]['title'] = 'Gift Voucher: #' . $voucher->getCode();
+      $products[$i]['variations'] = '';
+      $products[$i]['summary'] = 'Voucher created via gift system';
+      $products[$i]['quantity'] = '1';
+      $products[$i]['charge_price'] = $voucher->getReductionValue();
+      $products[$i]['price_promotion'] = '';
+      $products[$i]['price_retail'] = $voucher->getReductionValue();
+      $products[$i]['price_wholesale'] = '';
+      $products[$i]['currency'] = sfConfig::get('app_rt_shop_payment_currency','AUD');
+    }
 
-     // Taxes
-     $order->setTaxCharge($this->getTaxCharge());
-     $order->setTaxComponent($this->getTaxComponent());
-     $order->setTaxMode($this->getTaxMode());
-     $order->setTaxRate($this->getTaxRate());
+    // Save products data
+    $order->setProductsData($products);
 
-     // Voucher     
-     $order->setVoucherCode($this->getVoucherCode());
-     $order->setVoucherReduction($this->getVoucherReduction());
-     $voucher = $this->getVoucher();
-     if($voucher)
-     {
-       $order->setVoucherId($voucher->getId());
-       $order->setVoucherData($voucher->toArray());
-     }
+    // Shipping charge
+    $order->setShippingCharge($this->getShippingCharge());
 
-     // Promotion
-     $promotion = $this->getPromotion();
-     $order->setPromotionReduction($this->getPromotionReduction());
-     if($promotion)
-     {
-       $order->setPromotionId($promotion->getId());
-       $order->setPromotionData($promotion->toArray());
-     }
+    // Taxes
+    $order->setTaxCharge($this->getTaxCharge());
+    $order->setTaxComponent($this->getTaxComponent());
+    $order->setTaxMode($this->getTaxMode());
+    $order->setTaxRate($this->getTaxRate());
 
-     // Items charge
-     $order->setItemsCharge($this->getItemsCharge());
+    // Voucher
+    $order->setVoucherCode($this->getVoucherCode());
+    $order->setVoucherReduction($this->getVoucherReduction());
+    $voucher = $this->getVoucher();
+    if($voucher)
+    {
+      $order->setVoucherId($voucher->getId());
+      $order->setVoucherData($voucher->toArray());
+    }
 
-     // Total charge
-     $order->setTotalCharge($this->getTotalCharge());
-   }
+    // Promotion
+    $promotion = $this->getPromotion();
+    $order->setPromotionReduction($this->getPromotionReduction());
+    if($promotion)
+    {
+      $order->setPromotionId($promotion->getId());
+      $order->setPromotionData($promotion->toArray());
+    }
 
-   /**
-    * Adjust stock quantities
-    */
+    // Items charge
+    $order->setItemsCharge($this->getItemsCharge());
+
+    // Total charge
+    $order->setTotalCharge($this->getTotalCharge());
+  }
+
+  /**
+   * Adjust stock quantities
+   */
   public function adjustStockQuantities()
   {
     if($this->getOrder()->getStatus() === rtShopOrder::STATUS_PAID)
@@ -693,7 +784,6 @@ class rtShopCartManager
 
   /**
    * Remove Cache for products altered in the order submission
-   *
    */
   public function clearCache($product_ids = array())
   {
@@ -716,11 +806,13 @@ class rtShopCartManager
   /**
    * Does the cart contain any stock selections.
    *
+   * @todo   This should reference self::getStockInfoArray()
    * @return boolean
    */
   public function isEmpty()
   {
-    return $this->getOrder()->Stocks->count() == 0 ? true : false;
+    //return $this->getOrder()->Stocks->count() == 0 ? true : false;
+    return count($this->getStockInfoArray()) == 0 ? true : false;
   }
 
   /**
@@ -745,5 +837,33 @@ class rtShopCartManager
     $string .= sprintf('->getTotalCharge = %s, ',           $this->getTotalCharge());
     
     return $string;
+  }
+
+  /**
+   * Create gift voucher based on session data
+   *
+   * @return false|rtShopVoucher
+   */
+  public function createGiftVoucherFromSession()
+  {
+    return $this->getVoucherManager()->createWithOrder($this->getOrder());
+  }
+
+  /**
+   * Remove gift voucher session attribute
+   */
+  public function removeGiftVoucherFromSession()
+  {
+    $this->getVoucherManager()->resetSessionVoucher();
+  }
+
+  /**
+   * Return rtShopVoucher object
+   * 
+   * @return rtShopVoucher
+   */
+  public function getVoucherManager()
+  {
+    return $this->_voucher_manager;
   }
 }
