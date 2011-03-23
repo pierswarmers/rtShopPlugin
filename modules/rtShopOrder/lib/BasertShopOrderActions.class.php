@@ -172,16 +172,16 @@ class BasertShopOrderActions extends sfActions
   }
 
   /**
-   * Check if product has stock
+   * Check if stock exists, and redirect back to product if there are any issues.
    *
    * @param rtShopStock $rt_shop_stock
    */
-  private function checkIfStockIsAvailable($rt_shop_stock)
+  private function checkIfStockIsAvailable(rtShopStock $rt_shop_stock)
   {
     if(!$rt_shop_stock)
     {
       $this->getUser()->setFlash('error', 'We don\'t seem to have any stock available for that selection.');
-      $this->redirect('rt_shop_product_show', $rt_shop_product);
+      $this->redirect('rt_shop_product_show', $rt_shop_stock->getRtShopProduct());
     }
   }
 
