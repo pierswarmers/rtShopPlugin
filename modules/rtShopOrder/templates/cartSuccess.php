@@ -1,10 +1,11 @@
 <?php use_helper('I18N', 'Date', 'rtText', 'rtForm', 'rtDate', 'rtSite', 'Number') ?>
+<?php $rt_shop_order = $rt_shop_cart_manager->getOrder(); ?>
 
 <?php slot('rt-title') ?>
   <?php echo ucwords(__(sfConfig::get('rt_shop_cart_name', 'shopping bag'))) ?>
 <?php end_slot(); ?>
 
-<?php if((is_object($rt_shop_order) && count($rt_shop_order->Stocks) > 0) || $rt_shop_cart_manager->getVoucherManager()->hasSessionVoucher()): ?>
+<?php if(count($rt_shop_order->Stocks) > 0 || $rt_shop_cart_manager->getVoucherManager()->hasSessionVoucher()): ?>
 
 <form action="<?php echo url_for('@rt_shop_order_update') ?>" method="post">
 

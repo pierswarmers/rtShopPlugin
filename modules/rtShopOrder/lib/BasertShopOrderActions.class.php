@@ -38,55 +38,7 @@ class BasertShopOrderActions extends sfActions
   }
 
   /**
-   * Redeem voucher function
-   *
-   * @example: http://example.com/order/voucher/redeem?code=123456
-   * @example: http://example.com/order/voucher/redeem?code=123456&redirect=/category/3/shirts
-   *
-   * @param sfWebRequest $request
-   */
-  public function executeRedeemVoucher(sfWebRequest $request)
-  {
-    if(!$this->hasRequestParameter('code'))
-    {
-      $this->getUser()->setFlash('error', 'No voucher code found.', true);
-      $this->redirect('@homepage');
-    }
-
-    // Prevent abuse
-    $attempts = $this->getUser()->getAttribute('rt_shop_voucher_redeem_attempt', 0);
-    if($attempts > 10)
-    {
-      $this->getUser()->setFlash('success', 'Excess number of bad voucher codes found... please try again later.', true);
-    }
-    $this->getUser()->setAttribute('rt_shop_voucher_redeem_attempt', $attempts + 1);
-
-    // Get rtShopVoucher
-    $rt_shop_voucher = Doctrine::getTable('rtShopVoucher')->findOneByCode($this->getRequestParameter('code'));
-
-    // Set voucher code
-    if($rt_shop_voucher)
-    {
-      $cm = $this->getCartManager();
-      $cm->setVoucherCode($rt_shop_voucher->getCode());
-      $this->getUser()->setFlash('notice', 'Voucher has been added.', true);
-    }
-    else
-    {
-      $this->getUser()->setFlash('error', 'Voucher not found. Probably a bad voucher code.', true);
-    }
-
-    // Allow for redirect parameter
-    if($this->hasRequestParameter('redirect'))
-    {
-      $this->redirect($this->getRequestParameter('redirect'));
-    }
-
-    $this->redirect('@homepage'); 
-  }
-
-  /**
-   * Executes the index page
+   * Executes the index page, essentually a redirect to the cart page
    *
    * @param sfWebRequest $request
    */
@@ -96,18 +48,16 @@ class BasertShopOrderActions extends sfActions
   }
 
   /**
-   * Executes the cart page
+   * Executes the cart page - first step in order completion.
    *
    * @param sfWebRequest $request
    */
   public function executeCart(sfWebRequest $request)
   {
     $this->rt_shop_cart_manager = $this->getCartManager();
-    $this->rt_shop_order = $this->getOrder();
-
     $this->updateUserSession();
   }
-
+  
   /**
    * Add to shopping bag function then redirect to cart, or in the case of an
    * error redirect to product details screen
@@ -325,101 +275,50 @@ class BasertShopOrderActions extends sfActions
     $this->redirectUnless($this->cartIsPopulated(), '@rt_shop_order_cart');
 
     $this->show_shipping = false;
-
-    if(Doctrine::getTable('rtAddress')->getAddressForObjectAndType($this->getOrder(), 'shipping'))
+    $order = $this->getOrder();
+    $rt_guard_user = Doctrine::getTable('rtGuardUser')->find($this->getUser()->getGuardUser()->getId());
+    
+    if(Doctrine::getTable('rtAddress')->getAddressForObjectAndType($order, 'shipping'))
     {
       $this->show_shipping = true;
     }
 
-    if($this->getUser()->isAuthenticated())
+    if($this->getUser()->isAuthenticated() && is_null($order->getEmailAddress()))
     {
-      $user = $this->getUser()->getGuardUser();
-
-      if(is_null($this->getOrder()->getEmailAddress()))
-      {
-        $this->getOrder()->setEmailAddress($user->getEmailAddress());
-      }
+      $this->getOrder()->setEmailAddress($rt_guard_user->getEmailAddress());
     }
 
-    $this->form = new rtShopOrderEmailForm($this->getOrder());
+    $this->form = new rtShopOrderEmailForm($order);
 
-    $billing_address = new rtAddress;
-
-    $shipping_address = new rtAddress;
-
-    $user = $this->getUser()->getGuardUser();
-
-    //$this->form->setDefault('email',$user->getEmailAddress());
-
-    $tmp_address_1 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($this->getOrder(), 'shipping');
-    if($tmp_address_1)
-    {
-      $shipping_address = $tmp_address_1;
-    }
-    elseif($this->getUser()->isAuthenticated())
-    {
-      $rt_user = Doctrine::getTable('rtGuardUser')->find($user->getId());
-      $tmp_address_1 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($rt_user, 'shipping');
-      if($tmp_address_1)
-      {
-        $shipping_address = $tmp_address_1->copy(false);
-        $shipping_address->setFirstName($rt_user->getFirstName());
-        $shipping_address->setLastName($rt_user->getLastName());
-      }
-    }
-    $tmp_address_2 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($this->getOrder(), 'billing');
-    if($tmp_address_2)
-    {
-      $billing_address = $tmp_address_2;
-    }
-    elseif($this->getUser()->isAuthenticated())
-    {
-      $rt_user = Doctrine::getTable('rtGuardUser')->find($user->getId());
-      $tmp_address_2 = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($rt_user, 'billing');
-      if($tmp_address_2)
-      {
-        $billing_address = $tmp_address_2->copy(false);
-        $billing_address->setFirstName($rt_user->getFirstName());
-        $billing_address->setLastName($rt_user->getLastName());
-      }
-    }
-
-    $shipping_address->setType('shipping');
-    $shipping_address->setModel('rtShopOrder');
-    $shipping_address->setModelId($this->getOrder()->getId());
-    $billing_address->setType('billing');
-    $billing_address->setModel('rtShopOrder');
-    $billing_address->setModelId($this->getOrder()->getId());
-
-    $this->form_billing = new rtAddressForm($billing_address, array('object' => $this->getOrder(),'is_optional' => false, 'use_names' => true));
+    $this->form_billing = new rtAddressForm($this->getAddressByType('billing'), array('object' => $order,'is_optional' => false, 'use_names' => true));
     $this->form_billing->getWidgetSchema()->setNameFormat('rt_address_billing[%s]');
-    $this->form_shipping = new rtAddressForm($shipping_address, array('object' => $this->getOrder(),'is_optional' => true, 'use_names' => true));
+    
+    $this->form_shipping = new rtAddressForm($this->getAddressByType('shipping'), array('object' => $order,'is_optional' => true, 'use_names' => true));
     $this->form_shipping->getWidgetSchema()->setNameFormat('rt_address_shipping[%s]');
-
-    // Run save logic...
 
     if($this->getRequest()->isMethod('POST'))
     {
-      $this->form->bind($request->getParameter($this->form->getName()), $request->getFiles($this->form->getName()));
-      $this->form_billing->bind($request->getParameter($this->form_billing->getName()), $request->getFiles($this->form_billing->getName()));
-      $this->form_shipping->bind($request->getParameter($this->form_shipping->getName()), $request->getFiles($this->form_shipping->getName()));
+      $this->form->bind($request->getParameter($this->form->getName()));
+      $this->form_billing->bind($request->getParameter($this->form_billing->getName()));
 
       if($this->form->isValid() && $this->form_billing->isValid())
       {
-        $this->getCartManager()->resetShippingCharge();
-
-        // At this point we have the two primary forms vaild...
         $valid = true;
+        
+        $this->getCartManager()->resetShippingCharge();
 
         if(!$request->hasParameter('shipping_toggle'))
         {
           // We need to verify the shipping...
+
+          $this->form_shipping->bind($request->getParameter($this->form_shipping->getName()));
+          
           if($this->form_shipping->isValid())
           {
             $this->form_shipping->save();
-            if(isset($rt_user))
+            if(isset($rt_guard_user))
             {
-              $this->updateUserAddressInfo($rt_user, 'shipping', $this->form_shipping->getObject());
+              $this->updateUserAddressInfo($rt_guard_user, 'shipping', $this->form_shipping->getObject());
             }
           }
           else
@@ -438,15 +337,97 @@ class BasertShopOrderActions extends sfActions
         {
           $this->form->save();
           $this->form_billing->save();
-          if(isset($rt_user))
+          if(isset($rt_guard_user))
           {
-            $this->updateUserAddressInfo($rt_user, 'billing', $this->form_billing->getObject());
+            $this->updateUserAddressInfo($rt_guard_user, 'billing', $this->form_billing->getObject());
           }
           $this->redirect('rt_shop_order_payment');
         }
       }
       $this->getUser()->setFlash('default_error', true, false);
     }
+  }
+
+  /**
+   * Return an address for a given type.
+   * 
+   * @param  $type
+   * @return rtAddress
+   */
+  protected function getAddressByType($type)
+  {
+    $address = Doctrine::getTable('rtAddress')->getAddressForObjectAndType($this->getOrder(), $type);
+
+    if(!$address && $this->getUser()->isAuthenticated())
+    {
+      $user = $this->getUser()->getGuardUser();
+      $address = Doctrine::getTable('rtAddress')->getAddressForModelAndIdAndType('rtGuardUser', $user->getId(), $type);
+      if($address)
+      {
+        $address = $address->copy(false);
+        $address->setFirstName($user->getFirstName());
+        $address->setLastName($user->getLastName());
+      }
+    }
+
+    if(!$address)
+    {
+      $address = new rtAddress;
+    }
+
+    $address->setModelId($this->getOrder()->getId());
+    $address->setType($type);
+    $address->setModel('rtShopOrder');
+    
+    return $address;
+  }
+
+  /**
+   * Redeem voucher function, this adds the voucher to a session via a passed voucher code.
+   *
+   * @example: http://example.com/order/voucher/redeem?code=123456
+   * @example: http://example.com/order/voucher/redeem?code=123456&redirect=http://example.com/some/page
+   *
+   * @param sfWebRequest $request
+   */
+  public function executeRedeemVoucher(sfWebRequest $request)
+  {
+    if(!$this->hasRequestParameter('code'))
+    {
+      $this->getUser()->setFlash('error', 'No voucher code found.', true);
+      $this->redirect('@homepage');
+    }
+
+    // Stall brute force testing
+    $attempts = $this->getUser()->getAttribute('rt_shop_voucher_redeem_attempt', 0);
+    if($attempts > 10)
+    {
+      $this->getUser()->setFlash('success', 'Excess number of bad voucher codes found... please try again later.', true);
+    }
+    $this->getUser()->setAttribute('rt_shop_voucher_redeem_attempt', $attempts + 1);
+
+    // Get rtShopVoucher
+    $rt_shop_voucher = Doctrine::getTable('rtShopVoucher')->findOneByCode($this->getRequestParameter('code'));
+
+    // Set voucher code
+    if($rt_shop_voucher)
+    {
+      $cm = $this->getCartManager();
+      $cm->setVoucherCode($rt_shop_voucher->getCode());
+      $this->getUser()->setFlash('notice', 'Voucher has been added.', true);
+    }
+    else
+    {
+      $this->getUser()->setFlash('error', 'Voucher not found. Probably a bad voucher code.', true);
+    }
+
+    // Allow for redirect parameter
+    if($this->hasParameter('redirect'))
+    {
+      $this->redirect($this->getRequestParameter('redirect'));
+    }
+
+    $this->redirect('@homepage');
   }
 
   /**
@@ -555,7 +536,7 @@ class BasertShopOrderActions extends sfActions
         $cc_array = $this->FormatCcInfoArray($this->form_cc->getValues());
         $address = $rt_shop_cart_manager->getBillingAddress();
         $customer_array = $this->FormatCustomerInfoArray($address, $rt_shop_cart_manager->getOrder()->getEmailAddress());
-        
+
         $payment = rtShopPaymentToolkit::getPaymentObject(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
 
         $this->logMessage($this->getCartManager()->getPricingInfo());
@@ -620,7 +601,6 @@ class BasertShopOrderActions extends sfActions
     $this->redirectUnless($this->cartIsPopulated(), '@rt_shop_order_cart');
 
     $rt_shop_cart_manager = $this->getCartManager();
-    //$this->redirectUnless(count($rt_shop_cart_manager->getOrder()->Stocks) > 0, '@rt_shop_order_cart');
     $this->rt_shop_order = $rt_shop_cart_manager->getOrder();
 
     // Send mail to admin and user
