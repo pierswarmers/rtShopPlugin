@@ -99,10 +99,12 @@ class BasertShopOrderActions extends sfActions
         {
           throw new sfException('Products without variations can only have one stock item. More than one found.');
         }
+        
+        $rt_shop_stock = $rt_shop_stock[0];
 
         $this->checkIfStockIsAvailable($rt_shop_stock);
 
-        $stock_id = $rt_shop_stock[0]->id;
+        $stock_id = $rt_shop_stock->id;
       }
       else
       {
@@ -215,7 +217,7 @@ class BasertShopOrderActions extends sfActions
     }
     else
     {
-      $this->getUser()->setFlash('notice', ucfirst(sfConfig::get('rt_shop_cart_name', 'shopping bag')) . ' was updated.');
+      $this->getUser()->setFlash('notice', ucfirst(sfConfig::get('rt_shop_cart_name', 'shopping bag')) . ' was updated');
     }
 
     $this->rt_shop_order = $this->getOrder();
@@ -276,14 +278,20 @@ class BasertShopOrderActions extends sfActions
 
     $this->show_shipping = false;
     $order = $this->getOrder();
-    $rt_guard_user = Doctrine::getTable('rtGuardUser')->find($this->getUser()->getGuardUser()->getId());
     
     if(Doctrine::getTable('rtAddress')->getAddressForObjectAndType($order, 'shipping'))
     {
       $this->show_shipping = true;
     }
 
-    if($this->getUser()->isAuthenticated() && is_null($order->getEmailAddress()))
+    $rt_guard_user = false;
+
+    if($this->getUser()->isAuthenticated())
+    {
+      $rt_guard_user = Doctrine::getTable('rtGuardUser')->find($this->getUser()->getGuardUser()->getId());
+    }
+    
+    if($rt_guard_user && is_null($order->getEmailAddress()))
     {
       $this->getOrder()->setEmailAddress($rt_guard_user->getEmailAddress());
     }
@@ -310,13 +318,12 @@ class BasertShopOrderActions extends sfActions
         if(!$request->hasParameter('shipping_toggle'))
         {
           // We need to verify the shipping...
-
           $this->form_shipping->bind($request->getParameter($this->form_shipping->getName()));
           
           if($this->form_shipping->isValid())
           {
             $this->form_shipping->save();
-            if(isset($rt_guard_user))
+            if($rt_guard_user)
             {
               $this->updateUserAddressInfo($rt_guard_user, 'shipping', $this->form_shipping->getObject());
             }
@@ -329,7 +336,7 @@ class BasertShopOrderActions extends sfActions
         }
         else
         {
-          // try to clean any existing shipping addresses...
+          // Try to clean any existing shipping addresses...
           $this->form_shipping->getObject()->delete();
         }
 
@@ -337,7 +344,7 @@ class BasertShopOrderActions extends sfActions
         {
           $this->form->save();
           $this->form_billing->save();
-          if(isset($rt_guard_user))
+          if($rt_guard_user)
           {
             $this->updateUserAddressInfo($rt_guard_user, 'billing', $this->form_billing->getObject());
           }
