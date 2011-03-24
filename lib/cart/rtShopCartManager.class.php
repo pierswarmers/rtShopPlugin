@@ -448,6 +448,7 @@ class rtShopCartManager
     $faux_item['price_retail'] = $voucher['reduction_value'];
     $faux_item['price_wholesale'] = 0.0;
     $faux_item['rtShopOrderToStock'][]['quantity'] = 1;
+    $faux_item['rtShopProduct']['is_taxable'] = true;
 
     return $faux_item;
   }
