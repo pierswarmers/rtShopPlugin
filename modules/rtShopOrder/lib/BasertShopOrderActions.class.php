@@ -704,15 +704,9 @@ class BasertShopOrderActions extends sfActions
    * Updates user session details with latest cart info
    */
   private function updateUserSession()
-  {
-    $items = 0;
-
-    foreach($this->getOrder()->getStockInfoArray() as $stock)
-    {
-      $items += $stock['rtShopOrderToStock'][0]['quantity'];
-    }
+  { 
     $this->logMessage($this->getCartManager()->getPricingInfo());
-    $this->getUser()->setAttribute('rt_shop_order_cart_items', $items);
+    $this->getUser()->setAttribute('rt_shop_order_cart_items', $this->getCartManager()->getItemsInCart());
     $this->getUser()->setAttribute('rt_shop_order_cart_total', $this->getCartManager()->getTotalCharge());
   }
 
