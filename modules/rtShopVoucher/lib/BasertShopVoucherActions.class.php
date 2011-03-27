@@ -20,7 +20,8 @@
 class BasertShopVoucherActions extends sfActions
 {
   private $_rt_shop_voucher_manager;
-
+  private $_rt_shop_cart_manager;
+  
   public function preExecute()
   {
     sfConfig::set('app_rt_node_title', 'Gift Voucher');
@@ -31,7 +32,7 @@ class BasertShopVoucherActions extends sfActions
   {
     if($this->getVoucherManager()->hasSessionVoucher())
     {
-      $this->getUser()->setFlash('error', 'Only one gift voucher allowed.');
+      $this->getUser()->setFlash('error', 'Only one gift voucher allowed');
       $this->redirect('rt_shop_voucher_edit');
     }
 
@@ -80,16 +81,18 @@ class BasertShopVoucherActions extends sfActions
     if($this->getVoucherManager()->hasSessionVoucher())
     {
       $this->getVoucherManager()->resetSessionVoucher();
-      $this->getUser()->setFlash('notice', 'Voucher has been removed.');
+      $this->getUser()->setFlash('notice', 'Voucher has been removed');
     }
 
+    $this->updateUserSession();
+
     // Redirect to referer page
-    $refer = $this->getReferer($request);
+    $referer = $this->getReferer($request);
     
-    if($refer)
+    if($referer)
     {
       $this->cleanReferer();
-      $this->redirect($refer);
+      $this->redirect($referer);
     }
 
     // No referer, go to new voucher
@@ -116,7 +119,7 @@ class BasertShopVoucherActions extends sfActions
       $referer = $this->getUser()->getAttribute('rt-voucher-referer');
     }
 
-    return $referer;
+    return urldecode($referer);
   }
 
   /**
@@ -147,13 +150,15 @@ class BasertShopVoucherActions extends sfActions
       $this->getVoucherManager()->setSessionVoucherArray($form_values);
       $this->getUser()->setFlash('notice', 'Voucher has been '.($request->getParameter('action') == 'update' ? 'updated' : 'created'));
 
-      // Redirect to referer page
-      $refer = $this->getReferer($request);
+      $this->updateUserSession();
 
-      if($refer)
+      // Redirect to referer page
+      $referer = $this->getReferer($request);
+
+      if($referer)
       {
         $this->cleanReferer();
-        $this->redirect($refer);
+        $this->redirect($referer);
       }
 
       // No referer, go to edit voucher
@@ -173,5 +178,30 @@ class BasertShopVoucherActions extends sfActions
     }
 
     return $this->_rt_shop_voucher_manager;
+  }
+
+  /**
+   * Get cart manager object
+   *
+   * @return rtShopCartManager
+   */
+  public function getCartManager()
+  {
+    if(is_null($this->_rt_shop_cart_manager))
+    {
+      $this->_rt_shop_cart_manager = new rtShopCartManager();
+    }
+
+    return $this->_rt_shop_cart_manager;
+  }
+
+  /**
+   * Updates user session details with latest cart info
+   */
+  private function updateUserSession()
+  {
+    $this->logMessage($this->getCartManager()->getPricingInfo());
+    $this->getUser()->setAttribute('rt_shop_order_cart_items', $this->getCartManager()->getItemsInCart());
+    $this->getUser()->setAttribute('rt_shop_order_cart_total', $this->getCartManager()->getTotalCharge());
   }
 }
