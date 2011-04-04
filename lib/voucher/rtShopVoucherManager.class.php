@@ -12,7 +12,6 @@
 /**
  * rtShopVoucherManager
  *
- *
  * @package    rtShopPlugin
  * @subpackage manager
  * @author     Piers Warmers <piers@wranglers.com.au>
