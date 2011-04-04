@@ -3,7 +3,7 @@
 /*
  * This file is part of the rtShopPlugin package.
  *
- * (c) 2006-2008 digital Wranglers <steercms@wranglers.com.au>
+ * (c) 2006-2011 digital Wranglers <steercms@wranglers.com.au>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -17,7 +17,7 @@
  * @author     Piers Warmers <piers@wranglers.com.au>
  * @author     Konny Zurcher <konny@wranglers.com.au>
  */
-class rtShopCartManager
+class rtShopCartManager implements rtShopCartManagerInterface
 {
   private $_order,
           $_user,
@@ -76,6 +76,25 @@ class rtShopCartManager
     }
 
     return (float) $charge;
+  }
+
+  /**
+   * Return the items charge for promotion calculations.
+   * 
+   * @return float
+   */
+  public function getItemsChargeForPromotion($filter = null)
+  {
+    $charge = $this->getItemsCharge($filter);
+    
+    $voucher = $this->getSessionVoucherAsLineItem();
+
+    if($voucher)
+    {
+      $charge = $charge - $voucher['price_retail'];
+    }
+
+    return $charge;
   }
 
   /**
@@ -259,12 +278,13 @@ class rtShopCartManager
     if($promotion)
     {
       $filter = $promotion->getStackable() ? self::FILTER_STACKABLE : self::FILTER_NON_STACKABLE;
-      $total = $this->getItemsCharge($filter);
+      //$total = $this->getItemsCharge($filter);
+      $total = $this->getItemsChargeForPromotion($filter);
 
-      if ($promotion->getReductionType() == rtShopPromotion::REDUCTION_TYPE_PERCENTAGE)
+      if($promotion->getReductionType() == rtShopPromotion::REDUCTION_TYPE_PERCENTAGE)
       {
-          $percentage = $promotion->getReductionValue()/100;
-          $total = $total * $percentage;
+        $percentage = $promotion->getReductionValue()/100;
+        $total = $total * $percentage;
       }
       else
       {
@@ -419,23 +439,31 @@ class rtShopCartManager
     {
       $merged_info_array[] = $value;
     }
+
     // Add gift voucher, if exits
-    if($vm->hasSessionVoucher())
+    $voucher = $this->getSessionVoucherAsLineItem();
+    if($voucher)
     {
-      $merged_info_array[] = $this->getFauxStockItemArray();
+      $merged_info_array[] = $voucher;
     }
-    
+
     return $merged_info_array;
   }
 
   /**
    * Create faux stock item (i.e. for gift vochers, etc.)
    *
-   * @return array
+   * @return mixed array on success or otherwise false
    */
-  public function getFauxStockItemArray()
+  public function getSessionVoucherAsLineItem()
   {
-    $vm      = $this->getVoucherManager();
+    $vm = $this->getVoucherManager();
+
+    if(!$vm->hasSessionVoucher())
+    {
+      return false;
+    }
+    
     $voucher = $vm->getSessionVoucherArray();
 
     $faux_item = array();
@@ -449,6 +477,7 @@ class rtShopCartManager
     $faux_item['price_wholesale'] = 0.0;
     $faux_item['rtShopOrderToStock'][]['quantity'] = 1;
     $faux_item['rtShopProduct']['is_taxable'] = false;
+    $faux_item['rtShopProduct']['title'] = $voucher['title'];
 
     return $faux_item;
   }
@@ -861,7 +890,7 @@ class rtShopCartManager
   /**
    * Return rtShopVoucher object
    * 
-   * @return rtShopVoucher
+   * @return rtShopVoucherManager
    */
   public function getVoucherManager()
   {
