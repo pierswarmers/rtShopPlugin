@@ -1,7 +1,9 @@
 <?php
+
 /*
- * This file is part of the reditype package.
- * (c) 2009-2010 Piers Warmers <piers@wranglers.com.au>
+ * This file is part of the rtShopPlugin package.
+ *
+ * (c) 2006-2011 digital Wranglers <steercms@wranglers.com.au>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -138,18 +140,18 @@ class BasertShopProductAdminActions extends sfActions
   private function stats()
   {
     // Dates
-    $date_now         = date("Y-m-d H:i:s");
+    $date_now = date("Y-m-d H:i:s");
 
     // SQL queries
     $con = Doctrine_Manager::getInstance()->getCurrentConnection();
 
-    $result_products_total               = $con->fetchAssoc("select count(id) as count from rt_shop_product");
-    $result_products_total_published     = $con->fetchAssoc("select count(id) as count from rt_shop_product where published = 1 and (published_from <= '".$date_now."' OR published_from IS NULL) and (published_to > '".$date_now."' OR published_to IS NULL)");
+    $result_products_total           = $con->fetchAssoc("select count(id) as count from rt_shop_product");
+    $result_products_total_published = $con->fetchAssoc("select count(id) as count from rt_shop_product where published = 1 and (published_from <= '".$date_now."' OR published_from IS NULL) and (published_to > '".$date_now."' OR published_to IS NULL)");
 
     // Create array
     $stats = array();
-    $stats['total']                = $result_products_total[0] != '' ? $result_products_total[0] : 0;
-    $stats['total_published']      = $result_products_total_published[0] != '' ? $result_products_total_published[0] : 0;
+    $stats['total']           = $result_products_total[0] != '' ? $result_products_total[0] : 0;
+    $stats['total_published'] = $result_products_total_published[0] != '' ? $result_products_total_published[0] : 0;
 
     return $stats;
   }
@@ -184,11 +186,8 @@ class BasertShopProductAdminActions extends sfActions
   public function executeCreate(sfWebRequest $request)
   {
     $this->forward404Unless($request->isMethod(sfRequest::POST));
-
     $this->form = new rtShopProductForm();
-
     $this->processForm($request, $this->form);
-
     $this->setTemplate('new');
   }
 
@@ -203,19 +202,16 @@ class BasertShopProductAdminActions extends sfActions
     $this->forward404Unless($request->isMethod(sfRequest::POST) || $request->isMethod(sfRequest::PUT));
     $this->forward404Unless($rt_shop_product = Doctrine::getTable('rtShopProduct')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_product does not exist (%s).', $request->getParameter('id')));
     $this->form = new rtShopProductForm($rt_shop_product);
-
     $this->processForm($request, $this->form);
-
     $this->setTemplate('edit');
   }
 
   public function executeDelete(sfWebRequest $request)
   {
     $request->checkCSRFProtection();
-
     $this->forward404Unless($rt_shop_product = Doctrine::getTable('rtShopProduct')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_product does not exist (%s).', $request->getParameter('id')));
     $rt_shop_product->delete();
-
+    $this->getDispatcher($request)->notify(new sfEvent($this, 'doctrine.admin.delete_object', array('object' => $rt_shop_product)));
     $this->redirect('rtShopProductAdmin/index');
   }
 
@@ -366,6 +362,8 @@ class BasertShopProductAdminActions extends sfActions
       $rt_shop_product = $form->save();
       $this->clearCache($rt_shop_product);
 
+      $this->getDispatcher($request)->notify(new sfEvent($this, 'doctrine.admin.save_object', array('object' => $rt_shop_product)));
+
       $action = $request->getParameter('rt_post_save_action', 'index');
 
       if($action == 'edit')
@@ -382,9 +380,21 @@ class BasertShopProductAdminActions extends sfActions
     $this->getUser()->setFlash('default_error', true, false);
   }
 
+  /**
+   * Clean the cache relating to rtShopProduct
+   *
+   * @param rtShopProduct $rt_shop_product
+   */
   private function clearCache($rt_shop_product = null)
   {
     rtShopProductCacheToolkit::clearCache($rt_shop_product);
   }
 
+  /**
+   * @return sfEventDispatcher
+   */
+  protected function getDispatcher(sfWebRequest $request)
+  {
+    return ProjectConfiguration::getActive()->getEventDispatcher(array('request' => $request));
+  }
 }

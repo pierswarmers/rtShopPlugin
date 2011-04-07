@@ -1,7 +1,9 @@
 <?php
+
 /*
- * This file is part of the reditype package.
- * (c) 2009-2010 Piers Warmers <piers@wranglers.com.au>
+ * This file is part of the rtShopPlugin package.
+ *
+ * (c) 2006-2011 digital Wranglers <steercms@wranglers.com.au>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -109,10 +111,9 @@ class BasertShopVoucherAdminActions extends sfActions
   public function executeDelete(sfWebRequest $request)
   {
     $request->checkCSRFProtection();
-
     $this->forward404Unless($rt_shop_voucher = Doctrine::getTable('rtShopVoucher')->find(array($request->getParameter('id'))), sprintf('Object rt_shop_voucher does not exist (%s).', $request->getParameter('id')));
     $rt_shop_voucher->delete();
-
+    $this->getDispatcher($request)->notify(new sfEvent($this, 'doctrine.admin.delete_object', array('object' => $rt_shop_voucher)));
     $this->redirect('rtShopVoucherAdmin/index');
   }
 
@@ -326,6 +327,8 @@ class BasertShopVoucherAdminActions extends sfActions
     {
       $rt_shop_voucher = $form->save();
 
+      $this->getDispatcher($request)->notify(new sfEvent($this, 'doctrine.admin.save_object', array('object' => $rt_shop_voucher)));
+
       $action = $request->getParameter('rt_post_save_action', 'index');
 
       if($action == 'edit')
@@ -336,5 +339,13 @@ class BasertShopVoucherAdminActions extends sfActions
       $this->redirect('rtShopVoucherAdmin/index');
     }
     $this->getUser()->setFlash('default_error', true, false);
+  }
+
+  /**
+   * @return sfEventDispatcher
+   */
+  protected function getDispatcher(sfWebRequest $request)
+  {
+    return ProjectConfiguration::getActive()->getEventDispatcher(array('request' => $request));
   }
 }
