@@ -588,6 +588,8 @@ class BasertShopOrderActions extends sfActions
     $rt_shop_cart_manager->archive();
     $rt_shop_cart_manager->getOrder()->save();
 
+    $this->getDispatcher($request)->notify(new sfEvent($this, 'doctrine.admin.save_object', array('object' => $rt_shop_cart_manager->getOrder())));
+
     // Adjust stock quantities
     $rt_shop_cart_manager->adjustStockQuantities();
     $rt_shop_cart_manager->adjustVoucherDetails();
@@ -796,5 +798,13 @@ class BasertShopOrderActions extends sfActions
   protected function cartIsPopulatedByVoucherOnly()
   {
     return count($this->getCartManager()->getStockInfoArray()) === 1 && !$this->getCartManager()->hasRealItems();
+  }
+
+  /**
+   * @return sfEventDispatcher
+   */
+  protected function getDispatcher(sfWebRequest $request)
+  {
+    return ProjectConfiguration::getActive()->getEventDispatcher(array('request' => $request));
   }
 }

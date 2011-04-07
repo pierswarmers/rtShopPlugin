@@ -157,17 +157,18 @@ class BasertShopOrderAdminActions extends sfActions
 
   public function executeNew(sfWebRequest $request)
   {
+    // Disable creation of orders in admin
+    $this->getUser()->setFlash('notice','Order creation in admin has beend disabled',true);
+    $this->redirect('rtShopOrderAdmin/index');
+    
     $this->form = new rtShopOrderForm();
   }
 
   public function executeCreate(sfWebRequest $request)
   {
     $this->forward404Unless($request->isMethod(sfRequest::POST));
-
     $this->form = new rtShopOrderForm();
-
     $this->processForm($request, $this->form);
-
     $this->setTemplate('new');
   }
 
@@ -180,7 +181,7 @@ class BasertShopOrderAdminActions extends sfActions
 
   public function executeEdit(sfWebRequest $request)
   {
-    // temporary redirect
+    // Temporary redirect
     $this->redirect('rtShopOrderAdmin/show?id='.$request->getParameter('id'));
 
     $rt_shop_order = $this->getRtShopOrderObjectById($request);
@@ -377,11 +378,9 @@ class BasertShopOrderAdminActions extends sfActions
   public function executeDelete(sfWebRequest $request)
   {
     $request->checkCSRFProtection();
-
     $rt_shop_order = $this->getRtShopOrderObjectById($request);
-    
     $rt_shop_order->delete();
-
+    $this->getDispatcher($request)->notify(new sfEvent($this, 'doctrine.admin.delete_object', array('object' => $rt_shop_order)));
     $this->redirect('rtShopOrderAdmin/index');
   }
 
@@ -573,10 +572,8 @@ class BasertShopOrderAdminActions extends sfActions
    */
   protected function checkOrderStatusForDispatch($status)
   {
-    $cred  = sfConfig::get('app_rt_shop_order_dispatch_credential', 'admin_shop_order_dispatch');
-    
+    $cred = sfConfig::get('app_rt_shop_order_dispatch_credential', 'admin_shop_order_dispatch');
     $allowed_dispatch_status  = array(rtShopOrder::STATUS_PICKING, rtShopOrder::STATUS_SENDING, rtShopOrder::STATUS_SENT);
-
     if($this->getUser()->hasCredential($cred) && !in_array($status, $allowed_dispatch_status))
     {
       return false;
@@ -617,8 +614,16 @@ class BasertShopOrderAdminActions extends sfActions
     if ($form->isValid())
     {
       $rt_shop_order = $form->save();
-
+      $this->getDispatcher($request)->notify(new sfEvent($this, 'doctrine.admin.save_object', array('object' => $rt_shop_order)));
       $this->redirect('rtShopOrderAdmin/edit?id='.$rt_shop_order->getId());
     }
+  }
+
+  /**
+   * @return sfEventDispatcher
+   */
+  protected function getDispatcher(sfWebRequest $request)
+  {
+    return ProjectConfiguration::getActive()->getEventDispatcher(array('request' => $request));
   }
 }
