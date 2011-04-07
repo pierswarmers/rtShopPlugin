@@ -159,6 +159,6 @@ class BasertShopProductActions extends sfActions
 
   private function isAdmin()
   {
-    return $this->getUser()->hasCredential(sfConfig::get('app_rt_shop_product_admin_credential', 'admin_product'));
+    return $this->getUser()->hasCredential(sfConfig::get('app_rt_shop_product_admin_credential', 'admin_shop_product'));
   }
 }
