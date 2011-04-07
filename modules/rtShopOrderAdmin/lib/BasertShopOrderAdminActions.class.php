@@ -140,7 +140,7 @@ class BasertShopOrderAdminActions extends sfActions
 
     $stats['month_last']       = $result_revenue_month_last[0];
     $stats['month_last']['revenue'] = $stats['month_last']['revenue'] != null ? $stats['month_last']['revenue'] : 0;
-    
+
     return $stats;
   }
 
@@ -160,7 +160,7 @@ class BasertShopOrderAdminActions extends sfActions
     // Disable creation of orders in admin
     $this->getUser()->setFlash('notice','Order creation in admin has beend disabled',true);
     $this->redirect('rtShopOrderAdmin/index');
-    
+
     $this->form = new rtShopOrderForm();
   }
 
@@ -366,7 +366,7 @@ class BasertShopOrderAdminActions extends sfActions
     $this->forward404Unless($request->isMethod(sfRequest::POST) || $request->isMethod(sfRequest::PUT));
 
     $rt_shop_order = $this->getRtShopOrderObjectById($request);
-    
+
     $this->rt_shop_order = $rt_shop_order;
     $this->form = new rtShopOrderForm($rt_shop_order);
 
@@ -489,7 +489,7 @@ class BasertShopOrderAdminActions extends sfActions
     $this->checkOrderStatusForDispatch($request->getParameter('rt-shop-order-status'));
 
     if($rt_shop_order->getStatus() != $request->getParameter('rt-shop-order-status'))
-    {      
+    {
       $rt_shop_order->setStatus($request->getParameter('rt-shop-order-status'));
       $rt_shop_order->save();
 
@@ -604,7 +604,7 @@ class BasertShopOrderAdminActions extends sfActions
 
   /**
    * Process a submitted order form
-   * 
+   *
    * @param sfWebRequest $request
    * @param sfForm $form
    */
