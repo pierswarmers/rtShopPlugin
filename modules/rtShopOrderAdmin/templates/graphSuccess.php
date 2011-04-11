@@ -69,7 +69,7 @@
         r2.g.txtattr.font = "10px 'Fontin Sans', Fontin-Sans, sans-serif";
 
         fin = function () {
-          this.flag = r2.g.popup(this.bar.x, this.bar.y, '<?php echo sfConfig::get('app_rt_currency', 'AUD') ?>' + this.bar.value || "0").insertBefore(this);
+          this.flag = r2.g.popup(this.bar.x, this.bar.y, '$' + this.bar.value || "0").insertBefore(this);
         },
         fout = function () {
           this.flag.animate({opacity: 0}, 300, function () {this.remove();});
@@ -112,7 +112,7 @@
         r3.g.txtattr.font = "10px 'Fontin Sans', Fontin-Sans, sans-serif";
 
         fin = function () {
-          this.flag = r3.g.popup(this.bar.x, this.bar.y, '<?php echo sfConfig::get('app_rt_currency', 'AUD') ?>' + this.bar.value || "0").insertBefore(this);
+          this.flag = r3.g.popup(this.bar.x, this.bar.y, '$' + this.bar.value || "0").insertBefore(this);
         },
         fout = function () {
           this.flag.animate({opacity: 0}, 300, function () {this.remove();});
