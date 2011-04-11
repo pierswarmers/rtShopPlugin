@@ -458,11 +458,11 @@ class BasertShopOrderAdminActions extends sfActions
    */
   public function executeGraph(sfWebRequest $request)
   {
-    // 6 months range
+    // 6 months range (total income per day)
     $summary_data = $this->getGraphOrderSummaryRange();
 
-    $sums_list   = '';  // Sums list,   y-axis
-    $counts_list = '';  // Counts list, y-axis
+    $counts_list = '';
+    $sums_list   = '';
     $i           = 0;
     foreach($summary_data as $key => $value)
     {
@@ -474,7 +474,108 @@ class BasertShopOrderAdminActions extends sfActions
 
     $this->days_in_months            = implode(",", range(1,count($summary_data),1));
     $this->revenue_per_day_in_months = $sums_list;
-    $this->orders_per_day_in_months  = $counts_list;
+
+    // 12 months range (total income/average order value per month)
+    $total_data   = $this->getGraphOrderTotalRange();
+    $average_data = $this->getGraphOrderAverageRange();
+
+    $sums_total_month_list = '';
+    $j = 0;
+    foreach($total_data as $key => $value)
+    {
+      $separator = ($j > 0) ? ',' : '';
+      $sums_total_month_list .= $separator.$value;
+      $j++;
+    }
+
+    $average_order_list = '';
+    $k = 0;
+    foreach($average_data as $key => $value)
+    {
+      $separator = ($k > 0) ? ',' : '';
+      $average_order_list .= $separator.$value;
+      $k++;
+    }
+
+    $this->total_income_in_month  = $sums_total_month_list;
+    $this->average_order_in_month = $average_order_list;
+  }
+
+  /**
+   * Return array with total per months values for the specified months range
+   * 
+   * @param integer $months
+   * @return arrau
+   */
+  public function getGraphOrderTotalRange($months = 12)
+  {
+    // Build empty months array
+    $range_months = array();
+    for($i=$months; $i>=1; $i--)
+    {
+      $days_in_month = date('t', mktime(0,0,0,(date('m')-$i),28,date('Y')));
+      $month = date('m', mktime(0,0,0,(date('m')-$i),$days_in_month,date('Y')));
+      $year  = date('Y', mktime(0,0,0,(date('m')-$i),$days_in_month,date('Y')));
+      $range_months[$year.$month] = 0;
+    }
+
+    // Add data to emtpy month array where applicable
+    foreach($this->getGraphOrderRangeData($months) as $key => $value)
+    {
+      $range_months[$value['o_date']] = $value['o_sum'];
+    }
+
+    return $range_months;
+  }
+
+  /**
+   * Return array with average order value per months values for the specified months range
+   *
+   * @param integer $months
+   * @return arrau
+   */
+  public function getGraphOrderAverageRange($months = 12)
+  {
+    // Build empty months array
+    $range_months = array();
+    for($i=$months; $i>=1; $i--)
+    {
+      $days_in_month = date('t', mktime(0,0,0,(date('m')-$i),28,date('Y')));
+      $month = date('m', mktime(0,0,0,(date('m')-$i),$days_in_month,date('Y')));
+      $year  = date('Y', mktime(0,0,0,(date('m')-$i),$days_in_month,date('Y')));
+      $range_months[$year.$month] = 0;
+    }
+
+    // Add data to emtpy month array where applicable
+    foreach($this->getGraphOrderRangeData($months) as $key => $value)
+    {
+      $range_months[$value['o_date']] = round($value['o_sum'] / $value['o_count'],2);
+    }
+
+    return $range_months;
+  }
+
+  /**
+   * Return rtShopOrder date for specified months range
+   * Range is from 1st this month to 1st of month range specified
+   *
+   * @see getGraphOrderAverageRange, getGraphOrderTotalRange
+   * @param integer $months
+   * @return array
+   */
+  protected function getGraphOrderRangeData($months)
+  {
+    $start_range = date('Y-m-d H:i:s', mktime(0,0,0,date('m'),1,date('Y')));
+    $end_range   = date('Y-m-d H:i:s', mktime(0,0,0,(date('m')-$months),1,date('Y')));
+
+    $query = Doctrine::getTable('rtShopOrder')->getQuery();
+    $query->select('DATE_FORMAT(o.created_at,"%Y%m") as date, sum(o.total_charge), count(o.id)')
+          ->andWhere('o.status != ?', rtShopOrder::STATUS_PENDING)
+          ->andWhere('date(o.created_at) < ?', $start_range)
+          ->andWhere('date(o.created_at) >= ?', $end_range)
+          ->groupBy('date');
+
+    return $query->execute(array(), Doctrine_Core::HYDRATE_SCALAR);
   }
 
   /**
