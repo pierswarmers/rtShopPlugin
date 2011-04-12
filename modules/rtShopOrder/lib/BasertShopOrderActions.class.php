@@ -491,7 +491,7 @@ class BasertShopOrderActions extends sfActions
     // If order placed is placed and total charge = 0
     if($this->getCartManager()->getTotalCharge() == 0 && $rt_shop_cart_manager->getVoucherCode() != '')
     {
-      $this->closeOrder();
+      $this->closeOrder($request);
       $this->redirect('rt_shop_order_receipt');
     }
 
@@ -510,7 +510,7 @@ class BasertShopOrderActions extends sfActions
       // If order placed is placed and total charge = 0
       if($this->getCartManager()->getTotalCharge() == 0)
       {
-        $this->closeOrder();
+        $this->closeOrder($request);
         $this->redirect('rt_shop_order_receipt');
       }
 
@@ -552,7 +552,7 @@ class BasertShopOrderActions extends sfActions
         {
           if($payment->isApproved())
           {
-            $this->closeOrder($payment);
+            $this->closeOrder($request, $payment);
 
             $this->logMessage('{rtShopPayment} Payment success for order #'.$rt_shop_cart_manager->getOrder()->getReference().': ' . $payment->getLog());
             $this->redirect('rt_shop_order_receipt');
@@ -569,9 +569,10 @@ class BasertShopOrderActions extends sfActions
   /**
    * Close order and archive
    *
+   * @param sfWebRequest $request
    * @param object $payment Payment object
    */
-  public function closeOrder($payment = null)
+  public function closeOrder($request, $payment = null)
   {
     $rt_shop_cart_manager = $this->getCartManager();
 
