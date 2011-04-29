@@ -206,7 +206,6 @@ EOF;
 
     // Templates
     $message_html  = get_partial('rtShopVoucher/email_gift_voucher_html', $vars);
-    $message_html  = get_partial('rtEmail/layout_html', array('content' => $message_html));
 
     $message_plain = get_partial('rtShopVoucher/email_gift_voucher_plain', $vars);
     $message_plain = get_partial('rtEmail/layout_plain', array('content' => html_entity_decode($message_plain)));
