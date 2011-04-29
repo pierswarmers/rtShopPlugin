@@ -429,7 +429,7 @@ class BasertShopOrderActions extends sfActions
     }
 
     // Allow for redirect parameter
-    if($this->hasParameter('redirect'))
+    if($request->hasParameter('redirect'))
     {
       $this->redirect($this->getRequestParameter('redirect'));
     }
@@ -588,6 +588,8 @@ class BasertShopOrderActions extends sfActions
     
     $rt_shop_cart_manager->archive();
     $rt_shop_cart_manager->getOrder()->save();
+
+    exit;
 
     $this->getDispatcher($request)->notify(new sfEvent($this, 'doctrine.admin.save_object', array('object' => $rt_shop_cart_manager->getOrder())));
 
