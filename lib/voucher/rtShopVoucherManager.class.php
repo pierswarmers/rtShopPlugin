@@ -214,7 +214,7 @@ EOF;
     $message = Swift_Message::newInstance()
             ->setFrom($sender_email)
             ->setTo($session_voucher_array['email_address'])
-            ->setSubject(sprintf('A %s gift voucher for you from %s %s',format_currency($session_voucher_array['reduction_value'], sfConfig::get('app_rt_currency', 'AUD')),$sender_fname,$sender_lname))
+            ->setSubject(sprintf('A %s Gift Voucher for you from %s %s',format_currency($session_voucher_array['reduction_value'], sfConfig::get('app_rt_currency', 'AUD')),$sender_fname,$sender_lname))
             ->setBody($message_html, 'text/html')
             ->addPart($message_plain, 'text/plain');
 
@@ -229,7 +229,7 @@ EOF;
    */
   public function createWithOrder(rtShopOrder $order)
   {
-    $voucher = $this->persistSessionVoucher('Created with order: #' . $order->getReference(), 'Gift voucher created by: ' . $order->getBillingAddress()->getFirstName() . ' ' . $order->getBillingAddress()->getLastName());
+    $voucher = $this->persistSessionVoucher('Created with order: #' . $order->getReference(), 'Gift Voucher created by: ' . $order->getBillingAddress()->getFirstName() . ' ' . $order->getBillingAddress()->getLastName());
 
     if($voucher)
     {
