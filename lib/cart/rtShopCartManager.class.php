@@ -278,7 +278,7 @@ class rtShopCartManager implements rtShopCartManagerInterface
     if($promotion)
     {
       $filter = $promotion->getStackable() ? self::FILTER_STACKABLE : self::FILTER_NON_STACKABLE;
-      //$total = $this->getItemsCharge($filter);
+      
       $total = $this->getItemsChargeForPromotion($filter);
 
       if($promotion->getReductionType() == rtShopPromotion::REDUCTION_TYPE_PERCENTAGE)
@@ -312,7 +312,8 @@ class rtShopCartManager implements rtShopCartManagerInterface
       $filter = $this->getVoucher()->getStackable() ? self::FILTER_STACKABLE : self::FILTER_NON_STACKABLE;
     }
 
-    $charge = $this->getPreTotalCharge($filter);
+    //$charge = $this->getPreTotalCharge($filter);
+    $charge = $this->getItemsCharge($filter);
 
 	if(is_null($this->getVoucherCode()))
     {
@@ -648,6 +649,49 @@ class rtShopCartManager implements rtShopCartManagerInterface
   public function getVoucherCode()
   {
     return $this->getOrder()->getVoucherCode();
+  }
+  
+  /**
+   * Return data for check voucher request
+   * 
+   * @param  string $voucher_code Voucher code
+   * @return array
+   */
+  public function getCheckVoucherArray($voucher_code)
+  {
+    $numberFormat = new sfNumberFormat(sfContext::getInstance()->getUser()->getCulture());
+    $voucher_data = array('error' => false, 'id' => '');
+
+    if($voucher_code !== '')
+    {
+      $voucher = rtShopVoucherToolkit::getApplicable($voucher_code, $this->getItemsCharge());
+
+      if($voucher)
+      {
+        $this->getOrder()->setVoucherCode($voucher->getCode());
+        $voucher_data = $voucher->getData();
+      }
+      else
+      {
+        $this->getOrder()->setVoucherCode(null);
+        $voucher_data['error'] = true;
+      }
+    }
+    else
+    {
+      $this->getOrder()->setVoucherCode(null);
+    }
+
+    $this->getOrder()->save();
+    
+    // Add data
+    $voucher_data['shipping_charge']        = $this->getShippingCharge();
+    $voucher_data['total_charge']           = $this->getTotalCharge();
+    $voucher_data['reduction']              = $this->getVoucherReduction();
+    $voucher_data['reduction_formatted']    = $numberFormat->format($this->getVoucherReduction(), 'c', sfConfig::get('app_rt_shop_payment_currency','AUD'));
+    $voucher_data['total_charge_formatted'] = $numberFormat->format($this->getTotalCharge(), 'c', sfConfig::get('app_rt_shop_payment_currency','AUD'));
+    
+    return $voucher_data;
   }
   
   /**

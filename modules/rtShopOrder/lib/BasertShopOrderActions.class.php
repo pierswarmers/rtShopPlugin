@@ -444,37 +444,8 @@ class BasertShopOrderActions extends sfActions
    */
   public function executeCheckVoucher(sfWebRequest $request)
   {
-    $rt_shop_cart_manager = $this->getCartManager();
-
-    $this->voucher = array('error' => '', 'id' => '');
-
-    if($request->getParameter('code', '') !== '')
-    {
-      $voucher = rtShopVoucherToolkit::getApplicable($request->getParameter('code'), $rt_shop_cart_manager->getTotalCharge());
-
-      if($voucher)
-      {
-        $rt_shop_cart_manager->getOrder()->setVoucherCode($voucher->getCode());
-        $this->voucher = $voucher->getData();
-      }
-      else
-      {
-        $rt_shop_cart_manager->getOrder()->setVoucherCode(null);
-        $this->voucher['error'] = true;
-      }
-    }
-    else
-    {
-      $rt_shop_cart_manager->getOrder()->setVoucherCode(null);
-    }
-
-    $rt_shop_cart_manager->getOrder()->save();
-    $this->voucher['shipping_charge'] = $rt_shop_cart_manager->getShippingCharge();
-    $this->voucher['total_charge'] = $rt_shop_cart_manager->getTotalCharge();
-    $this->voucher['reduction'] = $rt_shop_cart_manager->getVoucherReduction();
-    $numberFormat = new sfNumberFormat(sfContext::getInstance()->getUser()->getCulture());
-    $this->voucher['reduction_formatted'] = $numberFormat->format($rt_shop_cart_manager->getVoucherReduction(), 'c', sfConfig::get('app_rt_shop_payment_currency','AUD'));
-    $this->voucher['total_charge_formatted'] = $numberFormat->format($rt_shop_cart_manager->getTotalCharge(), 'c', sfConfig::get('app_rt_shop_payment_currency','AUD'));
+    $cm = $this->getCartManager();
+    $this->voucher = $cm->getCheckVoucherArray($request->getParameter('code'));
   }
 
   /**
