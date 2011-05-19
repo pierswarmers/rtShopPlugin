@@ -1,28 +1,28 @@
 <?php
-
 /*
  * This file is part of the rtShopPlugin package.
- * (c) 2006-2008 digital Wranglers <rtShop@wranglers.com.au>
+ * (c) 2006-2011 digital Wranglers <rtShop@wranglers.com.au>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
  * To use it copy to test/unit:
  *
- * $ cp plugins/rtShopPlugin/test/unit/rtShopComplexOrder3Test.php test/unit/rtShopComplexOrder3Test.php
+ * $ cp plugins/rtShopPlugin/test/unit/rtShopVoucherRangeTest.php test/unit/rtShopVoucherRangeTest.php
  *
  */
 
 /**
- * rtShopComplexOrder3 Testing - Order testing
+ * advanced rtShopVoucher Testing
  *
  * @package    rtShopPlugin
  * @author     Piers Warmers <piers@wranglers.com.au>
  * @author     Konny Zurcher <konny@wranglers.com.au>
  */
+
 include(dirname(__FILE__).'/../bootstrap/unit.php');
 
-$t = new lime_test(18, new lime_output_color());
+$t = new lime_test(16, new lime_output_color());
 
 $configuration = ProjectConfiguration::getApplicationConfiguration('frontend', 'test', true);
 $configuration->loadHelpers('Number');
@@ -31,28 +31,23 @@ sfContext::createInstance($configuration);
 new sfDatabaseManager($configuration);
 
 $t->comment('/////////////////////////////////////////////////////////////////////////////');
-$t->comment('/// Complex Order #3                                                      ///');
+$t->comment('/// rtShopVoucher: Test range');
 $t->comment('/////////////////////////////////////////////////////////////////////////////');
 
-// Acronyms:
-$t->comment('');
-$t->comment('Acronyms:');
-$t->comment('QTY = Quantity');
-$t->comment('PR  = Price Retail');
-$t->comment('PP  = Price Promotion');
-$t->comment('TI  = Tax inclusive');
-$t->comment('TE  = Tax exclusive');
-$t->comment('PS  = Promotion, stackable');
-$t->comment('PNS = Promotion, non-stackable');
-$t->comment('VS  = Voucher, stackable');
-$t->comment('VNS = Voucher, non-stackable');
-$t->comment('PromoId = Promotion ID');
-$t->comment('RedType = Promotion, reduction type');
-$t->comment('RedValue = Promotion, reduction value');
+$numberFormat = new sfNumberFormat(sfContext::getInstance()->getUser()->getCulture());
 
-// Add data
-rtShopComplexOrder3TestTools::clean();
+// Tools
+$tools = new rtShopVoucherRangeTestTools;
 
+// Tax and shipping configurations
+sfConfig::set('app_rt_shop_tax_rate', 10);
+sfConfig::set('app_rt_shop_tax_mode', 'exclusive');
+sfConfig::set('app_rt_shop_shipping_charges', array('default' => 20, 'AU' => 10, 'NZ' => 10));
+
+// Add some data to play with...
+$tools->clean();
+
+// Products
 try {
   $prod1 = new rtShopProduct();
   $prod1->setTitle('Product A');
@@ -64,6 +59,7 @@ try {
   throw new sfException('Products could not be added! Please check.');
 }
 
+// Categories
 try {
   $cat1 = new rtShopCategory();
   $cat1->setTitle('Home');
@@ -83,6 +79,7 @@ try {
   throw new sfException('Categories could not be added! Please check.');
 }
 
+// Product to category
 try {
   $prod1tocat2 = new rtShopProductToCategory();
   $prod1tocat2->setProductId($prod1->getId());
@@ -96,6 +93,7 @@ try {
   throw new sfException('Products could not be added to categories! Please check.');
 }
 
+// Attributes
 try {
   $att1 = new rtShopAttribute();
   $att1->setTitle('Attribute A');
@@ -107,6 +105,7 @@ try {
   throw new sfException('Attributes could not be added! Please check.');
 }
 
+// Product to attribute
 try {
   $prod1toatt1 = new rtShopProductToAttribute();
   $prod1toatt1->setProductId($prod1->getId());
@@ -128,6 +127,7 @@ try {
   throw new sfException('Attributes could not be added to products! Please check.');
 }
 
+// Variations
 try {
   $var1 = new rtShopVariation();
   $var1->setTitle('A1');
@@ -143,24 +143,26 @@ try {
   throw new sfException('Variations could not be added! Please check.');
 }
 
+// Stocks
 try {
   $stock1 = new rtShopStock();
   $stock1->setProductId($prod1->getId());
   $stock1->setQuantity(5);
   $stock1->setSku(mt_rand(1,100000));
-  $stock1->setPriceRetail(50);
+  $stock1->setPriceRetail(40);
   $stock1->save();
   $stock2 = new rtShopStock();
   $stock2->setProductId($prod2->getId());
   $stock2->setQuantity(5);
   $stock2->setSku(mt_rand(1,100000));
-  $stock2->setPriceRetail(50);
+  $stock2->setPriceRetail(40);
   $stock2->setPricePromotion(30);
   $stock2->save();
 } catch (Exception $e) {
   throw new sfException('Stocks could not be added! Please check.');
 }
 
+// Stock to variation
 try {
   $stock1tovar1 = new rtShopStockToVariation();
   $stock1tovar1->setStockId($stock1->getId());
@@ -182,22 +184,6 @@ try {
   throw new sfException('Stocks could not be added to variations! Please check.');
 }
 
-// Set taxes and shipping rate
-sfConfig::set('app_rt_shop_tax_rate', 10);
-sfConfig::set('app_rt_shop_tax_mode', 'inclusive');
-sfConfig::set('app_rt_shop_shipping_charges', array('default' => 20, 'AU' => 10));
-
-// Create tools instance
-$tools = new rtShopComplexOrder3TestTools;
-
-$t->diag('');
-$t->diag('/////////////////////////////////////////////////////////////////////////////');
-$t->diag('1. Voucher: $200, non-stackable');
-$t->diag('/////////////////////////////////////////////////////////////////////////////');
-
-// Add voucher
-$voucher1 = $tools->createVoucher('Voucher $200', 200, 'dollarOff', false);
-
 // Create cart manager instance
 try {
   $cm = new rtShopCartManager();
@@ -209,6 +195,56 @@ try {
 $cm->addToCart($stock1, 2);
 $cm->addToCart($stock2, 2);
 
+// Create voucher
+$voucher1 = $tools->createVoucher('Voucher $100.00 // Valid if total >= $150', 100, 'dollarOff', 150);
+$voucher2 = $tools->createVoucher('Voucher $100.00 // Valid if total >= $100', 100, 'dollarOff', 100);
+$voucher3 = $tools->createVoucher('Voucher 10.00% // Valid if total >= $150', 10, 'percentageOff', 150);
+$voucher4 = $tools->createVoucher('Voucher 10.00% // Valid if total >= $100', 10, 'percentageOff', 100);
+
+$t->comment('');
+$t->diag('***************************************');
+$t->diag('*** Voucher #1 details');
+$t->diag('***************************************');
+$t->diag('Code:            '.$voucher1->getCode());
+$t->diag(sprintf('Stackable:       %s',$voucher1->getStackable() ? 'Yes' : 'No'));
+$t->diag('Reduction type:  '.$voucher1->getReductionType());
+$t->diag('Reduction value: '.$voucher1->getReductionValue());
+$t->diag('Count:           '.$voucher1->getCount());
+$t->diag('Total_from:      '.$voucher1->getTotalFrom());
+$t->diag('***************************************');
+$t->diag('*** Voucher #2 details');
+$t->diag('***************************************');
+$t->diag('Code:            '.$voucher2->getCode());
+$t->diag(sprintf('Stackable:       %s',$voucher2->getStackable() ? 'Yes' : 'No'));
+$t->diag('Reduction type:  '.$voucher2->getReductionType());
+$t->diag('Reduction value: '.$voucher2->getReductionValue());
+$t->diag('Count:           '.$voucher2->getCount());
+$t->diag('Total_from:      '.$voucher2->getTotalFrom());
+$t->diag('***************************************');
+$t->diag('*** Voucher #3 details');
+$t->diag('***************************************');
+$t->diag('Code:            '.$voucher3->getCode());
+$t->diag(sprintf('Stackable:       %s',$voucher3->getStackable() ? 'Yes' : 'No'));
+$t->diag('Reduction type:  '.$voucher3->getReductionType());
+$t->diag('Reduction value: '.$voucher3->getReductionValue());
+$t->diag('Count:           '.$voucher3->getCount());
+$t->diag('Total_from:      '.$voucher3->getTotalFrom());
+$t->diag('***************************************');
+$t->diag('*** Voucher #4 details');
+$t->diag('***************************************');
+$t->diag('Code:            '.$voucher4->getCode());
+$t->diag(sprintf('Stackable:       %s',$voucher4->getStackable() ? 'Yes' : 'No'));
+$t->diag('Reduction type:  '.$voucher4->getReductionType());
+$t->diag('Reduction value: '.$voucher4->getReductionValue());
+$t->diag('Count:           '.$voucher4->getCount());
+$t->diag('Total_from:      '.$voucher4->getTotalFrom());
+$t->diag('***************************************');
+
+$t->comment('');
+$t->diag('***************************************');
+$t->diag('*** Order cart');
+$t->diag('***************************************');
+
 // Add addresses to order
 $tools->addAddressForOrder($cm->getOrder()->getId());
 $tools->addAddressForOrder($cm->getOrder()->getId(),'shipping');
@@ -218,11 +254,11 @@ $t->comment('');
 $t->comment('*****************************************************************************');
 $stock_info = $cm->getOrder()->getStockInfoArray();
 $i=0;
-$compare_charge = array(50,30);
+$compare_charge = array($stock1->getPriceRetail(),$stock2->getPricePromotion());
 foreach($stock_info as $stock)
 {
   $rt_shop_stock = Doctrine::getTable('rtShopStock')->find($stock['id']);
-
+  
   $charge = ($stock['price_promotion'] > 0) ? $stock['price_promotion'] : $stock['price_retail'];
   
   $message = $stock['rtShopProduct']['title'].
@@ -236,107 +272,86 @@ foreach($stock_info as $stock)
 }
 $t->comment('*****************************************************************************');
 // ItemsCharge
-$t->is($cm->getItemsCharge(),160,'ItemsCharge: '.format_currency($cm->getItemsCharge(), sfConfig::get('app_rt_currency', 'AUD')));
+$t->is($cm->getItemsCharge(),140,'ItemsCharge: '.format_currency($cm->getItemsCharge(), sfConfig::get('app_rt_currency', 'AUD')));
 // SubTotal
-$t->is($cm->getSubTotal(),160,'SubTotal:    '.format_currency($cm->getSubTotal(), sfConfig::get('app_rt_currency', 'AUD')));
+$t->is($cm->getSubTotal(),140,'SubTotal:    '.format_currency($cm->getSubTotal(), sfConfig::get('app_rt_currency', 'AUD')));
 $t->comment('-----------------------------------------------------------------------------');
+// Tax
+$t->is($cm->getTaxCharge(),14.00,'Tax:          '.format_currency($cm->getTaxCharge(), sfConfig::get('app_rt_currency', 'AUD')));
 // Shipping
-$t->is($cm->getShippingCharge(),10,'Shipping:    '.format_currency($cm->getShippingCharge(), sfConfig::get('app_rt_currency', 'AUD')));
+$t->is($cm->getShippingCharge(),10,'Shipping:     '.format_currency($cm->getShippingCharge(), sfConfig::get('app_rt_currency', 'AUD')));
 $t->comment('-----------------------------------------------------------------------------');
 // Pre total
-$t->is($cm->getPreTotalCharge(),170,'PreTotal:    '.format_currency($cm->getPreTotalCharge(), sfConfig::get('app_rt_currency', 'AUD')));
-$t->comment('-----------------------------------------------------------------------------');
-// Voucher
-$cm->setVoucherCode($voucher1->getCode());
-$t->is($cm->getVoucherReduction(),200,'Voucher:    -'.format_currency($cm->getVoucherReduction(), sfConfig::get('app_rt_currency', 'AUD')).' (#'.$cm->getVoucherCode().')');
+$t->is($cm->getPreTotalCharge(),164.00,'PreTotal:    '.format_currency($cm->getPreTotalCharge(), sfConfig::get('app_rt_currency', 'AUD')));
 $t->comment('=============================================================================');
 // Total
-$t->is($cm->getTotalCharge(),0,'Total (includes $'.format_currency($cm->getTaxComponent(), sfConfig::get('app_rt_currency', 'AUD')).' tax): '.format_currency($cm->getTotalCharge(), sfConfig::get('app_rt_currency', 'AUD')));
+$t->is($cm->getTotalCharge(),164.00,'Total:       '.format_currency($cm->getTotalCharge(), sfConfig::get('app_rt_currency', 'AUD')));
 $t->comment('=============================================================================');
 
-$cm->adjustVoucherDetails($cm->getPreTotalCharge());
-$t->is($cm->getVoucher()->getReductionValue(),30,'>>> Voucher leftover after reduction value: '.format_currency($cm->getVoucher()->getReductionValue(), sfConfig::get('app_rt_currency', 'AUD')).' <<<');
-
-$t->diag('');
-$t->diag('/////////////////////////////////////////////////////////////////////////////');
-$t->diag('2. Voucher: 10%, non-stackable');
-$t->diag('/////////////////////////////////////////////////////////////////////////////');
-
-// Clean order and reset cart manager
-unset($cm);
-rtShopComplexOrder3TestTools::cleanOrder();
-
-// Add voucher
-$voucher1 = $tools->createVoucher('Voucher 10%', 10, 'percentageOff', false);
-
-// Create cart manager instance
-try {
-  $cm = new rtShopCartManager();
-} catch (Exception $e) {
-  throw new sfException('Cart manager instance could not be created! Please check.');
-}
-
-// Add stocks to cart manager
-$cm->addToCart($stock1, 2);
-$cm->addToCart($stock2, 2);
-
-// Add addresses to order
-$tools->addAddressForOrder($cm->getOrder()->getId());
-$tools->addAddressForOrder($cm->getOrder()->getId(),'shipping');
-
-// Loop through stocks in order
 $t->comment('');
-$t->comment('*****************************************************************************');
-$stock_info = $cm->getOrder()->getStockInfoArray();
-$i=0;
-$compare_charge = array(50,30);
-foreach($stock_info as $stock)
-{
-  $rt_shop_stock = Doctrine::getTable('rtShopStock')->find($stock['id']);
+$t->diag('***************************************');
+$t->diag('*** Voucher check');
+$t->diag('***************************************');
+$t->comment('');
 
-  $charge = ($stock['price_promotion'] > 0) ? $stock['price_promotion'] : $stock['price_retail'];
+$t->comment('--- BasertShopOrderActions::executeCheckVoucher() // dollarOff ----------------------------------------');
 
-  $message = $stock['rtShopProduct']['title'].
-             " || PR: ".format_currency($stock['price_retail'], sfConfig::get('app_rt_currency', 'AUD')).
-             " || PP: ".format_currency($rt_shop_stock->getPricePromotion(), sfConfig::get('app_rt_currency', 'AUD')).
-             " || QTY: ".$stock['rtShopOrderToStock'][0]['quantity'].
-             " || Charge: ".format_currency($charge, sfConfig::get('app_rt_currency', 'AUD'));
+$t->diag('*** Case #1.0: Voucher #1: Non-applicable voucher');
 
-  $t->is($charge,$compare_charge[$i],$message);
-  $i++;
-}
-$t->comment('*****************************************************************************');
-// ItemsCharge
-$t->is($cm->getItemsCharge(),160,'ItemsCharge: '.format_currency($cm->getItemsCharge(), sfConfig::get('app_rt_currency', 'AUD')));
-// SubTotal
-$t->is($cm->getSubTotal(),160,'SubTotal:    '.format_currency($cm->getSubTotal(), sfConfig::get('app_rt_currency', 'AUD')));
-$t->comment('-----------------------------------------------------------------------------');
-// Shipping
-$t->is($cm->getShippingCharge(),10,'Shipping:    '.format_currency($cm->getShippingCharge(), sfConfig::get('app_rt_currency', 'AUD')));
-$t->comment('-----------------------------------------------------------------------------');
-// Pre total
-$t->is($cm->getPreTotalCharge(),170,'PreTotal:    '.format_currency($cm->getPreTotalCharge(), sfConfig::get('app_rt_currency', 'AUD')));
-$t->comment('-----------------------------------------------------------------------------');
-// Voucher
+$check_voucher_array1 = $cm->getCheckVoucherArray($voucher1->getCode());
+$t->is($check_voucher_array1['error'], true, '->checkVoucher() has no applicable rtShopVoucher.');
+
+$t->diag('*** Case #1.1: Voucher #2: Applicable voucher');
+
+$check_voucher_array2 = $cm->getCheckVoucherArray($voucher2->getCode());
+$t->is($check_voucher_array2['error'], false, '->checkVoucher() has applicable rtShopVoucher where code #'.$voucher2->getCode());
+
+$t->comment('--- BasertShopOrderActions::executeCheckVoucher() // percentageOff ------------------------------------');
+
+$t->diag('*** Case #1.2: Voucher #3: Non-applicable voucher');
+
+$check_voucher_array3 = $cm->getCheckVoucherArray($voucher3->getCode());
+$t->is($check_voucher_array3['error'], true, '->checkVoucher() has no applicable rtShopVoucher.');
+
+$t->diag('*** Case #1.3: Voucher #4: Applicable voucher');
+
+$check_voucher_array4 = $cm->getCheckVoucherArray($voucher4->getCode());
+$t->is($check_voucher_array4['error'], false, '->checkVoucher() has applicable rtShopVoucher where code #'.$voucher4->getCode());
+
+$t->comment('--- rtShopCartManager::getVoucherReduction() // dollarOff ---------------------------------------------');
+
+$t->diag('*** Case #2.0: Voucher #1: Non-applicable voucher');
+
 $cm->setVoucherCode($voucher1->getCode());
-$t->is($cm->getVoucherReduction(),10,'Voucher:    -'.format_currency($cm->getVoucherReduction(), sfConfig::get('app_rt_currency', 'AUD')).' (#'.$cm->getVoucherCode().')');
-$t->comment('=============================================================================');
-// Total
-$t->is($cm->getTotalCharge(),160,'Total (includes $'.format_currency($cm->getTaxComponent(), sfConfig::get('app_rt_currency', 'AUD')).' tax): '.format_currency($cm->getTotalCharge(), sfConfig::get('app_rt_currency', 'AUD')));
-$t->comment('=============================================================================');
+$t->is($cm->getVoucherReduction(), 0, '->getVoucherReduction() is returning correct voucher reduction value of '.$numberFormat->format($cm->getVoucherReduction(), 'c', sfConfig::get('app_rt_shop_payment_currency','AUD')).')');
 
-$t->is($cm->getVoucher()->getReductionValue(),10,'>>> Voucher leftover after reduction value: '.$cm->getVoucher()->getReductionValue().'% <<<');
+$t->diag('*** Case #2.1: Voucher #2: Applicable voucher');
+
+$cm->setVoucherCode($voucher2->getCode());
+$t->is($cm->getVoucherReduction(), 100, '->getVoucherReduction() is returning correct voucher reduction value of '.$numberFormat->format($cm->getVoucherReduction(), 'c', sfConfig::get('app_rt_shop_payment_currency','AUD')).')');
+
+$t->comment('--- rtShopCartManager::getVoucherReduction() // percentageOff -----------------------------------------');
+
+$t->diag('*** Case #2.2: Voucher #3: Non-applicable voucher');
+
+$cm->setVoucherCode($voucher3->getCode());
+$t->is($cm->getVoucherReduction(), 0, '->getVoucherReduction() is returning correct voucher reduction value of '.$numberFormat->format($cm->getVoucherReduction(), 'c', sfConfig::get('app_rt_shop_payment_currency','AUD')).')');
+
+$t->diag('*** Case #2.3: Voucher #4: Applicable voucher');
+
+$cm->setVoucherCode($voucher4->getCode());
+$t->is($cm->getVoucherReduction(), 14, '->getVoucherReduction() is returning correct voucher reduction value of '.$numberFormat->format($cm->getVoucherReduction(), 'c', sfConfig::get('app_rt_shop_payment_currency','AUD')).')');
 
 /**
- * rtShopComplexOrder3TestTools Class
+ * rtShopVoucherRangeTestTools Class
  */
-class rtShopComplexOrder3TestTools
+class rtShopVoucherRangeTestTools
 {
   /**
    * Make sure table is cleaned before testing
    */
   public static function clean()
-  {
+  {    
     $doctrine = Doctrine_Manager::getInstance()->getCurrentConnection()->getDbh();
     $doctrine->query('TRUNCATE table rt_address');
     $doctrine->query('TRUNCATE table rt_shop_attribute');
@@ -354,21 +369,9 @@ class rtShopComplexOrder3TestTools
     $doctrine->query('TRUNCATE table rt_shop_stock');
     $doctrine->query('TRUNCATE table rt_shop_stock_to_variation');
     $doctrine->query('TRUNCATE table rt_shop_variation');
-    unset($doctrine);
+    unset($doctrine);    
   }
-
-  /**
-   * Make sure table is cleaned before testing
-   */
-  public static function cleanOrder()
-  {
-    $doctrine = Doctrine_Manager::getInstance()->getCurrentConnection()->getDbh();
-    $doctrine->query('TRUNCATE table rt_shop_order');
-    $doctrine->query('TRUNCATE table rt_shop_order_to_stock');
-    $doctrine->query('TRUNCATE table rt_shop_promotion');
-    unset($doctrine);
-  }
-
+  
   /**
    * Add address for order
    *
@@ -494,13 +497,13 @@ class rtShopComplexOrder3TestTools
   public function createVoucher($title,
                                 $value = 10,
                                 $type = 'percentageOff',
-                                $stackable = true,
                                 $total_from = NULL,
                                 $total_to = NULL,
                                 $date_from = NULL,
                                 $date_to = NULL,
                                 $mode = 'Single',
-                                $count = 1)
+                                $count = 1,
+                                $stackable = true)
   {
     $voucher = new rtShopVoucher();
     $voucher->setTitle($title);
