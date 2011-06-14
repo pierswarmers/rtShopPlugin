@@ -194,24 +194,50 @@ class rtShopVoucherToolkit
     $dbh = $conn->getDbh();
 
     // Split loop into batches to avoid database memory problems
-    for ($i = 1; $i <= ceil($divider); $i++) {
+    for ($i = 1; $i <= ceil($divider); $i++) 
+    {
+      $codes  = array();
+      $index  = array();
+      
       $max = ($i < ceil($divider) || fmod($batchsize, $sql_batch_limit) == 0) ? $sql_batch_limit : $leftover;
+      
       for($j = 1; $j <= $max; $j++)
       {
         $rows[13] = self::generateVoucherCode();
         $values[] = sprintf('("%s")', implode('", "', $rows));
+        
+        // Voucher codes
+        $codes[] = sprintf("'%s'",$rows[13]);
       }
       if(isset($values))
       {
         $dbh->exec(sprintf('INSERT INTO %s (%s) VALUES %s', $table->getTableName(), implode(', ', $columns), implode(',', $values)));
       }
-      unset($values);
+      
+      // Get vouchers based by code (to get voucher ID)
+      $vouchers = $conn->fetchAssoc(sprintf('SELECT * FROM rt_shop_promotion where code in (%s)', implode(',', $codes)));
+      
+      // Add voucher ID to index array
+      foreach($vouchers as $voucher)
+      {
+        $index[] = sprintf('("%s", "%s", "%s")',$voucher['code'],'rtShopVoucher',$voucher['id']);
+      }
+      
+      // Add to index table
+      if(isset($index))
+      {
+        $dbh->exec(sprintf('INSERT INTO %s (%s) VALUES %s', 'rt_index', implode(', ', array('keyword', 'model', 'model_id')), implode(',', $index)));
+      }      
+      
+      unset($values,$codes,$index);
+      
     }
 
     if($verbose)
     {
       sfContext::getInstance()->getLogger()->notice('{rtShopBatchVoucher} '.$batchsize.' vouchers with reference: '.$voucher['batch_reference'].' were successfully created. Details: '.serialize($voucher));
     }
+    
     return $voucher['batch_reference'];
   }
 
