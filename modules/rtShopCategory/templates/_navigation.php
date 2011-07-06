@@ -1,5 +1,7 @@
 <?php
 
+/** @var rtShopCategory $rt_shop_category */
+
 use_helper('I18N', 'Date', 'rtText', 'rtForm', 'rtDate', 'rtShopCategory');
 
 $options = isset($options) ? $options->getRawValue() : array();

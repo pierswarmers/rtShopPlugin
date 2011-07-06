@@ -125,7 +125,8 @@ class BasertShopProductActions extends sfActions
   {
     $this->form = new rtShopSendToFriendForm();
     $this->form->setDefault('product_id', $request->getParameter('product_id'));
-
+    $this->rt_shop_product = Doctrine::getTable('rtShopProduct')->find($request->getParameter('product_id'));
+    
     if($request->isMethod('POST'))
     {
       $this->form->bind($request->getParameter($this->form->getName()), $request->getFiles($this->form->getName()));
