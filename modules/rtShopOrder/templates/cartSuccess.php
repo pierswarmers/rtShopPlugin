@@ -15,19 +15,21 @@ $cart_used = (count($rt_shop_order->Stocks) > 0 || $rt_shop_cart_manager->getVou
 <div class="rt-section rt-shop-order">
 
   <!-- <div class="rt-section-tools-header rt-admin-tools"></div> -->
-      
-  <div class="rt-section-header">
-    
-    <?php if(sfConfig::get('app_rt_templates_headers_embedded', true)): ?>
-      <h1><?php echo ucwords(__(sfConfig::get('rt_shop_cart_name', 'shopping bag'))) ?></h1>
-    <?php endif; ?>
-    
-    <?php if($cart_used): ?>
-      <?php include_partial('breadcrumb', array()) ?>  
-    <?php endif; ?>
-      
-  </div>
+  
+  <?php if(sfConfig::get('app_rt_templates_headers_embedded', true) || $cart_used): ?>
+    <div class="rt-section-header">
 
+      <?php if(sfConfig::get('app_rt_templates_headers_embedded', true)): ?>
+        <h1><?php echo ucwords(__(sfConfig::get('rt_shop_cart_name', 'shopping bag'))) ?></h1>
+      <?php endif; ?>
+
+      <?php if($cart_used): ?>
+        <?php include_partial('breadcrumb', array()) ?>  
+      <?php endif; ?>
+
+    </div>
+  <?php endif; ?>
+  
   <div class="rt-section-content">
     
     <?php if($cart_used): ?>
