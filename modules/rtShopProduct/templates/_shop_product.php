@@ -31,6 +31,12 @@ use_helper('Number', 'Url', 'I18N', 'rtShopProduct')
       <?php include_partial('details_suffix', array('rt_shop_product' => $rt_shop_product)) ?>
       <?php include_component('rtSnippet','snippetPanel', array('collection' => 'shop-product-suffix','sf_cache_key' => 'shop-product-suffix')); ?>
     </div>
+
+    <div class="rt-shop-product-comments" style="clear: both;">
+      <?php if(in_array($rt_shop_product->getCommentStatus(), array('open', 'user'))): ?>
+        <?php include_component('rtComment', 'panel', array('model' => 'rtShopProduct', 'model_id' => $rt_shop_product->getId(), 'title' => $rt_shop_product->getTitle(), 'rating_enabled' => true)) ?>
+      <?php endif; ?>  
+    </div>    
     
   </div>
   
