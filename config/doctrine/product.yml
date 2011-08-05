@@ -143,13 +143,9 @@ rtShopStockToVariation:
 
 rtShopProductToAttribute:
   columns:
-    product_id:
-      type: integer
-      primary: true
-    attribute_id:
-      type: integer
-      primary: true
-    position: integer
+    product_id:           { type: integer, primary: true }
+    attribute_id:         { type: integer, primary: true }
+    position:             integer
   relations:
     rtShopProduct:
       local: product_id
@@ -184,6 +180,8 @@ rtShopAttribute:
     title:                   { type: string(100) }
     display_title:           { type: string(100) }
     description:             { type: string(255) }
+    display_image:           { type: boolean, default: 1 }
+    display_label:           { type: boolean, default: 1 }
   relations:
     rtShopProducts:
       class: rtShopProduct
