@@ -18,6 +18,10 @@ abstract class PluginrtShopAttributeForm extends BasertShopAttributeForm
 
     $form = new rtShopVariationCollectionNewForm(null, array('attribute' => $this->getObject()));
 
+    $this->widgetSchema->setHelp('display_image','should the variations be displayed with attached images');
+
+    $this->widgetSchema->setHelp('display_label','should the variations be displayed with labels');
+
     $this->embedForm('newVariations', $form);
 
     if(!$this->isNew())

@@ -21,6 +21,8 @@
       <?php echo render_form_row($form['title']); ?>
       <?php echo render_form_row($form['display_title']); ?>
       <?php echo render_form_row($form['description']); ?>
+      <?php echo render_form_row($form['display_image']); ?>
+      <?php echo render_form_row($form['display_label']); ?>
     </tbody>
   </table>
 
