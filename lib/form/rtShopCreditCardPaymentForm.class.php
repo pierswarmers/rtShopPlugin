@@ -31,6 +31,14 @@ class rtShopCreditCardPaymentForm extends sfForm
       $year_range[$value] = $value;
     }
 
+    // Credit card input fields
+    $this->widgetSchema['cc_type']         = new sfWidgetFormSelect(array('choices' => sfConfig::get('app_rt_shop_payment_methods',array('Mastercard' => 'Mastercard', 'Visa' => 'Visa'))));
+    $this->widgetSchema['cc_number']       = new sfWidgetFormInput(array(), array('class'=>'text'));
+    $this->widgetSchema['cc_name']         = new sfWidgetFormInput(array(), array('class'=>'text'));
+    $this->widgetSchema['cc_expire']       = new sfWidgetFormDate(array('format' => '%month%/%year%','years' => $year_range),array('style' => 'width:60px'));
+    $this->widgetSchema['cc_verification'] = new sfWidgetFormInput(array(),array('size' => 4, 'maxlength' => 4, 'class'=>'medium text'));    
+    
+    // Add labels
     $this->widgetSchema->setLabel('cc_type',"Card type:");
     $this->widgetSchema->setLabel('cc_name',"Name on Card:");
     $this->widgetSchema->setLabel('cc_number',"Credit Card number:");
