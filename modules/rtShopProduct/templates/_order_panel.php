@@ -88,7 +88,7 @@ if($rt_shop_product->isPurchasable()):
 
   <p class="rt-shop-item-quantity">
     <label for="rt-shop-quantity"><?php echo __('Quantity') ?>:</label>
-    <input type="text" name="rt-shop-quantity" id="rt-shop-quantity" class="rt-text-small" value="1" />
+    <input name="rt-shop-quantity" id="rt-shop-quantity" class="rt-text-small" type="number" min="1" max="50" step="1" value="1" />
   </p>
 
   <?php if(sfConfig::get('app_rt_shop_ordering_enabled', true)): ?>
