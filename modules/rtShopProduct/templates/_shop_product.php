@@ -78,7 +78,7 @@ use_helper('Number', 'Url', 'I18N', 'rtShopProduct', 'rtTemplate')
       <div class="rt-shp-products-related rt-collection clearfix">
         <h2><?php echo __('Related Products') ?></h2>
         <?php $i=1; foreach($related_products as $linked_rt_shop_product): ?>
-          <div class="rt-list-item rt-list-item-<?php echo $i ?>">
+          <div class="rt-list-item item-<?php echo $i ?>">
           <?php include_component('rtShopProduct', 'shopProductMini', array('id' => $linked_rt_shop_product->getId())) ?>
           </div>
         <?php $i++; endforeach; ?>
