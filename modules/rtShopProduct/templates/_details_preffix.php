@@ -6,9 +6,15 @@
   <span class="sku"><code>#<?php echo $rt_shop_product->getSku() ?></code></span>
 </h2>
 
-<div class="rt-metas">Average Rating: <?php if($rt_shop_product->getOverallRating() > 0) { include_partial('rtComment/rating', array('rating_value' => $rt_shop_product->getOverallRating(), 'show_items' => array('text','graph'))); } ?>
+<div class="rt-metas">
 
- (<span class="tabs"><a id="commentsTrigger">See Comments</a></span>)
+  <?php if($rt_shop_product->getNumberOfComments() > 0): ?>
+  Average Rating: <?php if($rt_shop_product->getOverallRating() > 0) { include_partial('rtComment/rating', array('rating_value' => $rt_shop_product->getOverallRating(), 'show_items' => array('text','graph'))); } ?>
+
+
+  <?php endif; ?>
+
+  <span class="tabs"><a id="commentsTrigger"><?php echo __($rt_shop_product->getNumberOfComments() > 0 ? 'See reviews' : 'Be the first to review') ?></a></span>
 
 </div>
 
