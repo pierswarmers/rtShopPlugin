@@ -28,7 +28,7 @@ $(function() {
     $(".rt-shop-product-primary-image a[class*=rt-image-ref-"+match+"]").css("display","inline").siblings('a').css("display","none");
     // de-focus all options
     $(".rt-shop-option-set input[type=radio]").each(function(){
-      $(this).button( "widget" ).fadeTo(1, 0.3).removeClass('available');
+      $(this).button( "widget" ).fadeTo(1, 0.4).removeClass('available');
     });
     // focus available options based on stock id matrix
     $($(this).next('.ref').html()).each(function(){
@@ -75,7 +75,7 @@ checkUserSelection = function() {
     }
     else
     {
-      button.text("Selection not available").attr("disabled",true);
+      button.text("Not available").attr("disabled",true);
       button.addClass("disabled");
     }
   }

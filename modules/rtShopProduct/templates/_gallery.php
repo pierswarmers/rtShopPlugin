@@ -5,8 +5,8 @@ $config = sfConfig::get('app_rt_gallery');
 $img_s_width  = isset($config['product_preview']['max_width'])  ? $config['product_preview']['max_width'] : 49;
 $img_s_height = isset($config['product_preview']['max_height']) ? $config['product_preview']['max_height'] : 69;
 
-$img_m_width  = isset($config['product_medium']['max_width'])  ? $config['product_medium']['max_width'] : 180;
-$img_m_height = isset($config['product_medium']['max_height']) ? $config['product_medium']['max_height'] : 230;
+$img_m_width  = isset($config['product_medium']['max_width'])  ? $config['product_medium']['max_width'] : 650;
+$img_m_height = isset($config['product_medium']['max_height']) ? $config['product_medium']['max_height'] : 1000;
 
 $img_l_width  = isset($config['product_full']['max_width'])  ? $config['product_full']['max_width'] : 1000;
 $img_l_height = isset($config['product_full']['max_height']) ? $config['product_full']['max_height'] : 800;

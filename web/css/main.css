@@ -47,7 +47,7 @@ UI overide
 .ui-buttonset .image-swatch span { background-position: 50% 50%; padding-left:0; }
 .ui-buttonset label.ui-state-disabled {color:#555;display:none!important;}
 .ui-buttonset label.ui-state-disabled span {display:none;}
-.ui-state-default { background-image: none;} 
+.ui-state-default { background-image: none;}
 .ui-helper-hidden-accessible {position:absolute!important;} /*don't remove this important! blueprint overrides otherwise this UI style */
 /*
 

@@ -1,7 +1,8 @@
 <?php
-include_partial('order_panel_assets');
 
+include_partial('order_panel_assets');
 use_helper('Number', 'Url', 'I18N', 'rtShopProduct');
+
 if($rt_shop_product->isPurchasable()):
 
 ?>
@@ -28,7 +29,7 @@ if($rt_shop_product->isPurchasable()):
 
   <p class="clearfix rt-shop-selection-group">
 
-    <strong><?php echo __('Select') . ' ' . $rt_shop_attribute->getDisplayTitle() ?>: </strong>
+    <strong><?php echo __('Select') . ' ' . $rt_shop_attribute->getDisplayTitle() ?> <?php $rt_shop_attribute->getDisplayImage() ?>: </strong>
     
     <span class="rt-shop-option-set">
     
@@ -54,7 +55,7 @@ if($rt_shop_product->isPurchasable()):
 
       if(is_file($file_location))
       {
-        $image = ' style="background: url('.rtAssetToolkit::getThumbnailPath($file_location, array('maxWidth' => 30, 'maxHeight' => 30)).')"';
+        $image = ' style="background-image: url('.rtAssetToolkit::getThumbnailPath($file_location, array('maxWidth' => 30, 'maxHeight' => 30)).')"';
         $is_image = true;
       }
 
@@ -68,7 +69,9 @@ if($rt_shop_product->isPurchasable()):
       
         <input name="rt-shop-variation-ids[<?php echo $i ?>]" title="<?php echo $title ?>" id="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo $class ?>" type="radio" value="<?php echo $variation->getId() ?>" <?php echo count($variations) == 1 ? ' checked="checked"' : '' ?>/>
         <span class="ref" style="display:none">.<?php echo implode(', .', $ref) ?></span>
-        <label for="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo $stock_level > 0 ? '' : 'unavailable' ?> <?php echo $is_image ? 'image-swatch' : '' ?>" <?php echo $image ?>><?php echo $variation->getTitle() ?></label>
+        <label for="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo $stock_level > 0 ? '' : 'unavailable' ?> <?php echo $is_image ? 'image-swatch' : '' ?>" <?php echo $image ?>>
+          <?php echo $variation->getTitle() ?>
+        </label>
 
       <?php endforeach; // Finish cycle through each variation  ?>
 
@@ -90,7 +93,7 @@ if($rt_shop_product->isPurchasable()):
 
   <?php if(sfConfig::get('app_rt_shop_ordering_enabled', true)): ?>
   <p>
-    <button type="submit" class="disabled" disabled><?php echo __('Please make your selection') ?></button>
+    <button type="submit" class="disabled" disabled><?php echo __('Add to wishlist') ?></button>
     <span class="rt-shop-product-tools">
     <span class="rt-shop-add-to-wishlist"><a href="#"><?php echo __('Add to wishlist') ?></a></span> |
     <span class="rt-shop-send-to-friend"><a href="<?php echo url_for('rt_shop_send_to_friend', array('product_id' => $rt_shop_product->getId())) ?>"><?php echo __('Send to a friend') ?></a></span>
@@ -99,6 +102,9 @@ if($rt_shop_product->isPurchasable()):
   <?php endif; ?>
 
 </form>
+
 <?php else: ?>
-<p><?php echo __('Sorry, this product is out of stock.') ?></p>
+
+<p class="notice rt-flash-message"><?php echo __('Sorry, this product is out of stock.') ?></p>
+  
 <?php endif; ?>
