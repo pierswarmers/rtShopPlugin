@@ -19,7 +19,7 @@ use_helper('Number', 'Url', 'I18N', 'rtShopProduct', 'rtTemplate')
     </div>
   <?php endif; ?>
   
-  <div class="rt-section-content clearfix">
+  <div  id="rtProductHolder"  class="rt-section-content clearfix">
 
     <div class="rt-shop-product-details">
 

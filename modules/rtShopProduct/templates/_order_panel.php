@@ -29,7 +29,7 @@ if($rt_shop_product->isPurchasable()):
 
   <p class="clearfix rt-shop-selection-group">
 
-    <strong><?php echo __('Select') . ' ' . $rt_shop_attribute->getDisplayTitle() ?> <?php $rt_shop_attribute->getDisplayImage() ?>: </strong>
+    <strong><?php echo __('Select') . ' ' . $rt_shop_attribute->getDisplayTitle() ?>: </strong>
     
     <span class="rt-shop-option-set">
     
@@ -69,9 +69,7 @@ if($rt_shop_product->isPurchasable()):
       
         <input name="rt-shop-variation-ids[<?php echo $i ?>]" title="<?php echo $title ?>" id="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo $class ?>" type="radio" value="<?php echo $variation->getId() ?>" <?php echo count($variations) == 1 ? ' checked="checked"' : '' ?>/>
         <span class="ref" style="display:none">.<?php echo implode(', .', $ref) ?></span>
-        <label for="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo $stock_level > 0 ? '' : 'unavailable' ?> <?php echo $is_image ? 'image-swatch' : '' ?>" <?php echo $image ?>>
-          <?php echo $variation->getTitle() ?>
-        </label>
+        <label for="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo $stock_level > 0 ? '' : 'unavailable' ?> <?php echo $is_image ? 'image-swatch' : '' ?> <?php echo !$rt_shop_attribute->getDisplayLabel() ? 'label-hidden' : '' ?>" <?php echo $image ?>><?php echo $variation->getTitle() ?></label>
 
       <?php endforeach; // Finish cycle through each variation  ?>
 
