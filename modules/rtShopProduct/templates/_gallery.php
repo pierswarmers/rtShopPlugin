@@ -37,7 +37,7 @@ foreach ($config['stylesheets'] as $file)
 ?>
 
 <div class="rt-shop-product-primary-image">
-  <?php $promo_span = $rt_shop_product->isOnPromotion() ? '<span class="rt-shop-product-promotion">'.__('On Sale Now').'</span>' : ''; ?>
+  <?php $promo_span = $rt_shop_product->isOnPromotion() ? '<span class="promotion">'.__('On Sale Now').'</span>' : ''; ?>
   <?php echo $promo_span ?>
   <?php $style = ''; foreach($rt_shop_product->getImages() as $image): ?>
     <?php
