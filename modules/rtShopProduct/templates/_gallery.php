@@ -61,6 +61,7 @@ foreach ($config['stylesheets'] as $file)
     </a>
   <?php $style = 'display:none'; endforeach; ?>
 </div>
+<?php if(count($rt_shop_product->getImages()) > 1): ?>
 <div class="rt-shop-product-image-thumbs">
   <?php $i = 1; foreach($rt_shop_product->getImages() as $image): ?>
     <div class="rt-list-item-<?php echo $i ?>">
@@ -70,3 +71,4 @@ foreach ($config['stylesheets'] as $file)
     </div>
   <?php $i++; endforeach; ?>
 </div>
+<?php endif; ?>

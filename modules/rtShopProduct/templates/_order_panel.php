@@ -1,18 +1,20 @@
 <?php
-
-include_partial('order_panel_assets');
 use_helper('Number', 'Url', 'I18N', 'rtShopProduct');
+use_javascript('/rtCorePlugin/vendor/jquery/js/jquery.min.js');
+use_javascript('/rtCorePlugin/vendor/jquery/js/jquery.ui.min.js');
 
-if($rt_shop_product->isPurchasable()):
+/**
+ * @var rtShopProduct $rt_shop_product
+ */
 
-?>
+if($rt_shop_product->isPurchasable()): ?>
 
 <form action="<?php echo url_for('@rt_shop_order_add_to_bag') ?>" method="post" class="rt-shop-product-order-panel">
 
   <input type="hidden" name="rt-shop-product-id" id="rt-shop-product-id" value="<?php echo $rt_shop_product->getId(); ?>" />
-  
-  <?php 
-  
+
+  <?php
+
   $i = 0;
 
   // Cycle through attribute
@@ -20,19 +22,15 @@ if($rt_shop_product->isPurchasable()):
   foreach (Doctrine::getTable('rtShopAttribute')->findByProductId($rt_shop_product->getId()) as $rt_shop_attribute):
 
     // Get a list of variations for this attribute and product
-
-    $variations = Doctrine::getTable('rtShopVariation')->findByAttributeIdAndProductId(
-                    $rt_shop_attribute->getId(),
-                    $rt_shop_product->getId()
-                  );
+    $variations = Doctrine::getTable('rtShopVariation')->findByAttributeIdAndProductId($rt_shop_attribute->getId(), $rt_shop_product->getId());
   ?>
 
   <p class="clearfix rt-shop-selection-group">
 
     <strong><?php echo __('Select') . ' ' . $rt_shop_attribute->getDisplayTitle() ?>: </strong>
-    
+
     <span class="rt-shop-option-set">
-    
+
       <?php
 
       // Cycle through each variation
@@ -45,64 +43,47 @@ if($rt_shop_product->isPurchasable()):
       foreach(Doctrine::getTable('rtShopStock')->getForProductIdAndVariationId($rt_shop_product->getId(), $variation->getId()) as $rt_shop_stock)
       {
         $stock_level += $rt_shop_stock->quantity;
+        if($rt_shop_stock->quantity > 0 || $rt_shop_product->getBackorderAllowed()) {
         $ref[] = 'rt-shop-stock-id-'. $rt_shop_stock->id;
+        }
       }
 
       $available = $stock_level > 0;
-      $image = '';
-      $is_image = false;
-      $file_location =sfConfig::get('sf_upload_dir') . '/variations/'.$variation->image;
-
-      if(is_file($file_location))
-      {
-        $image = ' style="background-image: url('.rtAssetToolkit::getThumbnailPath($file_location, array('maxWidth' => 30, 'maxHeight' => 30)).')"';
-        $is_image = true;
-      }
-
-      $class = ($available ? 'available ' : 'unavailable') . ' '. implode(' ', $ref);
-
-      // Clean entities from title
-
-      $title = htmlentities($variation->getTitle());
+      $file_location = sfConfig::get('sf_upload_dir') . '/variations/' . $variation->image;
+      $image = is_file($file_location) ? ' style="background-image: url('.rtAssetToolkit::getThumbnailPath($file_location, array('maxWidth' => 30, 'maxHeight' => 30)).')"' : '';
 
       ?>
-      
-        <input name="rt-shop-variation-ids[<?php echo $i ?>]" title="<?php echo $title ?>" id="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo $class ?>" type="radio" value="<?php echo $variation->getId() ?>" <?php echo count($variations) == 1 ? ' checked="checked"' : '' ?>/>
+
+        <input name="rt-shop-variation-ids[<?php echo $i ?>]" title="<?php echo htmlentities($variation->getTitle()) ?>" id="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo ($available ? 'available ' : 'unavailable') . ' '. implode(' ', $ref) ?>" type="radio" value="<?php echo $variation->getId() ?>" <?php echo count($variations) == 1 ? ' checked="checked"' : '' ?>/>
         <span class="ref" style="display:none">.<?php echo implode(', .', $ref) ?></span>
-        <label for="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo $stock_level > 0 ? '' : 'unavailable' ?> <?php echo $is_image ? 'image-swatch' : '' ?> <?php echo !$rt_shop_attribute->getDisplayLabel() ? 'label-hidden' : '' ?>" <?php echo $image ?>><?php echo $variation->getTitle() ?></label>
+        <label for="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo $stock_level > 0 ? '' : 'unavailable' ?> <?php echo $image !== '' ? 'image-swatch' : '' ?> <?php echo !$rt_shop_attribute->getDisplayLabel() ? 'label-hidden' : '' ?>" <?php echo $image ?>><?php echo $variation->getTitle() ?></label>
 
       <?php endforeach; // Finish cycle through each variation  ?>
 
     </span>
   </p>
 
-  <?php
-  
-  $i++;
-  
-  endforeach; // Finish cycle through attribute
-
-  ?>
+  <?php $i++; endforeach; // Finish cycle through attributes ?>
 
   <p class="rt-shop-item-quantity">
     <label for="rt-shop-quantity"><?php echo __('Quantity') ?>:</label>
     <input name="rt-shop-quantity" id="rt-shop-quantity" class="rt-text-small" type="number" min="1" max="50" step="1" value="1" />
   </p>
 
-  <?php if(sfConfig::get('app_rt_shop_ordering_enabled', true)): ?>
-  <p>
-    <button type="submit" class="disabled" disabled><?php echo __('Add to cart') ?></button>
-    <span class="rt-shop-product-tools">
-    <span class="rt-shop-add-to-wishlist"><a href="#"><?php echo __('Add to wishlist') ?></a></span> |
-    <span class="rt-shop-send-to-friend"><a href="<?php echo url_for('rt_shop_send_to_friend', array('product_id' => $rt_shop_product->getId())) ?>"><?php echo __('Send to a friend') ?></a></span>
-    </span>
-  </p>
+  <?php if(sfConfig::get('app_rt_shop_ordering_enabled', true)): // Emergency kill for ordering... ?>
+
+  <p><button type="submit" class="disabled" disabled><?php echo __('Add to cart') ?></button><span></span></p>
+
   <?php endif; ?>
 
+  <p class="rt-shop-product-tools">
+    <span class="rt-shop-add-to-wishlist"><a href="#"><?php echo __('Add to wishlist') ?></a></span> |
+    <span class="rt-shop-send-to-friend"><a href="<?php echo url_for('rt_shop_send_to_friend', array('product_id' => $rt_shop_product->getId())) ?>"><?php echo __('Send to a friend') ?></a></span>
+  </p>
 </form>
 
 <?php else: ?>
 
 <p class="notice rt-flash-message"><?php echo __('Sorry, this product is out of stock.') ?></p>
-  
-<?php endif; ?>
+
+<?php endif; // is $rt_shop_product->isPurchasable()? ?>
