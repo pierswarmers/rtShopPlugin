@@ -5,6 +5,7 @@ use_javascript('/rtCorePlugin/vendor/jquery/js/jquery.ui.min.js');
 
 /**
  * @var rtShopProduct $rt_shop_product
+ * @var rtShopAttribute $rt_shop_attribute
  */
 
 if($rt_shop_product->isPurchasable()): ?>
@@ -50,7 +51,7 @@ if($rt_shop_product->isPurchasable()): ?>
 
       $available = $stock_level > 0;
       $file_location = sfConfig::get('sf_upload_dir') . '/variations/' . $variation->image;
-      $image = is_file($file_location) ? ' style="background-image: url('.rtAssetToolkit::getThumbnailPath($file_location, array('maxWidth' => 30, 'maxHeight' => 30)).')"' : '';
+      $image = $rt_shop_attribute->getDisplayImage() && is_file($file_location) ? ' style="background-image: url('.rtAssetToolkit::getThumbnailPath($file_location, array('maxWidth' => 30, 'maxHeight' => 30)).')"' : '';
 
       ?>
 
