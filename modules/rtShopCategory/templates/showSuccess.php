@@ -8,7 +8,7 @@ slot('rt-title', $rt_shop_category->getTitle());
 
 ?>
 
-<div class="rt-section rt-shop-category">
+<div class="rt-section rt-shop-category product-list">
 
   <!--RTAS
   <div class="rt-section-tools-header rt-admin-tools">
@@ -32,7 +32,7 @@ slot('rt-title', $rt_shop_category->getTitle());
     
     <div class="rt-container rt-collection">
       <?php $i = 1; foreach($pager as $rt_shop_product): ?>
-      <div class="item-<?php echo $i ?>">
+      <div class="product-item item-<?php echo $i ?>">
         <?php include_partial('rtShopProduct/shopProductMini', array('rt_shop_product' => $rt_shop_product)); ?>
       </div>
       <?php $i++; endforeach; ?>

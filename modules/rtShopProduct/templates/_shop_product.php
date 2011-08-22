@@ -37,17 +37,18 @@ use_helper('Number', 'Url', 'I18N', 'rtShopProduct', 'rtTemplate')
         
           <?php include_partial('details_preffix', array('rt_shop_product' => $rt_shop_product)) ?>
 
-          
-
           <?php include_partial('rtShopProduct/order_panel', array('rt_shop_product' => $rt_shop_product)) ?>
 
+          <p class="rt-shop-product-tools">
+            <span class="rt-shop-add-to-wishlist"><a href="#"><?php echo __('Add to wishlist') ?></a></span> |
+            <span class="rt-shop-send-to-friend"><a href="<?php echo url_for('rt_shop_send_to_friend', array('product_id' => $rt_shop_product->getId())) ?>"><?php echo __('Send to a friend') ?></a></span>
+          </p>
 
-        
           <?php include_partial('details_suffix', array('rt_shop_product' => $rt_shop_product)) ?>
 
-        
           <?php include_component('rtSnippet','snippetPanel', array('collection' => 'shop-product-suffix','sf_cache_key' => 'shop-product-suffix')); ?>
       </li>
+      
       <li id="commentsTab">
           <?php if(in_array($rt_shop_product->getCommentStatus(), array('open', 'user'))): ?>
             <?php include_component('rtComment', 'panel', array('model' => 'rtShopProduct', 'model_id' => $rt_shop_product->getId(), 'title' => $rt_shop_product->getTitle(), 'rating_enabled' => true)) ?>

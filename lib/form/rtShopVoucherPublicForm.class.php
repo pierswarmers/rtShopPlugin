@@ -36,7 +36,7 @@ class rtShopVoucherPublicForm extends sfForm
     $amounts[''] = '--';
     foreach ($options as $key => $item)
     {
-      $amounts[$item] = format_currency($item, sfConfig::get('app_rt_currency', 'AUD'));
+      $amounts[$item] = format_currency($item, sfConfig::get('app_rt_currency', 'USD'));
     }
 
     // Widgets

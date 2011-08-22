@@ -248,7 +248,7 @@ EOF;
     }
     else
     {
-      return format_currency($config['reduction_value'], sfConfig::get('app_rt_currency', 'AUD'));
+      return format_currency($config['reduction_value'], sfConfig::get('app_rt_currency', 'USD'));
     }
   }
 }

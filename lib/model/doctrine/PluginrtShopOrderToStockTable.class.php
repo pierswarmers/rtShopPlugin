@@ -16,4 +16,19 @@ class PluginrtShopOrderToStockTable extends Doctrine_Table
     {
         return Doctrine_Core::getTable('PluginrtShopOrderToStock');
     }
+
+  /**
+   * Return a query object, creating a new one if needed.
+   *
+   * @param Doctrine_Query $query
+   * @return Doctrine_Query
+   */
+  public function getQuery(Doctrine_Query $query = null)
+  {
+    if(is_null($query))
+    {
+      $query = parent::createQuery('ots');
+    }
+    return $query;
+  }
 }

@@ -501,55 +501,66 @@ class rtShopCartManager implements rtShopCartManagerInterface
   }
 
   /**
-   * Add products to cart
+   * Add stock reference to cart.
    *
    * @param Integer $stock_id stock_id
    * @param Integer $quantity Ordered quantity
+   * @param boolean $add_to_existing_quantity
+   * @return boolean
    */
-  public function addToCart($stock_id, $quantity)
+  public function addToCart($stock_id, $quantity, $add_to_existing_quantity = false)
   {
     $order = $this->getOrder();
     sfContext::getInstance()->getLogger()->info(sprintf('{rtShopCartManager} Adding %s stock_id %s to order_id %s', $quantity, $stock_id, $order->getId()));
 
     if (!is_int($quantity))
-	{
+	  {
       throw new Exception('Supplied quantity must be an integer.');
     }
 
     $stock = Doctrine::getTable('rtShopStock')->find($stock_id);
 
     if (!$stock)
-	{
+	  {
       throw new Exception('No stock found for given id ' . $stock_id);
     }
 
     $product = $stock->rtShopProduct;
 
-    // Check if backorder allowed and quantities available
-    if ($product->getBackorderAllowed() === false && $quantity > $stock->getQuantity())
-    {
-      sfContext::getInstance()->getLogger()->info('{rtShopCartManager} Stock not added due to quantity to high.');
-      return false;
-    }
+    $order_to_stock = Doctrine::getTable('rtShopOrderToStock')->getQuery()
+                        ->andWhere('ots.stock_id = ?', $stock_id)
+                        ->andWhere('ots.order_id = ?', $order->getId())
+                        ->fetchOne();
 
-    // Remove existing order to stock element
-    Doctrine_Query::create()
-      ->delete('rtShopOrderToStock os')
-      ->addWhere('os.stock_id = ?', $stock_id)
-      ->addWhere('os.order_id = ?', $order->getId())
-      ->execute();
+    if(!$order_to_stock)
+    {
+      $order_to_stock = new rtShopOrderToStock();
+      $order_to_stock->setStockId($stock_id);
+      $order_to_stock->setOrderId($order->getId());
+      $order_to_stock->setQuantity(0);
+    }
 
     if($quantity == 0)
     {
+      $order_to_stock->delete();
       return true;
     }
+    else
+    {
+      if($add_to_existing_quantity && !is_null($order_to_stock->getQuantity()))
+      {
+        $quantity += $order_to_stock->getQuantity();
+      }
+      
+      if ($product->getBackorderAllowed() === false && $quantity > $stock->getQuantity())
+      {
+        sfContext::getInstance()->getLogger()->info('{rtShopCartManager} Stock not added due to quantity to high.');
+        return false;
+      }
 
-    // Add new order_to_stock element
-    $ots = new rtShopOrderToStock();
-    $ots->setQuantity($quantity);
-    $ots->setStockId($stock_id);
-    $ots->setOrderId($order->getId());
-    $ots->save();
+      $order_to_stock->setQuantity($quantity);
+      $order_to_stock->save();
+    }
 
     $this->resetShippingCharge();
 
@@ -559,7 +570,8 @@ class rtShopCartManager implements rtShopCartManagerInterface
   /**
    * Remove product from cart
    *
-   * @param Integer $stock_id stock_id
+   * @param integer $stock_id
+   * @return void
    */
   public function removeFromCart($stock_id)
   {
@@ -585,24 +597,10 @@ class rtShopCartManager implements rtShopCartManagerInterface
   /**
    * Returns no of items in cart
    *
-   * @todo   Why doesn't this use self::getStockInfoArray()
    * @return Integer
    */
   public function getItemsInCart()
   {
-//    $order = $this->getOrder();
-//
-//    $query = Doctrine_Query::create()
-//             ->from('rtShopOrderToStock os')
-//             ->addWhere('os.order_id = ?', $order->getId());
-//    $order_to_stock = $query->fetchArray();
-//
-//    if(!$order_to_stock) {
-//      return 0;
-//    }
-//
-//    return count($order_to_stock);
-
     return count($this->getStockInfoArray());
   }
 
@@ -695,7 +693,10 @@ class rtShopCartManager implements rtShopCartManagerInterface
   }
   
   /**
-   * Set voucher details
+   * Set voucher details from a voucher code.
+   * 
+   * @param string $voucher_code
+   * @return void
    */
   public function setVoucherCode($voucher_code)
   {
@@ -706,7 +707,7 @@ class rtShopCartManager implements rtShopCartManagerInterface
   /**
    * Archive closed order values (total, tax, products)
    *
-   * @param $order Order object
+   * @return void
    */
   public function archive()
   {
@@ -858,6 +859,8 @@ class rtShopCartManager implements rtShopCartManagerInterface
 
   /**
    * Remove Cache for products altered in the order submission
+   *
+   * @param array $product_ids
    */
   public function clearCache($product_ids = array())
   {
@@ -880,12 +883,10 @@ class rtShopCartManager implements rtShopCartManagerInterface
   /**
    * Does the cart contain any stock selections.
    *
-   * @todo   This should reference self::getStockInfoArray()
    * @return boolean
    */
   public function isEmpty()
   {
-    //return $this->getOrder()->Stocks->count() == 0 ? true : false;
     return count($this->getStockInfoArray()) == 0 ? true : false;
   }
 

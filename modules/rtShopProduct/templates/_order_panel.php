@@ -77,10 +77,6 @@ if($rt_shop_product->isPurchasable()): ?>
 
   <?php endif; ?>
 
-  <p class="rt-shop-product-tools">
-    <span class="rt-shop-add-to-wishlist"><a href="#"><?php echo __('Add to wishlist') ?></a></span> |
-    <span class="rt-shop-send-to-friend"><a href="<?php echo url_for('rt_shop_send_to_friend', array('product_id' => $rt_shop_product->getId())) ?>"><?php echo __('Send to a friend') ?></a></span>
-  </p>
 </form>
 
 <?php else: ?>

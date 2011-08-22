@@ -62,7 +62,7 @@
 
         // X and Y axis labels
         r1.g.text(380, 340, "<?php echo __('Month') ?>").attr({"font-weight": "bold", "font-size": "12px"});
-        r1.g.text(20, 165, "<?php echo __('Total Income') . ' (' . sfConfig::get('app_rt_currency', 'AUD') . ')' ?>").attr({"font-weight": "bold", "font-size": "12px", rotation: 270});
+        r1.g.text(20, 165, "<?php echo __('Total Income') . ' (' . sfConfig::get('app_rt_currency', 'USD') . ')' ?>").attr({"font-weight": "bold", "font-size": "12px", rotation: 270});
 
         // Bar Chart: Graph Total Income Per Month ---------------------------------------------------------- //
         var r2 = Raphael("graph-income-total-month");

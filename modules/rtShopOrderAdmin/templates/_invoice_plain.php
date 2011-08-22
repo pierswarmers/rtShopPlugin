@@ -82,25 +82,25 @@ $voucher = $rt_shop_order->getVoucherData();
 <?php $sub_total += $product['charge_price']*$product['quantity']; ?>
 <?php $i++; endforeach; ?>
 ------------------------------------------------------------
-<?php echo strtoupper(__('Sub-Total')); ?>: <?php echo format_currency($sub_total, sfConfig::get('app_rt_currency', 'AUD')); ?><?php echo "\r\n" ?>
+<?php echo strtoupper(__('Sub-Total')); ?>: <?php echo format_currency($sub_total, sfConfig::get('app_rt_currency', 'USD')); ?><?php echo "\r\n" ?>
 <?php if(sfConfig::get('app_rt_shop_tax_mode','inclusive') == 'exclusive'): ?>
-<?php echo strtoupper(__('Taxes')); ?>: <?php echo format_currency($rt_shop_order->getTaxCharge(), sfConfig::get('app_rt_currency', 'AUD')); ?><?php echo "\r\n" ?>
+<?php echo strtoupper(__('Taxes')); ?>: <?php echo format_currency($rt_shop_order->getTaxCharge(), sfConfig::get('app_rt_currency', 'USD')); ?><?php echo "\r\n" ?>
 <?php endif; ?>
 <?php if($rt_shop_order->getPromotionReduction() > 0): ?>
-<?php echo strtoupper(__('Promotion')); ?> (<?php echo $promotion['title'] ?>): -<?php echo format_currency($rt_shop_order->getPromotionReduction(), sfConfig::get('app_rt_currency', 'AUD')); ?><?php echo "\r\n" ?>
+<?php echo strtoupper(__('Promotion')); ?> (<?php echo $promotion['title'] ?>): -<?php echo format_currency($rt_shop_order->getPromotionReduction(), sfConfig::get('app_rt_currency', 'USD')); ?><?php echo "\r\n" ?>
 <?php endif; ?>
 <?php if($rt_shop_order->getVoucherCode()): ?>
-<?php echo strtoupper(__('Voucher')); ?> (<?php echo $voucher['title'] ?>): -<?php echo format_currency($rt_shop_order->getVoucherReduction(), sfConfig::get('app_rt_currency', 'AUD')); ?><?php echo "\r\n" ?>
+<?php echo strtoupper(__('Voucher')); ?> (<?php echo $voucher['title'] ?>): -<?php echo format_currency($rt_shop_order->getVoucherReduction(), sfConfig::get('app_rt_currency', 'USD')); ?><?php echo "\r\n" ?>
 <?php endif; ?>
-<?php echo strtoupper(__('Shipping rate')); ?>: <?php echo ($rt_shop_order->getShippingCharge() != false) ? format_currency($rt_shop_order->getShippingCharge(), sfConfig::get('app_rt_currency', 'AUD')) : __('undefined'); ?><?php echo "\r\n" ?>
+<?php echo strtoupper(__('Shipping rate')); ?>: <?php echo ($rt_shop_order->getShippingCharge() != false) ? format_currency($rt_shop_order->getShippingCharge(), sfConfig::get('app_rt_currency', 'USD')) : __('undefined'); ?><?php echo "\r\n" ?>
 <?php
 $includes_message = '';
 if(sfConfig::get('app_rt_shop_tax_rate', 0) > 0 && sfConfig::get('app_rt_shop_tax_mode') == 'inclusive')
 {
-  $includes_message = sprintf('(includes %s tax)',format_currency(rtShopCartManager::calcTaxComponent($rt_shop_order->getTotalCharge()), sfConfig::get('app_rt_currency', 'AUD')));
+  $includes_message = sprintf('(includes %s tax)',format_currency(rtShopCartManager::calcTaxComponent($rt_shop_order->getTotalCharge()), sfConfig::get('app_rt_currency', 'USD')));
 }
 ?>
-<?php echo strtoupper(__('Total')); ?> <?php echo $includes_message  ?>: <?php echo format_currency($rt_shop_order->getTotalCharge(), sfConfig::get('app_rt_currency', 'AUD')); ?>
+<?php echo strtoupper(__('Total')); ?> <?php echo $includes_message  ?>: <?php echo format_currency($rt_shop_order->getTotalCharge(), sfConfig::get('app_rt_currency', 'USD')); ?>
 <?php else: ?>
 <?php echo __('No products added to cart'); ?>
 <?php endif; ?>

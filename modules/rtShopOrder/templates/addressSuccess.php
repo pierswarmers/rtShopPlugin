@@ -1,6 +1,6 @@
 <?php
 
-use_helper('I18N', 'Number', 'rtForm');
+use_helper('I18N', 'Number', 'rtForm', 'rtTemplate');
 
 slot('rt-title', __(sfConfig::get('app_rt_shop_address_title', 'Address')));
 
@@ -9,17 +9,18 @@ slot('rt-title', __(sfConfig::get('app_rt_shop_address_title', 'Address')));
 <div class="rt-section rt-shop-order rt-shop-order-address">
 
 <!--  <div class="rt-section-tools-header rt-admin-tools"></div>-->
-    
-  <div class="rt-section-header">
-    <?php if(sfConfig::get('app_rt_templates_headers_embedded', true)): ?>
+  <?php if(sfConfig::get('app_rt_templates_headers_embedded', true)): ?>
+    <div class="rt-section-header">
       <h1><?php echo __(sfConfig::get('app_rt_shop_address_title', 'Address')) ?></h1>
-    <?php endif; ?>
+    </div>
+  <?php endif; ?>
 
-    <?php include_partial('breadcrumb', array('sf_request' => $sf_request)) ?>
-  </div>
+  <?php include_partial('breadcrumb', array('sf_request' => $sf_request)) ?>
 
   <div class="rt-section-content">
-    
+
+    <?php rt_get_snippet('rt-shop-address-prefix'); ?>
+
     <form action="<?php echo url_for('@rt_shop_order_address') ?>" method="post">
       <fieldset>
         <legend><?php echo __('Your Email Address') ?></legend>
@@ -48,7 +49,9 @@ slot('rt-title', __(sfConfig::get('app_rt_shop_address_title', 'Address')));
         <button type="submit"><?php echo __('Proceed to payment') ?></button>
       </p>
     </form>    
-    
+
+    <?php rt_get_snippet('rt-shop-address-suffix'); ?>
+
   </div>
 
 <!--  <div class="rt-section-tools-footer"></div>-->

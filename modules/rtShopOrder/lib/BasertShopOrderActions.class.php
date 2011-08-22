@@ -57,12 +57,47 @@ class BasertShopOrderActions extends sfActions
     $this->rt_shop_cart_manager = $this->getCartManager();
     $this->updateUserSession();
   }
-  
+
   /**
-   * Add to shopping bag function then redirect to cart, or in the case of an
+   * Special method to handle the mixed handling beteen ajax and regular
+   * 
+   * @param sfWebRequest $request
+   * @param string $message
+   * @param rtShopProduct $rt_shop_product
+   * @param string $status
+   * @return void
+   */
+  protected function handleProductAdditionResponse(sfWebRequest $request, $rt_shop_product, $message, $status = 'error')
+  {
+    if($request->getParameter('sf_format') === 'json')
+    {
+      $this->getResponse()->setContentType('application/json');
+
+      $numberFormat = new sfNumberFormat(sfContext::getInstance()->getUser()->getCulture());
+
+      $data = array(
+          'status'  => $status,
+          'message' => $message,
+          'cartItems' => $this->getCartManager()->getItemsInCart(),
+          'cartTotal' => $this->getCartManager()->getTotalCharge(),
+          'cartTotalFormatted' => $numberFormat->format($this->getCartManager()->getTotalCharge(), 'c', sfConfig::get('app_rt_currency', 'USD'))
+      );
+
+      echo json_encode($data);
+      sfView::NONE;
+      exit;
+    }
+
+    $this->getUser()->setFlash($status, $message, true);
+    $this->redirect('rt_shop_product_show', $rt_shop_product);
+  }
+
+  /**
+   * Add to shopping cart function then redirect to cart, or in the case of an
    * error redirect to product details screen
    *
    * @param sfWebRequest $request
+   * @return void
    */
   public function executeAddToBag(sfWebRequest $request)
   {
@@ -78,16 +113,14 @@ class BasertShopOrderActions extends sfActions
     {
       if(count($rt_shop_product->rtShopAttributes) > 0 && !$request->hasParameter('rt-shop-variation-ids'))
       {
-        $this->getUser()->setFlash('error', 'Please select one of each product options.');
-        $this->redirect('rt_shop_product_show', $rt_shop_product);
+        $this->handleProductAdditionResponse($request, $rt_shop_product, 'Please select one of each product options.');
       }
 
       $variation_ids = $request->getParameter('rt-shop-variation-ids');
 
       if(count($rt_shop_product->rtShopAttributes) != count($variation_ids))
       {
-        $this->getUser()->setFlash('error', 'Please select one of each product options. It looks like you missed one or more.');
-        $this->redirect('rt_shop_product_show', $rt_shop_product);
+        $this->handleProductAdditionResponse($request, $rt_shop_product, 'Please select one of each product options. It looks like you missed one or more.');
       }
 
       if(is_null($variation_ids) || $variation_ids == '')
@@ -116,17 +149,34 @@ class BasertShopOrderActions extends sfActions
         $stock_id = $rt_shop_stock->getId();
       }
     }
-
-    if(!$this->getCartManager()->addToCart($stock_id,(int) $request->getParameter('rt-shop-quantity')))
+    
+    if(!$this->getCartManager()->addToCart($stock_id,(int) $request->getParameter('rt-shop-quantity'), true))
     {
-      $this->getUser()->setFlash('error', 'We don\'t seem to have enough stock available for that selection.');
-      $this->redirect('rt_shop_product_show', $rt_shop_product);
+      $this->handleProductAdditionResponse($request, $rt_shop_product, 'We don\'t seem to have enough stock available for that selection.');
     }
 
     $this->updateUserSession();
 
-    $this->getUser()->setFlash('notice', 'Product added to ' . sfConfig::get('rt_shop_cart_name', 'shopping bag') . '.');
-    $this->redirect('rt_shop_product_show', $rt_shop_product);
+    $message = $request->getParameter('rt-shop-quantity') . ' &times; ' . $rt_shop_product->getTitle();
+
+    if(isset($variation_ids))
+    {
+      $variations = Doctrine::getTable('rtShopVariation')->getQuery()->andWhereIn('variation.id', $variation_ids)->execute();
+
+
+      $variations_titles = array();
+
+      foreach($variations as $variation)
+      {
+        $variations_titles[] = $variation->getTitle();
+      }
+
+      $message .= ' (' . implode(', ', array_reverse($variations_titles)) . ')';
+    }
+
+    $message .= ' added to your <a href="'. $this->getContext()->getRouting()->generate('rt_shop_order_cart') .'">' . sfConfig::get('rt_shop_cart_name', 'shopping cart') . '</a>';
+
+    $this->handleProductAdditionResponse($request, $rt_shop_product, $message, 'success');
   }
 
   /**
@@ -151,7 +201,7 @@ class BasertShopOrderActions extends sfActions
   public function executeDeleteStock(sfWebRequest $request)
   {
     $this->getCartManager()->removeFromCart((int)$request->getParameter('id'));
-    $this->getUser()->setFlash('notice', 'Product was removed from ' . sfConfig::get('rt_shop_cart_name', 'shopping bag') . '.');
+    $this->getUser()->setFlash('success', 'Product was removed from ' . sfConfig::get('rt_shop_cart_name', 'shopping cart') . '.');
     $this->updateUserSession();
     $this->redirect('rt_shop_order_cart');
   }
@@ -213,11 +263,11 @@ class BasertShopOrderActions extends sfActions
 
     if($stock_error)
     {
-      $this->getUser()->setFlash('error', ucfirst(sfConfig::get('rt_shop_cart_name', 'shopping bag')) . ' was updated, but some items didn\'t have enough stock');
+      $this->getUser()->setFlash('error', ucfirst(sfConfig::get('rt_shop_cart_name', 'shopping cart')) . ' was updated, but some items didn\'t have enough stock');
     }
     else
     {
-      $this->getUser()->setFlash('notice', ucfirst(sfConfig::get('rt_shop_cart_name', 'shopping bag')) . ' was updated');
+      $this->getUser()->setFlash('success', ucfirst(sfConfig::get('rt_shop_cart_name', 'shopping cart')) . ' was updated with new quantities');
     }
 
     $this->rt_shop_order = $this->getOrder();
@@ -239,8 +289,10 @@ class BasertShopOrderActions extends sfActions
 
     if($this->getUser()->getAttribute('registration_success', false))
     {
-      $this->getUser()->setFlash('notice', 'You are registered and signed in!');
+      $this->getUser()->setFlash('success', 'You are registered and signed in!');
     }
+
+    $this->getUser()->setAttribute('registration_success', false);
 
     // Is this user already logged in? If yes, redirect forwards...
     $this->redirectIf($this->getUser()->isAuthenticated(), 'rt_shop_order_address');
@@ -421,7 +473,7 @@ class BasertShopOrderActions extends sfActions
     {
       $cm = $this->getCartManager();
       $cm->setVoucherCode($rt_shop_voucher->getCode());
-      $this->getUser()->setFlash('notice', 'Voucher has been added.', true);
+      $this->getUser()->setFlash('success', 'Voucher has been added.', true);
     }
     else
     {
@@ -445,7 +497,7 @@ class BasertShopOrderActions extends sfActions
   public function executeCheckVoucher(sfWebRequest $request)
   {
     $cm = $this->getCartManager();
-    $this->voucher = $cm->getCheckVoucherArray($request->getParameter('code'));
+    $this->voucher = $cm->getCheckVoucherArray(str_replace('#', '', $request->getParameter('code')));
   }
 
   /**

@@ -62,9 +62,9 @@
         <td><code><?php echo $stock['rtShopProduct']['sku'] ?></code></td>
         <td><code><?php echo link_to($stock['sku'] === '' ? 'N/A' : $stock['sku'],'rtShopProductAdmin/stock?id='.$stock['rtShopProduct']['id']) ?></code></td>
         <td><?php echo $stock['quantity'] ?></td>
-        <td><?php echo format_currency($stock['price_retail'], sfConfig::get('app_rt_currency', 'AUD')) ?></td>
-        <td><?php echo format_currency($stock['price_promotion'], sfConfig::get('app_rt_currency', 'AUD')) ?></td>
-        <td><?php echo format_currency($stock['price_wholesale'], sfConfig::get('app_rt_currency', 'AUD')) ?></td>
+        <td><?php echo format_currency($stock['price_retail'], sfConfig::get('app_rt_currency', 'USD')) ?></td>
+        <td><?php echo format_currency($stock['price_promotion'], sfConfig::get('app_rt_currency', 'USD')) ?></td>
+        <td><?php echo format_currency($stock['price_wholesale'], sfConfig::get('app_rt_currency', 'USD')) ?></td>
         <td><?php echo substr($variations, 0, -3) ?></td>
       </tr>
     <?php endforeach; ?>

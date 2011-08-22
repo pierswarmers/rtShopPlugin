@@ -226,36 +226,36 @@ foreach($stock_info as $stock)
   $charge = ($stock['price_promotion'] > 0) ? $stock['price_promotion'] : $stock['price_retail'];
   
   $message = $stock['rtShopProduct']['title'].
-             " || PR: ".format_currency($stock['price_retail'], sfConfig::get('app_rt_currency', 'AUD')).
-             " || PP: ".format_currency($rt_shop_stock->getPricePromotion(), sfConfig::get('app_rt_currency', 'AUD')).
+             " || PR: ".format_currency($stock['price_retail'], sfConfig::get('app_rt_currency', 'USD')).
+             " || PP: ".format_currency($rt_shop_stock->getPricePromotion(), sfConfig::get('app_rt_currency', 'USD')).
              " || QTY: ".$stock['rtShopOrderToStock'][0]['quantity'].
-             " || Charge: ".format_currency($charge, sfConfig::get('app_rt_currency', 'AUD'));
+             " || Charge: ".format_currency($charge, sfConfig::get('app_rt_currency', 'USD'));
 
   $t->is($charge,$compare_charge[$i],$message);
   $i++;
 }
 $t->comment('*****************************************************************************');
 // ItemsCharge
-$t->is($cm->getItemsCharge(),160,'ItemsCharge: '.format_currency($cm->getItemsCharge(), sfConfig::get('app_rt_currency', 'AUD')));
+$t->is($cm->getItemsCharge(),160,'ItemsCharge: '.format_currency($cm->getItemsCharge(), sfConfig::get('app_rt_currency', 'USD')));
 // SubTotal
-$t->is($cm->getSubTotal(),160,'SubTotal:    '.format_currency($cm->getSubTotal(), sfConfig::get('app_rt_currency', 'AUD')));
+$t->is($cm->getSubTotal(),160,'SubTotal:    '.format_currency($cm->getSubTotal(), sfConfig::get('app_rt_currency', 'USD')));
 $t->comment('-----------------------------------------------------------------------------');
 // Shipping
-$t->is($cm->getShippingCharge(),10,'Shipping:    '.format_currency($cm->getShippingCharge(), sfConfig::get('app_rt_currency', 'AUD')));
+$t->is($cm->getShippingCharge(),10,'Shipping:    '.format_currency($cm->getShippingCharge(), sfConfig::get('app_rt_currency', 'USD')));
 $t->comment('-----------------------------------------------------------------------------');
 // Pre total
-$t->is($cm->getPreTotalCharge(),170,'PreTotal:    '.format_currency($cm->getPreTotalCharge(), sfConfig::get('app_rt_currency', 'AUD')));
+$t->is($cm->getPreTotalCharge(),170,'PreTotal:    '.format_currency($cm->getPreTotalCharge(), sfConfig::get('app_rt_currency', 'USD')));
 $t->comment('-----------------------------------------------------------------------------');
 // Voucher
 $cm->setVoucherCode($voucher1->getCode());
-$t->is($cm->getVoucherReduction(),200,'Voucher:    -'.format_currency($cm->getVoucherReduction(), sfConfig::get('app_rt_currency', 'AUD')).' (#'.$cm->getVoucherCode().')');
+$t->is($cm->getVoucherReduction(),200,'Voucher:    -'.format_currency($cm->getVoucherReduction(), sfConfig::get('app_rt_currency', 'USD')).' (#'.$cm->getVoucherCode().')');
 $t->comment('=============================================================================');
 // Total
-$t->is($cm->getTotalCharge(),0,'Total (includes $'.format_currency($cm->getTaxComponent(), sfConfig::get('app_rt_currency', 'AUD')).' tax): '.format_currency($cm->getTotalCharge(), sfConfig::get('app_rt_currency', 'AUD')));
+$t->is($cm->getTotalCharge(),0,'Total (includes $'.format_currency($cm->getTaxComponent(), sfConfig::get('app_rt_currency', 'USD')).' tax): '.format_currency($cm->getTotalCharge(), sfConfig::get('app_rt_currency', 'USD')));
 $t->comment('=============================================================================');
 
 $cm->adjustVoucherDetails($cm->getPreTotalCharge());
-$t->is($cm->getVoucher()->getReductionValue(),30,'>>> Voucher leftover after reduction value: '.format_currency($cm->getVoucher()->getReductionValue(), sfConfig::get('app_rt_currency', 'AUD')).' <<<');
+$t->is($cm->getVoucher()->getReductionValue(),30,'>>> Voucher leftover after reduction value: '.format_currency($cm->getVoucher()->getReductionValue(), sfConfig::get('app_rt_currency', 'USD')).' <<<');
 
 $t->diag('');
 $t->diag('/////////////////////////////////////////////////////////////////////////////');
@@ -297,32 +297,32 @@ foreach($stock_info as $stock)
   $charge = ($stock['price_promotion'] > 0) ? $stock['price_promotion'] : $stock['price_retail'];
 
   $message = $stock['rtShopProduct']['title'].
-             " || PR: ".format_currency($stock['price_retail'], sfConfig::get('app_rt_currency', 'AUD')).
-             " || PP: ".format_currency($rt_shop_stock->getPricePromotion(), sfConfig::get('app_rt_currency', 'AUD')).
+             " || PR: ".format_currency($stock['price_retail'], sfConfig::get('app_rt_currency', 'USD')).
+             " || PP: ".format_currency($rt_shop_stock->getPricePromotion(), sfConfig::get('app_rt_currency', 'USD')).
              " || QTY: ".$stock['rtShopOrderToStock'][0]['quantity'].
-             " || Charge: ".format_currency($charge, sfConfig::get('app_rt_currency', 'AUD'));
+             " || Charge: ".format_currency($charge, sfConfig::get('app_rt_currency', 'USD'));
 
   $t->is($charge,$compare_charge[$i],$message);
   $i++;
 }
 $t->comment('*****************************************************************************');
 // ItemsCharge
-$t->is($cm->getItemsCharge(),160,'ItemsCharge: '.format_currency($cm->getItemsCharge(), sfConfig::get('app_rt_currency', 'AUD')));
+$t->is($cm->getItemsCharge(),160,'ItemsCharge: '.format_currency($cm->getItemsCharge(), sfConfig::get('app_rt_currency', 'USD')));
 // SubTotal
-$t->is($cm->getSubTotal(),160,'SubTotal:    '.format_currency($cm->getSubTotal(), sfConfig::get('app_rt_currency', 'AUD')));
+$t->is($cm->getSubTotal(),160,'SubTotal:    '.format_currency($cm->getSubTotal(), sfConfig::get('app_rt_currency', 'USD')));
 $t->comment('-----------------------------------------------------------------------------');
 // Shipping
-$t->is($cm->getShippingCharge(),10,'Shipping:    '.format_currency($cm->getShippingCharge(), sfConfig::get('app_rt_currency', 'AUD')));
+$t->is($cm->getShippingCharge(),10,'Shipping:    '.format_currency($cm->getShippingCharge(), sfConfig::get('app_rt_currency', 'USD')));
 $t->comment('-----------------------------------------------------------------------------');
 // Pre total
-$t->is($cm->getPreTotalCharge(),170,'PreTotal:    '.format_currency($cm->getPreTotalCharge(), sfConfig::get('app_rt_currency', 'AUD')));
+$t->is($cm->getPreTotalCharge(),170,'PreTotal:    '.format_currency($cm->getPreTotalCharge(), sfConfig::get('app_rt_currency', 'USD')));
 $t->comment('-----------------------------------------------------------------------------');
 // Voucher
 $cm->setVoucherCode($voucher1->getCode());
-$t->is($cm->getVoucherReduction(),10,'Voucher:    -'.format_currency($cm->getVoucherReduction(), sfConfig::get('app_rt_currency', 'AUD')).' (#'.$cm->getVoucherCode().')');
+$t->is($cm->getVoucherReduction(),10,'Voucher:    -'.format_currency($cm->getVoucherReduction(), sfConfig::get('app_rt_currency', 'USD')).' (#'.$cm->getVoucherCode().')');
 $t->comment('=============================================================================');
 // Total
-$t->is($cm->getTotalCharge(),160,'Total (includes $'.format_currency($cm->getTaxComponent(), sfConfig::get('app_rt_currency', 'AUD')).' tax): '.format_currency($cm->getTotalCharge(), sfConfig::get('app_rt_currency', 'AUD')));
+$t->is($cm->getTotalCharge(),160,'Total (includes $'.format_currency($cm->getTaxComponent(), sfConfig::get('app_rt_currency', 'USD')).' tax): '.format_currency($cm->getTotalCharge(), sfConfig::get('app_rt_currency', 'USD')));
 $t->comment('=============================================================================');
 
 $t->is($cm->getVoucher()->getReductionValue(),10,'>>> Voucher leftover after reduction value: '.$cm->getVoucher()->getReductionValue().'% <<<');

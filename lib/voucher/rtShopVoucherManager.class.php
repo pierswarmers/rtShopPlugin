@@ -213,7 +213,7 @@ EOF;
     $message = Swift_Message::newInstance()
             ->setFrom($sender_email)
             ->setTo($session_voucher_array['email_address'])
-            ->setSubject(sprintf('A %s Gift Voucher for you from %s %s',format_currency($session_voucher_array['reduction_value'], sfConfig::get('app_rt_currency', 'AUD')),$sender_fname,$sender_lname))
+            ->setSubject(sprintf('A %s Gift Voucher for you from %s %s',format_currency($session_voucher_array['reduction_value'], sfConfig::get('app_rt_currency', 'USD')),$sender_fname,$sender_lname))
             ->setBody($message_html, 'text/html')
             ->addPart($message_plain, 'text/plain');
 

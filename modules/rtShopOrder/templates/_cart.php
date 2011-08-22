@@ -38,11 +38,11 @@
 
       $match = '/('.$match.')/i';
 
-      $image = $product->getPrimaryImage($match) ? image_tag(rtAssetToolkit::getThumbnailPath($product->getPrimaryImage($match)->getSystemPath(), array('maxHeight' => 70, 'maxWidth' => 50))) : 'xx';
+      $image = $product->getPrimaryImage($match) ? image_tag(rtAssetToolkit::getThumbnailPath($product->getPrimaryImage($match)->getSystemPath(), array('maxHeight' => 500, 'maxWidth' => 150))) : 'xx';
     }
     else
     {
-      $image = $product->getPrimaryImage() ? image_tag(rtAssetToolkit::getThumbnailPath($product->getPrimaryImage()->getSystemPath(), array('maxHeight' => 70, 'maxWidth' => 50))) : 'xx';
+      $image = $product->getPrimaryImage() ? image_tag(rtAssetToolkit::getThumbnailPath($product->getPrimaryImage()->getSystemPath(), array('maxHeight' => 500, 'maxWidth' => 150))) : 'xx';
     }
     
   ?>
@@ -52,26 +52,26 @@
     </td>
     <td class="rt-shop-cart-details">
       <input type="hidden" name="product_id[]" value="<?php echo $stock['rtShopProduct']['id']; ?>" />
-      <?php echo link_to($stock['rtShopProduct']['title'], '@rt_shop_product_show?id='.$stock['rtShopProduct']['id'].'&slug='.$stock['rtShopProduct']['slug']) ?>
-      <br />
-      <span><?php echo $variations ?></span>
+      <?php echo link_to($stock['rtShopProduct']['title'], '@rt_shop_product_show?id='.$stock['rtShopProduct']['id'].'&slug='.$stock['rtShopProduct']['slug'], array('class' => 'title')) ?>
+      <?php echo link_to(__('delete'), '@rt_shop_order_stock_delete?id='.$stock['id'], array('class' => 'delete')) ?>
+
+      <div class="rt-shop-cart-variations"><?php echo $variations ?></div>
       <?php if(rtSiteToolkit::isMultiSiteEnabled()): ?>
       <?php include_partial('rtAdmin/site_reference_key', array('id' => $product->getSiteId()))?>
       <?php endif; ?>
+
+      <div class="rt-shop-cart-price-unit">
+          <?php echo format_currency($item_price, sfConfig::get('app_rt_currency', 'USD')). ' ' . __('each'); ?>
+      </div>
+      
     </td>
     <?php if($editable == true): ?>
-    <td class="rt-shop-cart-actions">
-      <?php echo link_to(__('Delete'), '@rt_shop_order_stock_delete?id='.$stock['id']) ?>
-    </td>
     <?php endif; ?>
-    <td class="rt-shop-cart-price-unit">
-        <?php echo format_currency($item_price, sfConfig::get('app_rt_currency', 'AUD')); ?>
-    </td>
     <td class="rt-shop-cart-quantity">
       <?php if($editable == false): ?>
         <?php echo $stock['rtShopOrderToStock'][0]['quantity'] ?>
       <?php else: ?>
-        <input type="text" name="quantity[]" class="minitext" value="<?php echo isset($update_quantities[$stock['id']]) ? $update_quantities[$stock['id']] :$stock['rtShopOrderToStock'][0]['quantity']; ?>" />
+        <input name="quantity[]" id="rt-shop-quantity" class="rt-text-small" type="number" min="1" max="50" step="1" value="<?php echo isset($update_quantities[$stock['id']]) ? $update_quantities[$stock['id']] :$stock['rtShopOrderToStock'][0]['quantity']; ?>" />
         <?php if(isset($stock_exceeded[$stock['id']])): ?>
         <span>(<?php echo $stock_exceeded[$stock['id']] . ' ' . __('available') ?>)</span>
         <?php endif; ?>
@@ -79,7 +79,7 @@
       <?php endif; ?>
     </td>
     <td class="rt-shop-cart-price-total">
-      <?php echo format_currency($stock['rtShopOrderToStock'][0]['quantity'] * $item_price, sfConfig::get('app_rt_currency', 'AUD')) ?>
+      <?php echo format_currency($stock['rtShopOrderToStock'][0]['quantity'] * $item_price, sfConfig::get('app_rt_currency', 'USD')) ?>
     </td>
   </tr>
   <?php // Cart item row END ?>
@@ -98,9 +98,9 @@
     <?php if($editable == true): ?>
       <td class="rt-shop-cart-actions"><?php echo link_to(__('Edit'), 'rt_shop_voucher_edit', $options) ?> | <?php echo link_to(__('Delete'), 'rt_shop_voucher_delete', $options) ?></td>
     <?php endif; ?>
-    <td class="rt-shop-cart-price-unit"><?php echo format_currency($voucher['reduction_value'], sfConfig::get('app_rt_currency', 'AUD')) ?></td>
+    <td class="rt-shop-cart-price-unit"><?php echo format_currency($voucher['reduction_value'], sfConfig::get('app_rt_currency', 'USD')) ?></td>
     <td class="rt-shop-cart-quantity">1</td>
-    <td class="rt-shop-cart-price-total"><?php echo format_currency($voucher['reduction_value'], sfConfig::get('app_rt_currency', 'AUD')) ?></td>
+    <td class="rt-shop-cart-price-total"><?php echo format_currency($voucher['reduction_value'], sfConfig::get('app_rt_currency', 'USD')) ?></td>
   </tr>
 <?php endif; ?>
 <!-- Gift voucher END -->

@@ -31,17 +31,17 @@
   <h2><?php echo __('Sales Summary') ?></h2>
   <dl class="rt-admin-summary-panel clearfix">
     <dt class="rt-admin-primary"><?php echo __('Today') ?> (<?php echo $stats['today']['count'] ?>)</dt>
-    <dd class="rt-admin-primary"><?php echo format_currency($stats['today']['revenue'], sfConfig::get('app_rt_currency', 'AUD')) ?></dd>
+    <dd class="rt-admin-primary"><?php echo format_currency($stats['today']['revenue'], sfConfig::get('app_rt_currency', 'USD')) ?></dd>
     <dt><?php echo __('Yesterday') ?> (<?php echo $stats['yesterday']['count'] ?>)</dt>
-    <dd><?php echo format_currency($stats['yesterday']['revenue'], sfConfig::get('app_rt_currency', 'AUD')) ?></dd>
+    <dd><?php echo format_currency($stats['yesterday']['revenue'], sfConfig::get('app_rt_currency', 'USD')) ?></dd>
     <dt><?php echo __('This Month') ?> (<?php echo $stats['month_current']['count'] ?>)</dt>
-    <dd><?php echo format_currency($stats['month_current']['revenue'], sfConfig::get('app_rt_currency', 'AUD')) ?></dd>
+    <dd><?php echo format_currency($stats['month_current']['revenue'], sfConfig::get('app_rt_currency', 'USD')) ?></dd>
     <dt><?php echo __('Last Month') ?> (<?php echo $stats['month_last']['count'] ?>)</dt>
-    <dd><?php echo format_currency($stats['month_last']['revenue'], sfConfig::get('app_rt_currency', 'AUD')) ?></dd>
+    <dd><?php echo format_currency($stats['month_last']['revenue'], sfConfig::get('app_rt_currency', 'USD')) ?></dd>
     <dt><?php echo __('Total') ?> (<?php echo $stats['total']['count'] ?>)</dt>
-    <dd><?php echo format_currency($stats['total']['revenue'], sfConfig::get('app_rt_currency', 'AUD')) ?></dd>
+    <dd><?php echo format_currency($stats['total']['revenue'], sfConfig::get('app_rt_currency', 'USD')) ?></dd>
     <dt><?php echo __('Average Order Value') ?></dt>
-    <dd><?php echo format_currency(($stats['total']['count'] > 0) ? $stats['total']['revenue']/$stats['total']['count'] : 0.0, sfConfig::get('app_rt_currency', 'AUD')) ?></dd>
+    <dd><?php echo format_currency(($stats['total']['count'] > 0) ? $stats['total']['revenue']/$stats['total']['count'] : 0.0, sfConfig::get('app_rt_currency', 'USD')) ?></dd>
   </dl>
   <h2><?php echo __('30 Day Summary') ?></h2>
   <?php $orders_by_day = $sf_data->getRaw('orders_by_day') ?>
@@ -103,7 +103,7 @@
       <tr>
         <td><a href="<?php echo url_for('rtShopOrderAdmin/show?id='.$rt_shop_order->getId()) ?>"><code><?php echo $rt_shop_order->getReference() ?></code></a></td>
         <?php if(!$is_dispatch_user): ?>
-          <td><?php echo format_currency($rt_shop_order->getTotalCharge(), sfConfig::get('app_rt_currency', 'AUD')); ?></td>
+          <td><?php echo format_currency($rt_shop_order->getTotalCharge(), sfConfig::get('app_rt_currency', 'USD')); ?></td>
         <?php endif;?>
         <td><?php echo strtoupper($rt_shop_order->getStatus()) ?></td>
         <td><?php echo $rt_shop_order->getEmailAddress(); ?></td>
