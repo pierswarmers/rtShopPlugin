@@ -49,6 +49,20 @@ abstract class PluginrtShopOrder extends BasertShopOrder
     }
   }
 
+  public function save(Doctrine_Connection $conn = null)
+  {
+    if($this->getVoucherId() && ($this->getVoucherCode() === '' || is_null($this->getVoucherCode())))
+    {
+      $voucher  = Doctrine_Core::getTable('rtShopVoucher')->findOneById($this->getVoucherId());
+      if($voucher)
+      {
+        $this->setVoucherCode($voucher->getCode());
+      }
+    }
+    
+    parent::save($conn);
+  }
+
   /**
    * Title to string
    *
