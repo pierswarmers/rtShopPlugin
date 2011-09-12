@@ -30,7 +30,7 @@ slot('rt-title', $rt_shop_category->getTitle());
       <?php echo $content; ?>
     <?php endif; ?>      
     
-    <div class="rt-container rt-collection">
+    <div class="rt-container rt-collection clearfix">
       <?php $i = 1; foreach($pager as $rt_shop_product): ?>
       <div class="product-item item-<?php echo $i ?>">
         <?php include_partial('rtShopProduct/shopProductMini', array('rt_shop_product' => $rt_shop_product)); ?>
