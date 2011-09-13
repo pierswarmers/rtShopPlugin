@@ -647,15 +647,15 @@ class BasertShopOrderActions extends sfActions
     // Send confirmation mail to customer
     $message = Swift_Message::newInstance()
             ->setContentType('text/html')
-            ->setFrom(sfConfig::get('app_rt_shop_order_admin_email', 'from@noreply.com'))
+            ->setFrom($this->getAdminEmail())
             ->setTo($rt_shop_cart_manager->getOrder()->getEmailAddress())
             ->setSubject(sprintf('Order confirmation: #%s', $order_reference))
             ->setBody($message_html,'text/html')
             ->addPart($message_plain, 'text/plain');;
 
-    if(sfConfig::get('app_rt_shop_order_admin_email'))
+    if(sfConfig::get('app_rt_shop_order_bcc_admin', true))
     {
-      $message->setBcc(sfConfig::get('app_rt_shop_order_admin_email'));
+      $message->setBcc($this->getAdminEmail());
     }
 
     if(!$this->getMailer()->send($message))
@@ -801,7 +801,7 @@ class BasertShopOrderActions extends sfActions
    */
   private function getAdminEmail()
   {
-    return sfConfig::get('app_rt_registration_admin_email', sfConfig::get('app_rt_admin_email'));
+    return sfConfig::get('app_rt_shop_order_admin_email', sfConfig::get('app_rt_admin_email'));
   }
 
   /**
