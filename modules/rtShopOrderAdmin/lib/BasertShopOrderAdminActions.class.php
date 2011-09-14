@@ -144,7 +144,7 @@ class BasertShopOrderAdminActions extends sfActions
     return $stats;
   }
 
-  private function getCountPerPage(sfWebRequest $request)
+  protected function getCountPerPage(sfWebRequest $request)
   {
     $count = sfConfig::get('app_rt_admin_pagination_limit', 50);
     if($request->hasParameter('show_more'))
