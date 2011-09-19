@@ -17,7 +17,7 @@
     <?php foreach($rt_shop_order->getProductsData() as $product): ?>
       <tr>
         <td><?php echo $product['title'] ?> <?php echo ($product['variations'] != '' && !empty ($product['variations'])) ? sprintf('(%s)',$product['variations']) : ''; ?></td>
-        <td><?php echo $product['sku']; ?></td>
+        <td><?php echo $product['sku'] ? $product['sku'] : $product['sku_product']; ?></td>
         <td><?php echo format_currency($product['charge_price'], $product['currency']); ?></td>
         <td><?php echo $product['quantity']; ?></td>
         <td><?php echo format_currency($product['quantity']*$product['charge_price'], $product['currency']); ?></td>
