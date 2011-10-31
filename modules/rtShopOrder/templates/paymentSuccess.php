@@ -110,7 +110,7 @@ slot('rt-title', __(sfConfig::get('app_rt_shop_payment_title', 'Payment')));
       <?php endif; ?>
       </div>
 
-      <h3><?php echo __('Total to be charged to your credit card: '); ?> <span id="order-total-charge" class="rt-shop-total"><?php echo format_currency($rt_shop_cart_manager->getTotalCharge(), sfConfig::get('app_rt_shop_payment_currency','AUD')); ?></span></h3>
+      <h3><?php echo __('Total to be charged to your credit card: '); ?> <span id="order-total-charge" class="rt-shop-total"><?php echo format_currency($rt_shop_cart_manager->getTotalCharge(), sfConfig::get('app_rt_currency','USD')); ?></span></h3>
 
       <p class="rt-section-tools-submit">
         <button id="rt-submit-order"><?php echo __('Place your order') ?></button>
