@@ -476,7 +476,7 @@ class rtShopCartManager implements rtShopCartManagerInterface
     $faux_item['price_promotion'] = 0.0;
     $faux_item['price_retail'] = $voucher['reduction_value'];
     $faux_item['price_wholesale'] = 0.0;
-    $faux_item['rtShopOrderToStock'][]['quantity'] = 1;
+    $faux_item['rtShopOrderToStock'][0]['quantity'] = 1;
     $faux_item['rtShopProduct']['is_taxable'] = false;
     $faux_item['rtShopProduct']['title'] = $voucher['title'];
 
