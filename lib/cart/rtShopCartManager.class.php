@@ -142,6 +142,7 @@ class rtShopCartManager implements rtShopCartManagerInterface
   /**
    * Returns the tax component of the total. Only applicatable for inclusive tax mode.
    *
+   * @param integer $total
    * @return float
    */
   static function calcTaxComponent($total)
