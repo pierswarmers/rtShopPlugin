@@ -133,7 +133,14 @@ class rtShopCartManager implements rtShopCartManagerInterface
   {
     if($this->isTaxModeInclusive())
     {
-      return (float) ($this->getTotalCharge() * 10) / ($this->getTaxRate() + 100);
+      $total = $this->getTotalCharge();
+
+      if(!sfConfig::get('app_rt_shop_tax_inclusive_shipping', true))
+      {
+        $total = $total - $this->getShippingCharge();
+      }
+
+      return self::calcTaxComponent($total);
     }
 
     return 0.00;
@@ -149,7 +156,7 @@ class rtShopCartManager implements rtShopCartManagerInterface
   {
     if(sfConfig::get('app_rt_shop_tax_mode', 'inclusive'))
     {
-      return (float) ($total * 10) / (sfConfig::get('app_rt_shop_tax_rate', 0.0) + 100);
+      return (float) $total - ($total / (sfConfig::get('app_rt_shop_tax_rate', 0.0)/100 + 1));
     }
 
     return 0.00;
@@ -416,7 +423,7 @@ class rtShopCartManager implements rtShopCartManagerInterface
   }
 
   /**
-   * Get the taxation rate
+   * Get the taxation rate, typically this will be a percentage value, eg. 10, 15 etc...
    *
    * @return float
    */

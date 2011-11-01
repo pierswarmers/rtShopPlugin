@@ -24,7 +24,7 @@ $voucher = $rt_shop_order->getVoucherData();
 ------------------------------------------------------------
 <?php echo __('Payment transaction ID') ?>: <?php echo $rt_shop_order->getReference() ?><?php echo "\r\n" ?>
 <?php echo __('Order reference') ?>: <?php echo $rt_shop_order->getPaymentTransactionId() ?><?php echo "\r\n" ?>
-<?php echo __('Payment charge') ?>: <?php echo format_currency($rt_shop_order->getPaymentCharge(), 'AUD') ?><?php echo "\r\n" ?>
+<?php echo __('Payment charge') ?>: <?php echo format_currency($rt_shop_order->getPaymentCharge(), sfConfig::get('app_rt_currency', 'USD')) ?><?php echo "\r\n" ?>
 <?php echo __('Status') ?>: <?php echo strtoupper($rt_shop_order->getStatus()) ?><?php echo "\r\n" ?>
 <?php if($rt_shop_order->getVoucherCode()): ?>
 <?php echo __('Voucher code') ?>: <?php echo $rt_shop_order->getVoucherCode() ?><?php echo "\r\n" ?>
@@ -73,9 +73,9 @@ $voucher = $rt_shop_order->getVoucherData();
 <?php $i=1; foreach($rt_shop_order->getProductsData() as $product): ?>
 <?php echo __('Description'); ?>: <?php echo $product['title'] ?> <?php echo ($product['variations'] != '' && !empty ($product['variations'])) ? sprintf('(%s)',$product['variations']) : ''; ?><?php echo "\r\n" ?>
 <?php echo __('SKU'); ?>: <?php echo $product['sku']; ?><?php echo "\r\n" ?>
-<?php echo __('Price (each)'); ?>: <?php echo format_currency($product['charge_price'], $product['currency']); ?><?php echo "\r\n" ?>
+<?php echo __('Price (each)'); ?>: <?php echo format_currency($product['charge_price'], sfConfig::get('app_rt_currency', 'USD')); ?><?php echo "\r\n" ?>
 <?php echo __('Quantity'); ?>: <?php echo $product['quantity']; ?><?php echo "\r\n" ?>
-<?php echo __('Price'); ?>: <?php echo format_currency($product['quantity']*$product['charge_price'], $product['currency']); ?><?php echo "\r\n" ?>
+<?php echo __('Price'); ?>: <?php echo format_currency($product['quantity']*$product['charge_price'], sfConfig::get('app_rt_currency', 'USD')); ?><?php echo "\r\n" ?>
 <?php if($i < count($rt_shop_order->getProductsData())): ?>
 .................................................................................
 <?php endif; ?>

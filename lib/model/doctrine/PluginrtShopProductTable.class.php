@@ -37,5 +37,5 @@ class PluginrtShopProductTable extends rtPageTable
       return Doctrine_Core::getTable('PluginrtShopProduct');
   }
 
-  
+
 }
