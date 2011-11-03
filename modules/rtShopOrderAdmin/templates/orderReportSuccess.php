@@ -81,13 +81,13 @@
       <tr>
         <td><code><?php echo link_to($order['o_reference'],'@rt_shop_order_show?id='.$order['o_id']) ?></code></td>
         <td><?php echo strtoupper($order['o_status']) ?></td>
-        <td><?php echo format_currency($order['o_items_charge'], 'AUD') ?></td>
-        <td><?php echo format_currency($order['o_shipping_charge'], 'AUD') ?></td>
-        <td><?php echo format_currency($order['o_tax_charge'], 'AUD') ?></td>
-        <td><?php echo format_currency($order['o_tax_component'], 'AUD') ?></td>
-        <td><?php echo format_currency($order['o_promotion_reduction'], 'AUD') ?></td>
-        <td><?php echo format_currency($order['o_voucher_reduction'], 'AUD') ?></td>
-        <td><?php echo format_currency($order['o_total_charge'], 'AUD') ?></td>
+        <td><?php echo format_currency($order['o_items_charge'], 'USD') ?></td>
+        <td><?php echo format_currency($order['o_shipping_charge'], 'USD') ?></td>
+        <td><?php echo format_currency($order['o_tax_charge'], 'USD') ?></td>
+        <td><?php echo format_currency($order['o_tax_component'], 'USD') ?></td>
+        <td><?php echo format_currency($order['o_promotion_reduction'], 'USD') ?></td>
+        <td><?php echo format_currency($order['o_voucher_reduction'], 'USD') ?></td>
+        <td><?php echo format_currency($order['o_total_charge'], 'USD') ?></td>
         <td><?php echo $order['o_created_at'] ?></td>
       </tr>
     <?php endforeach; ?>

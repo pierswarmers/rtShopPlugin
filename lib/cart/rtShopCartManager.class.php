@@ -694,8 +694,8 @@ class rtShopCartManager implements rtShopCartManagerInterface
     $voucher_data['shipping_charge']        = $this->getShippingCharge();
     $voucher_data['total_charge']           = $this->getTotalCharge();
     $voucher_data['reduction']              = $this->getVoucherReduction();
-    $voucher_data['reduction_formatted']    = $numberFormat->format($this->getVoucherReduction(), 'c', sfConfig::get('app_rt_shop_payment_currency','AUD'));
-    $voucher_data['total_charge_formatted'] = $numberFormat->format($this->getTotalCharge(), 'c', sfConfig::get('app_rt_shop_payment_currency','AUD'));
+    $voucher_data['reduction_formatted']    = $numberFormat->format($this->getVoucherReduction(), 'c', sfConfig::get('app_rt_shop_payment_currency','USD'));
+    $voucher_data['total_charge_formatted'] = $numberFormat->format($this->getTotalCharge(), 'c', sfConfig::get('app_rt_shop_payment_currency','USD'));
     
     return $voucher_data;
   }
@@ -749,7 +749,7 @@ class rtShopCartManager implements rtShopCartManagerInterface
       $products[$i]['price_promotion'] = $stock['price_promotion'];
       $products[$i]['price_retail'] = $stock['price_retail'];
       $products[$i]['price_wholesale'] = $stock['price_wholesale'];
-      $products[$i]['currency'] = sfConfig::get('app_rt_shop_payment_currency','AUD');
+      $products[$i]['currency'] = sfConfig::get('app_rt_shop_payment_currency','USD');
       $i++;
     }
 
@@ -771,7 +771,7 @@ class rtShopCartManager implements rtShopCartManagerInterface
       $products[$i]['price_promotion'] = '';
       $products[$i]['price_retail'] = $voucher->getReductionValue();
       $products[$i]['price_wholesale'] = '';
-      $products[$i]['currency'] = sfConfig::get('app_rt_shop_payment_currency','AUD');
+      $products[$i]['currency'] = sfConfig::get('app_rt_shop_payment_currency','USD');
     }
 
     // Save products data

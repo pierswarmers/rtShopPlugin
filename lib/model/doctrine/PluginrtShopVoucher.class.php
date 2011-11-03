@@ -36,7 +36,7 @@ abstract class PluginrtShopVoucher extends BasertShopVoucher
     if($this->getReductionType() === self::REDUCTION_TYPE_DOLLAR)
     {
       $numberFormat = new sfNumberFormat(sfContext::getInstance()->getUser()->getCulture());
-      return $numberFormat->format($this->getReductionValue(), 'c', sfConfig::get('app_rt_shop_payment_currency','AUD'));
+      return $numberFormat->format($this->getReductionValue(), 'c', sfConfig::get('app_rt_shop_payment_currency','USD'));
     }
 
     return $this->getReductionValue(). '%';

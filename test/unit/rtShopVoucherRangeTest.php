@@ -323,24 +323,24 @@ $t->comment('--- rtShopCartManager::getVoucherReduction() // dollarOff ---------
 $t->diag('*** Case #2.0: Voucher #1: Non-applicable voucher');
 
 $cm->setVoucherCode($voucher1->getCode());
-$t->is($cm->getVoucherReduction(), 0, '->getVoucherReduction() is returning correct voucher reduction value of '.$numberFormat->format($cm->getVoucherReduction(), 'c', sfConfig::get('app_rt_shop_payment_currency','AUD')).')');
+$t->is($cm->getVoucherReduction(), 0, '->getVoucherReduction() is returning correct voucher reduction value of '.$numberFormat->format($cm->getVoucherReduction(), 'c', sfConfig::get('app_rt_shop_payment_currency','USD')).')');
 
 $t->diag('*** Case #2.1: Voucher #2: Applicable voucher');
 
 $cm->setVoucherCode($voucher2->getCode());
-$t->is($cm->getVoucherReduction(), 100, '->getVoucherReduction() is returning correct voucher reduction value of '.$numberFormat->format($cm->getVoucherReduction(), 'c', sfConfig::get('app_rt_shop_payment_currency','AUD')).')');
+$t->is($cm->getVoucherReduction(), 100, '->getVoucherReduction() is returning correct voucher reduction value of '.$numberFormat->format($cm->getVoucherReduction(), 'c', sfConfig::get('app_rt_shop_payment_currency','USD')).')');
 
 $t->comment('--- rtShopCartManager::getVoucherReduction() // percentageOff -----------------------------------------');
 
 $t->diag('*** Case #2.2: Voucher #3: Non-applicable voucher');
 
 $cm->setVoucherCode($voucher3->getCode());
-$t->is($cm->getVoucherReduction(), 0, '->getVoucherReduction() is returning correct voucher reduction value of '.$numberFormat->format($cm->getVoucherReduction(), 'c', sfConfig::get('app_rt_shop_payment_currency','AUD')).')');
+$t->is($cm->getVoucherReduction(), 0, '->getVoucherReduction() is returning correct voucher reduction value of '.$numberFormat->format($cm->getVoucherReduction(), 'c', sfConfig::get('app_rt_shop_payment_currency','USD')).')');
 
 $t->diag('*** Case #2.3: Voucher #4: Applicable voucher');
 
 $cm->setVoucherCode($voucher4->getCode());
-$t->is($cm->getVoucherReduction(), 14, '->getVoucherReduction() is returning correct voucher reduction value of '.$numberFormat->format($cm->getVoucherReduction(), 'c', sfConfig::get('app_rt_shop_payment_currency','AUD')).')');
+$t->is($cm->getVoucherReduction(), 14, '->getVoucherReduction() is returning correct voucher reduction value of '.$numberFormat->format($cm->getVoucherReduction(), 'c', sfConfig::get('app_rt_shop_payment_currency','USD')).')');
 
 /**
  * rtShopVoucherRangeTestTools Class
