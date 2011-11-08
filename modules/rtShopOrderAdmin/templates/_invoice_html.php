@@ -23,7 +23,7 @@ if(!$shipping_address)
     </tr>
     <tr>
       <th><?php echo __('Payment charge') ?>:</th>
-      <td><?php echo format_currency($rt_shop_order->getPaymentCharge(), 'USD') ?></td>
+      <td><?php echo format_currency($rt_shop_order->getPaymentCharge(), sfConfig::get('app_rt_currency', 'USD')) ?></td>
     </tr>
     <tr>
       <th><?php echo __('Status') ?>:</th>
