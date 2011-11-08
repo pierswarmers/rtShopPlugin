@@ -31,7 +31,7 @@
         if(!is_numeric($cleaned_title))
         {
           // avoid simple numbers when building the $match regex.
-          $match .= $or . rtAssetToolkit::cleanFilename($cleaned_title, true);
+          $match .= $or . $cleaned_title . '|' . str_replace(array('-', '_'), '', $cleaned_title);
           $or = '|';
         }
       }
