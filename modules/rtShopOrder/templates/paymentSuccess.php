@@ -162,6 +162,9 @@ slot('rt-title', __(sfConfig::get('app_rt_shop_payment_title', 'Payment')));
           if(data['id'] != '') {
             $('#voucher-message').html('<span class="success">'+data['title']+'</span>');
             $('.rt-shop-voucher-title').html(data['title']);
+
+            var voucher = $('#rt_shop_order_voucher_voucher_code').attr('value');
+            $('#rt_shop_order_voucher_voucher_code').attr('value', $('#rt_shop_order_voucher_voucher_code').attr('value').replace('#', ''));
             $('.rt-shop-voucher-reduction').html(data['reduction_formatted']);
             $('.rt-shop-cart-voucher').show();
           } else if(data['error'] != '') {
