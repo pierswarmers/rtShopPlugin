@@ -91,6 +91,7 @@ slot('rt-title', __(sfConfig::get('app_rt_shop_payment_title', 'Payment')));
           <h2><?php echo __('Voucher or Promotion Details') ?></h2>
           <p>If applicable enter your voucher or promotion code to apply your discount.</p>
           <p>
+            <?php if($form['voucher_code']->hasError()) : ?><span class="error"><?php echo $form['voucher_code']->getError(); ?></span><?php endif; ?>
             <?php echo $form['voucher_code'] ?>
             <button id="apply-voucher"><?php echo __('Apply Code') ?></button>
           </p>
