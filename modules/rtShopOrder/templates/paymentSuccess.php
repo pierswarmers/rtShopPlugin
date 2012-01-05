@@ -127,11 +127,25 @@ slot('rt-title', __(sfConfig::get('app_rt_shop_payment_title', 'Payment')));
 </div>
 
 <script type="text/javascript">
+
+  var submitcount = 0;
+
+  function checkForm(){
+      if (submitcount == 0) {
+          submitcount ++;
+          return true;
+      } else {
+          return false;
+      }
+  }
+
   $(function() {
 
     $('#rt-submit-order').click(function(){ 
       $(this).attr("disabled",true).html("<?php echo __('Processing your order, please be patient') ?>...").addClass("disabled");
-      $('#rt-shop-order-payment-form').submit();
+      if(checkForm()) {
+        $('#rt-shop-order-payment-form').submit();
+      }
     });
 
     $('#apply-voucher').click(function(){ return false;});

@@ -518,6 +518,11 @@ class BasertShopOrderActions extends sfActions
       $this->redirect('rt_shop_order_receipt');
     }
 
+    // Note: should this be - $this->getCartManager()->getTotalCharge() - $rt_shop_cart_manager->getOrder()->getPaymentCharge() = 0
+    if($rt_shop_cart_manager->getOrder()->getPaymentCharge() > 0) {
+      $this->redirect('rt_shop_order_receipt');
+    }
+
     if(!Doctrine::getTable('rtAddress')->getAddressForObjectAndType($rt_shop_cart_manager->getOrder(), 'billing'))
     {
       $this->redirect('rt_shop_order_address');
