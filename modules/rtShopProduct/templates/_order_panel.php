@@ -53,6 +53,11 @@ if($rt_shop_product->isPurchasable()): ?>
       $file_location = sfConfig::get('sf_upload_dir') . '/variations/' . $variation->image;
       $image = $rt_shop_attribute->getDisplayImage() && is_file($file_location) ? ' style="background-image: url('.rtAssetToolkit::getThumbnailPath($file_location, array('maxWidth' => 30, 'maxHeight' => 30)).')"' : '';
 
+      // Skip for out of stock options.
+      if(!$rt_shop_product->getBackorderAllowed() && !$available) {
+        continue;
+      }
+
       ?>
 
         <input name="rt-shop-variation-ids[<?php echo $i ?>]" title="<?php echo htmlentities($variation->getTitle()) ?>" id="rt-variation-<?php echo $variation->getId() ?>" class="<?php echo ($available ? 'available ' : 'unavailable') . ' '. implode(' ', $ref) ?>" type="radio" value="<?php echo $variation->getId() ?>" <?php echo count($variations) == 1 ? ' checked="checked"' : '' ?>/>
