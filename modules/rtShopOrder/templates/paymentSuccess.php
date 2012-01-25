@@ -58,8 +58,20 @@ slot('rt-title', __(sfConfig::get('app_rt_shop_payment_title', 'Payment')));
           </tr>
           <?php endif; ?>
 
+
+          <?php
+            $display_note                = ($rt_shop_cart_manager->getVoucherReduction() == 0) ? 'block' : 'none';
+            $voucher_not_applicable_note = '<small style="display:'.$display_note.'"><strong>Please Note:</strong> Your voucher is not applicable to to any of the items in you cart.</small>';
+          ?>
+
           <tr class="rt-shop-cart-voucher" <?php echo ($rt_shop_cart_manager->getVoucher()) ? "" : "style=\"display:none\""; ?>>
-            <th colspan="3"><?php echo __('Voucher') ?> (<span class="rt-shop-voucher-title"><?php echo ($rt_shop_cart_manager->getVoucher() != false) ? $rt_shop_cart_manager->getVoucher()->getTitle() : ""; ?></span>):</th>
+            <th colspan="3"><?php echo __('Voucher') ?> (<span class="rt-shop-voucher-title"><?php echo ($rt_shop_cart_manager->getVoucher() != false) ? $rt_shop_cart_manager->getVoucher()->getTitle() : ""; ?></span>):<?php echo $voucher_not_applicable_note ?></th>
+            <td>-<span class="rt-shop-voucher-reduction"><?php echo format_currency($rt_shop_cart_manager->getVoucherReduction(), sfConfig::get('app_rt_currency', 'USD')); ?></span></td>
+          </tr>
+
+
+          <tr class="rt-shop-cart-voucher" <?php echo ($rt_shop_cart_manager->getVoucher()) ? "" : "style=\"display:none\""; ?>>
+            <th colspan="3"><?php echo __('Voucher') ?> (<span class="rt-shop-voucher-title"><?php echo ($rt_shop_cart_manager->getVoucher() != false) ? $rt_shop_cart_manager->getVoucher()->getTitle() : ""; ?></span>):<?php echo $voucher_not_applicable_note ?></th>
             <td>-<span class="rt-shop-voucher-reduction"><?php echo format_currency($rt_shop_cart_manager->getVoucherReduction(), sfConfig::get('app_rt_currency', 'USD')); ?></span></td>
           </tr>
 
@@ -182,6 +194,11 @@ slot('rt-title', __(sfConfig::get('app_rt_shop_payment_title', 'Payment')));
             $('#rt_shop_order_voucher_voucher_code').attr('value', $('#rt_shop_order_voucher_voucher_code').attr('value').replace('#', ''));
             $('.rt-shop-voucher-reduction').html(data['reduction_formatted']);
             $('.rt-shop-cart-voucher').show();
+            $('.rt-shop-cart-voucher').find('small').css('display','none');
+            if(data['reduction'] == 0) {
+              $('.rt-shop-cart-voucher').find('small').css('display','block');
+            }
+
           } else if(data['error'] != '') {
             $('tr.rt-shop-cart-voucher').hide();
             $('#voucher-message').html('<span class="error">Code doesn\'t validate!</span>');
