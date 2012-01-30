@@ -69,12 +69,6 @@ slot('rt-title', __(sfConfig::get('app_rt_shop_payment_title', 'Payment')));
             <td>-<span class="rt-shop-voucher-reduction"><?php echo format_currency($rt_shop_cart_manager->getVoucherReduction(), sfConfig::get('app_rt_currency', 'USD')); ?></span></td>
           </tr>
 
-
-          <tr class="rt-shop-cart-voucher" <?php echo ($rt_shop_cart_manager->getVoucher()) ? "" : "style=\"display:none\""; ?>>
-            <th colspan="3"><?php echo __('Voucher') ?> (<span class="rt-shop-voucher-title"><?php echo ($rt_shop_cart_manager->getVoucher() != false) ? $rt_shop_cart_manager->getVoucher()->getTitle() : ""; ?></span>):<?php echo $voucher_not_applicable_note ?></th>
-            <td>-<span class="rt-shop-voucher-reduction"><?php echo format_currency($rt_shop_cart_manager->getVoucherReduction(), sfConfig::get('app_rt_currency', 'USD')); ?></span></td>
-          </tr>
-
           <?php
             $includes_message = '';
 
