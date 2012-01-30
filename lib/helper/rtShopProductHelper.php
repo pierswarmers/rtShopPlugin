@@ -12,7 +12,7 @@ function price_for($rt_shop_product, $config = array())
   $config['format_now_preffix_from'] = isset($config['format_now_preffix_from']) ? $config['format_now_preffix_from'] : __('From') .' ';
   $config['format_now_preffix_only'] = isset($config['format_now_preffix_only']) ? $config['format_now_preffix_only'] : '';
   $config['format_now_preffix_now_only'] = isset($config['format_now_preffix_now_only']) ? $config['format_now_preffix_now_only'] : __('Now') .' ';
-  $config['format_now_preffix_now_from_only'] = isset($config['format_now_preffix_now_from_only']) ? $config['format_now_preffix_now_from_only'] : __('Now from') .' ';
+  $config['format_now_preffix_now_from_only'] = isset($config['format_now_preffix_now_from_only']) ? $config['format_now_preffix_now_from_only'] : __('Now') .' '; // This might need to be changes to "Now from"?
   $config['format_was_preffix'] = isset($config['format_was_preffix']) ? $config['format_was_preffix'] : __('Was') .' ';
 
   $currency  = sfConfig::get('app_rt_currency', 'USD');
