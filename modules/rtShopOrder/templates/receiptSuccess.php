@@ -26,7 +26,7 @@ $order_received .= '<p>'  . sprintf('%s%s%s',__('Your order has been received. T
 
   <div class="rt-section-content">
     
-    <?php echo rt_get_snippet('shop-receipt-message', $order_received) ?>
+    <?php echo $order_received ?>
 
     <?php if(sfConfig::get('app_rt_analytics_ecommerce_enabled', false)): ?>
       <script type="text/javascript">
