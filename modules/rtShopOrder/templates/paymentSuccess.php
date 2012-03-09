@@ -61,7 +61,7 @@ slot('rt-title', __(sfConfig::get('app_rt_shop_payment_title', 'Payment')));
 
           <?php
             $display_note                = ($rt_shop_cart_manager->getVoucherReduction() == 0) ? 'block' : 'none';
-            $voucher_not_applicable_note = '<small style="display:'.$display_note.'"><strong>Please Note:</strong> Your voucher is not applicable to to any of the items in you cart.</small>';
+            $voucher_not_applicable_note = '<small style="display:'.$display_note.'"><strong>Please Note:</strong> Your voucher is not applicable to to any of the items in your cart.</small>';
           ?>
 
           <tr class="rt-shop-cart-voucher" <?php echo ($rt_shop_cart_manager->getVoucher()) ? "" : "style=\"display:none\""; ?>>
