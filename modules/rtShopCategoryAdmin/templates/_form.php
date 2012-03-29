@@ -87,11 +87,44 @@
                 revert: true
               });
             }
-            
+
             list.append(li_start + input_field + '&nbsp;' + label + li_end);
           }
           $(checkboxId).parents('li').effect('highlight');
         });
+      });
+
+
+      $(function () {
+          $("#rtSortableProducts ul.checkbox_list").first().sortable({
+              revert:true
+          });
+
+          $("#rt_shop_category_product_search").autocomplete({
+              source:'/rtShopProductAdmin/productSelect?q=' + $("#rt_shop_category_product_search").val(),
+              minLength:2,
+              select:function (event, ui) {
+                  var checkboxId = '#rt_shop_category_rt_shop_products_list_' + ui.item.id;
+                  if ($(checkboxId).html() == null && "<?php echo $form->getObject()->getId() ?>" != ui.item.id) {
+                      var li_start = '<li style="">';
+                      var input_field = '<input name="rt_shop_category[rt_shop_products_list][]" type="checkbox" value="' + ui.item.id + '" id="rt_shop_category_rt_shop_products_list_' + ui.item.id + '" checked="checked">';
+                      var label = '<label for="rt_shop_category_rt_shop_products_list_' + ui.item.id + '">' + ui.item.value + '</label>';
+                      var li_end = '</li>';
+
+                      var list = $("#rt_shop_category_product_search").parents('td').children('ul');
+
+                      if (list.html() == null) {
+                          $("#rt_shop_category_product_search").parents('td').prepend('<ul class="checkbox_list"></ul>');
+                          list = $("#rt_shop_category_product_search").parents('td').children('ul');
+                          list.sortable({
+                              revert:true
+                          });
+                      }
+                      list.append(li_start + input_field + '&nbsp;' + label + li_end);
+                  }
+                  $(checkboxId).parents('li').effect('highlight');
+              }
+          });
       });
     </script>
   </div>
