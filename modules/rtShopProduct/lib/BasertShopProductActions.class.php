@@ -17,149 +17,200 @@
  */
 class BasertShopProductActions extends sfActions
 {
-  /**
-   * Executes an application defined process prior to execution of this sfAction object.
-   *
-   * By default, this method is empty.
-   */
-  public function preExecute()
-  {
-    sfConfig::set('app_rt_node_title', 'Shop');
-    rtTemplateToolkit::setFrontendTemplateDir();
-  }
-
-  public function executeShow(sfWebRequest $request)
-  {
-    $this->rt_shop_product = $this->getRoute()->getObject();
-
-    $this->forward404Unless($this->rt_shop_product);
-
-    if(!$this->rt_shop_product->isPublished() && !$this->isAdmin())
+    /**
+     * Executes an application defined process prior to execution of this sfAction object.
+     *
+     * By default, this method is empty.
+     */
+    public function preExecute()
     {
-      $this->forward404('Product isn\'t published.');
+        sfConfig::set('app_rt_node_title', 'Shop');
+        rtTemplateToolkit::setFrontendTemplateDir();
     }
 
-    $query = Doctrine::getTable('rtShopProduct')->addRelatedProductQuery($this->rt_shop_product);
-
-    $this->related_products = $query->execute();
-
-    rtSiteToolkit::checkSiteReference($this->rt_shop_product);
-
-    $this->updateResponse($this->rt_shop_product);
-  }
-
-  public function executeAddToWishlist(sfWebRequest $request)
-  {
-    $wishlist = $this->getUser()->getAttribute('rt_shop_wish_list', array());
-    $wishlist[$request->getParameter('id')] = $request->getParameter('id');
-    $this->getUser()->setAttribute('rt_shop_wish_list', $wishlist);
-  }
-
-  public function executeShowWishlist(sfWebRequest $request)
-  {
-    $this->form = new rtShopOrderEmailForm();
-
-    $wishlist = $this->getUser()->getAttribute('rt_shop_wish_list', array());
-
-    if($request->hasParameter('delete'))
+    public function executeShow(sfWebRequest $request)
     {
-      unset($wishlist[$request->getParameter('delete')]);
-      $this->getUser()->setAttribute('rt_shop_wish_list', $wishlist);
-    }
+        $this->rt_shop_product = $this->getRoute()->getObject();
 
-    // Send wishlist to user
-    if($request->isMethod(sfRequest::POST) || $request->isMethod(sfRequest::PUT))
-    {
-      $this->form->bind($request->getParameter($this->form->getName()));
+        $this->forward404Unless($this->rt_shop_product);
 
-      if($this->form->isValid())
-      {
-        $vars = $this->form->getValues();
-
-        try {
-          $this->notifyUserOfWishlist($vars['email_address'],$wishlist);
-        } catch (Exception $e) {
-
+        if (!$this->rt_shop_product->isPublished() && !$this->isAdmin()) {
+            $this->forward404('Product isn\'t published.');
         }
-        $this->getUser()->setFlash('notice', 'Thank you. Your wishlist has been sent to the selected email address.', false);
-      }
-      else
-      {
-        $this->getUser()->setFlash('default_error', true, false);
-      }
-    }
-  }
 
-  /**
-   * Notify the user about his wishlist
-   *
-   * @param sfGuardUser $user
-   */
-  protected function notifyUserOfWishlist($email_address,$wishlist)
-  {
-    if(!$email_address)
+        $this->related_products = $this->getRelatedProducts($this->rt_shop_product);
+
+        rtSiteToolkit::checkSiteReference($this->rt_shop_product);
+
+        $this->updateResponse($this->rt_shop_product);
+    }
+
+    public function executeAddToWishlist(sfWebRequest $request)
     {
-      return;
+        $wishlist = $this->getUser()->getAttribute('rt_shop_wish_list', array());
+        $wishlist[$request->getParameter('id')] = $request->getParameter('id');
+        $this->getUser()->setAttribute('rt_shop_wish_list', $wishlist);
     }
 
-    $vars = array('email' => $email_address);
-    $vars['wishlist'] = $wishlist;
+    public function executeShowWishlist(sfWebRequest $request)
+    {
+        $this->form = new rtShopOrderEmailForm();
 
-    $message_html = $this->getPartial('rtShopProduct/email_wishlist_user_html', $vars);
-    $message_html = $this->getPartial('rtEmail/layout_html', array('content' => $message_html));
+        $wishlist = $this->getUser()->getAttribute('rt_shop_wish_list', array());
 
-    $message_plain = $this->getPartial('rtShopProduct/email_wishlist_user_plain', $vars);
-    $message_plain = $this->getPartial('rtEmail/layout_plain', array('content' => html_entity_decode($message_plain)));
+        if ($request->hasParameter('delete')) {
+            unset($wishlist[$request->getParameter('delete')]);
+            $this->getUser()->setAttribute('rt_shop_wish_list', $wishlist);
+        }
 
-    $message = Swift_Message::newInstance()
+        // Send wishlist to user
+        if ($request->isMethod(sfRequest::POST) || $request->isMethod(sfRequest::PUT)) {
+            $this->form->bind($request->getParameter($this->form->getName()));
+
+            if ($this->form->isValid()) {
+                $vars = $this->form->getValues();
+
+                try {
+                    $this->notifyUserOfWishlist($vars['email_address'], $wishlist);
+                } catch (Exception $e) {
+
+                }
+                $this->getUser()->setFlash(
+                    'notice',
+                    'Thank you. Your wishlist has been sent to the selected email address.',
+                    false
+                );
+            } else {
+                $this->getUser()->setFlash('default_error', true, false);
+            }
+        }
+    }
+
+    /**
+     * Notify the user about his wishlist
+     *
+     * @param sfGuardUser $user
+     */
+    protected function notifyUserOfWishlist($email_address, $wishlist)
+    {
+        if (!$email_address) {
+            return;
+        }
+
+        $vars = array('email' => $email_address);
+        $vars['wishlist'] = $wishlist;
+
+        $message_html = $this->getPartial('rtShopProduct/email_wishlist_user_html', $vars);
+        $message_html = $this->getPartial('rtEmail/layout_html', array('content' => $message_html));
+
+        $message_plain = $this->getPartial('rtShopProduct/email_wishlist_user_plain', $vars);
+        $message_plain = $this->getPartial(
+            'rtEmail/layout_plain',
+            array('content' => html_entity_decode($message_plain))
+        );
+
+        $message = Swift_Message::newInstance()
             ->setFrom(sfConfig::get('app_rt_shop_order_admin_email', 'from@noreply.com'))
             ->setTo($email_address)
             ->setSubject('My wishlist')
             ->setBody($message_html, 'text/html')
             ->addPart($message_plain, 'text/plain');
 
-    $this->getMailer()->send($message);
-  }
-
-  public function executeSendToFriend(sfWebRequest $request)
-  {
-    $this->form = new rtShopSendToFriendForm();
-    $this->form->setDefault('product_id', $request->getParameter('product_id'));
-    $this->rt_shop_product = Doctrine::getTable('rtShopProduct')->find($request->getParameter('product_id'));
-    
-    if($request->isMethod('POST'))
-    {
-      $this->form->bind($request->getParameter($this->form->getName()), $request->getFiles($this->form->getName()));
-      if ($this->form->isValid())
-      {
-        $rt_shop_product = Doctrine::getTable('rtShopProduct')->find($this->form->getValue('product_id'));
-
-        $message = Swift_Message::newInstance()
-          ->setFrom($this->form->getValue('email_address_sender'))
-          ->setTo($this->form->getValue('email_address_recipient'))
-          ->setSubject($rt_shop_product->getTitle())
-          ->setBody($this->getPartial('rtShopProduct/send_to_friend', array('message' => $this->form->getValue('message'), 'rt_shop_product' => $rt_shop_product)))
-          ->setContentType('text/html')
-        ;
-
         $this->getMailer()->send($message);
-        $this->getUser()->setFlash('notice', 'Your message has been sent');
-        $this->redirect('rt_shop_product_show', $rt_shop_product);
-      }
-      else
-      {
-        $this->getUser()->setFlash('default_error', true, false);
-      }
     }
-  }
 
-  private function updateResponse(rtShopProduct $page)
-  {
-    rtResponseToolkit::setCommonMetasFromPage($page, $this->getUser(), $this->getResponse());
-  }
+    public function executeSendToFriend(sfWebRequest $request)
+    {
+        $this->form = new rtShopSendToFriendForm();
+        $this->form->setDefault('product_id', $request->getParameter('product_id'));
+        $this->rt_shop_product = Doctrine::getTable('rtShopProduct')->find($request->getParameter('product_id'));
 
-  private function isAdmin()
-  {
-    return $this->getUser()->hasCredential(sfConfig::get('app_rt_shop_product_admin_credential', 'admin_shop_product'));
-  }
+        if ($request->isMethod('POST')) {
+            $this->form->bind(
+                $request->getParameter($this->form->getName()),
+                $request->getFiles($this->form->getName())
+            );
+            if ($this->form->isValid()) {
+                $rt_shop_product = Doctrine::getTable('rtShopProduct')->find($this->form->getValue('product_id'));
+
+                $message = Swift_Message::newInstance()
+                    ->setFrom($this->form->getValue('email_address_sender'))
+                    ->setTo($this->form->getValue('email_address_recipient'))
+                    ->setSubject($rt_shop_product->getTitle())
+                    ->setBody(
+                    $this->getPartial(
+                        'rtShopProduct/send_to_friend',
+                        array('message' => $this->form->getValue('message'), 'rt_shop_product' => $rt_shop_product)
+                    )
+                )
+                    ->setContentType('text/html');
+
+                $this->getMailer()->send($message);
+                $this->getUser()->setFlash('notice', 'Your message has been sent');
+                $this->redirect('rt_shop_product_show', $rt_shop_product);
+            } else {
+                $this->getUser()->setFlash('default_error', true, false);
+            }
+        }
+    }
+
+    private function updateResponse(rtShopProduct $page)
+    {
+        rtResponseToolkit::setCommonMetasFromPage($page, $this->getUser(), $this->getResponse());
+    }
+
+    private function isAdmin()
+    {
+        return $this->getUser()->hasCredential(
+            sfConfig::get('app_rt_shop_product_admin_credential', 'admin_shop_product')
+        );
+    }
+
+
+    /**
+     * Return a list of related products.
+     * @param rtShopProduct $rt_shop_product
+     * @return Doctrine_Collection
+     */
+    protected function getRelatedProducts(rtShopProduct $rt_shop_product)
+    {
+        $query = Doctrine::getTable('rtShopProduct')->addRelatedProductQuery($rt_shop_product);
+
+        $related_products = $query->execute();
+
+        if (count($related_products) < 3) {
+            $limit = 3 - count($related_products);
+            $cats = $rt_shop_product->getRtShopRelatedCategories();
+
+            if (count($cats) > 0) {
+
+                $cat_ids = array();
+
+                foreach ($cats as $cat) {
+                    $cat_ids[] = $cat->getId();
+                }
+
+                $query = Doctrine::getTable('rtShopProduct')->addPublishedQuery();
+
+                $query->select('page.id')
+                    ->leftJoin('page.rtShopProducts related')
+                    ->leftJoin('page.rtShopProductToCategory link')
+                    ->andWhereIn('link.category_id', $cat_ids);
+
+                $results = $query->fetchArray();
+
+                if (count($results) > 0) {
+                    shuffle($results);
+                    $results = array_slice($results, 0, $limit);
+                    foreach ($results as $i) {
+                        if ($product = Doctrine::getTable('rtShopProduct')->find($i['id'])) {
+                            $related_products[] = $product;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $related_products;
+    }
 }

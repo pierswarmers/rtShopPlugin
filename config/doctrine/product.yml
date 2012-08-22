@@ -16,6 +16,11 @@ rtShopProduct:
       local: product_id
       foreign:  category_id
       refClass: rtShopProductToCategory
+    rtShopRelatedCategories:
+      class: rtShopCategory
+      local: product_id
+      foreign:  category_id
+      refClass: rtShopProductToRelatedCategory
     rtShopStocks:
       local: id
       foreign: product_id
@@ -191,6 +196,19 @@ rtShopAttribute:
 
 
 rtShopProductToCategory:
+  columns:
+    category_id:
+      type: integer
+      primary: true
+    product_id:
+      type: integer
+      primary: true
+    position: integer
+  relations:
+    rtShopCategory:  { onDelete: CASCADE, local: category_id, foreign: id }
+    rtShopProduct:  { onDelete: CASCADE, local: product_id, foreign: id }
+
+rtShopProductToRelatedCategory:
   columns:
     category_id:
       type: integer

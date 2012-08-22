@@ -39,7 +39,7 @@ abstract class PluginrtShopProductForm extends BasertShopProductForm
     $query = Doctrine_Query::create()->from('rtShopProduct p')
             ->leftJoin('p.rtShopProductToProduct as ptp')
             ->andWhere('ptp.product_id = ?',$this->object->id);
-    
+
     if(!$this->isNew())
     {
       $query->select(sprintf('
@@ -64,13 +64,17 @@ abstract class PluginrtShopProductForm extends BasertShopProductForm
 
     $this->setWidget('rt_shop_categories_list', new rtWidgetFormTreeDoctrineChoice(array('query' => $query, 'expanded' => true ,'multiple' => true, 'model' => 'rtShopCategory')));
 
+    $this->setWidget('rt_shop_related_categories_list', new rtWidgetFormTreeDoctrineChoice(array('query' => $query, 'expanded' => true ,'multiple' => true, 'model' => 'rtShopCategory')));
+
     $this->widgetSchema['rt_shop_attributes_list']->setLabel('Attributes');
     $this->widgetSchema['rt_shop_categories_list']->setLabel('Categories');
+    $this->widgetSchema['rt_shop_related_categories_list']->setLabel('Related Product Categories');
     $this->widgetSchema['rt_shop_promotions_list']->setLabel('Promotions');
     $this->widgetSchema['rt_shop_products_list']->setLabel('Related Products');
 
     $this->widgetSchema->setHelp('rt_shop_attributes_list', 'Optional features this product is defined by. Dragging up or down changes the display order.');
     $this->widgetSchema->setHelp('rt_shop_categories_list', 'One or more categories can be linked to this product.');
+      $this->widgetSchema->setHelp('rt_shop_related_categories_list', 'One or more related product categories can be linked to this product.');
     $this->widgetSchema->setHelp('rt_shop_promotions_list', 'One or more product promotions can be linked to this product.');
     $this->widgetSchema->setHelp('rt_shop_products_list', 'One or more related products can be linked to this product. Dragging up or down changes the display order.');
 
@@ -82,6 +86,7 @@ abstract class PluginrtShopProductForm extends BasertShopProductForm
   protected function doSave($con = null)
   {
     $this->savertShopCategoriesList($con);
+    $this->savertShopRelatedCategoriesList($con);
     $this->savertShopPromotionsList($con);
 
     if (null === $con)

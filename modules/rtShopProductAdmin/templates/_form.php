@@ -145,7 +145,7 @@
             </div>
           </td>
         </tr>
-        <?php //echo render_form_row($form['rt_shop_products_list']); ?>
+        <?php echo render_form_row($form['rt_shop_related_categories_list']); ?>
         <?php echo render_form_row($form['rt_shop_categories_list']); ?>
       </tbody>
     </table>
