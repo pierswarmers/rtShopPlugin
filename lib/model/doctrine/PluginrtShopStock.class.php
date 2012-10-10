@@ -14,8 +14,8 @@ abstract class PluginrtShopStock extends BasertShopStock
 {
   public function getTidyVariationsList()
   {
-    exit;
-    return $this->rtShopVariations;
+    //exit;
+    //return $this->rtShopVariations;
   }
 
   /**
