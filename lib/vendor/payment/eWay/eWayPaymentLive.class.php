@@ -92,10 +92,12 @@ class EwayPaymentLive {
   {
     $ch = curl_init($this->myGatewayURL);
 
-    curl_setopt( $ch, CURLOPT_RETURNTRANSFEROUT, 240 );
+    curl_setopt( $ch, CURLOPT_TIMEOUT, 240 );
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlRequest);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
     foreach($this->myCurlPreferences as $key=>$value)
     {
       curl_setopt($ch, $key, $value);
