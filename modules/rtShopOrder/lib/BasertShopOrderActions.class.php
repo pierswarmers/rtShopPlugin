@@ -568,13 +568,15 @@ class BasertShopOrderActions extends sfActions
       {
         $this->logMessage('{rtShopPayment} Order: '.$rt_shop_cart_manager->getOrder()->getReference().'. Proceeding to charge credit card with: ' . $rt_shop_cart_manager->getTotalCharge());
 
+        $this->logMessage('{rtShopPayment} Formatting CC into array.');
         $cc_array = $this->FormatCcInfoArray($this->form_cc->getValues());
+        $this->logMessage('{rtShopPayment} Getting address info.');
         $address = $rt_shop_cart_manager->getBillingAddress();
+        $this->logMessage('{rtShopPayment} Formatting customer_details array.');
         $customer_array = $this->FormatCustomerInfoArray($address, $rt_shop_cart_manager->getOrder()->getEmailAddress());
-
+        $this->logMessage('{rtShopPayment} Instanciating the payment object.');
         $payment = rtShopPaymentToolkit::getPaymentObject(sfConfig::get('app_rt_shop_payment_class','rtShopPayment'));
-
-        $this->logMessage($this->getCartManager()->getPricingInfo());
+        $this->logMessage('{rtShopPayment} Pricing info: '.$this->getCartManager()->getPricingInfo());
 
         if($payment->doPayment((int) bcmul($rt_shop_cart_manager->getTotalCharge(), 100), $cc_array, $customer_array))
         {
